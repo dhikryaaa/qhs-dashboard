@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $kode_role
  * @property string $nama
  * @property string $aktif
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role query()
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role whereAktif($value)
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role whereKodeRole($value)
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_role whereNama($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole query()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole whereAktif($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole whereKodeRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSRole whereNama($value)
  * @mixin \Eloquent
  */
-class qhs_role extends Model
+class QHSRole extends Model
 {
     use HasFactory;
 

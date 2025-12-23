@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\qhs_inspect_d> $inspectD
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QHSInspectD> $inspectD
  * @property-read int|null $inspect_d_count
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_kategori newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_kategori newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|qhs_kategori query()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSKategori newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSKategori newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|QHSKategori query()
  * @mixin \Eloquent
  */
-class qhs_kategori extends Model
+class QHSKategori extends Model
 {
     use HasFactory;
 
@@ -31,6 +31,6 @@ class qhs_kategori extends Model
 
     public function inspectD()
     {
-        return $this->hasMany(qhs_inspect_d::class, 'kode', 'kode');
+        return $this->hasMany(QHSInspectD::class, 'kode', 'kode');
     }
 }
