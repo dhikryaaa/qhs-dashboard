@@ -6,6 +6,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use function PHPUnit\Framework\returnArgument;
 
+/**
+ * @property string $no_dokumen
+ * @property \Illuminate\Support\Carbon $tanggal
+ * @property string $jam_mulai
+ * @property string|null $jam_selesai
+ * @property string $kode_dept
+ * @property string|null $kode_lokasi
+ * @property string $user_input
+ * @property-read \App\Models\qhs_departemen $departemen
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\qhs_inspect_d> $inspectD
+ * @property-read int|null $inspect_d_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\qhs_inspect_r> $inspectR
+ * @property-read int|null $inspect_r_count
+ * @property-read \App\Models\qhs_lokasi|null $lokasi
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h query()
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereJamMulai($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereJamSelesai($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereKodeDept($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereKodeLokasi($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereNoDokumen($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereTanggal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|qhs_inspect_h whereUserInput($value)
+ * @mixin \Eloquent
+ */
 class qhs_inspect_h extends Model
 {
     use HasFactory;

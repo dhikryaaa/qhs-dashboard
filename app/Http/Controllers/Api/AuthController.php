@@ -30,20 +30,23 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('authToken')->plainTextToken;
+        $tokenResult = $user->createToken('authToken');
+
+        $token = $tokenResult->accessToken;
+        $token->expires_at = now()->addMinutes(config('sanctum.expiration'));
+        $token->save();
 
         return response()->json([
             'message' => 'Login Berhasil',
-            'token' => $token,
+            'token' => $tokenResult->plainTextToken,
+            'expires_at' => $token->expires_at,
             'user' => $user
         ]);
     }
 
     public function logout(Request $request)
     {
-        /**
-         * @var User $user
-         */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var PersonalAccessToken|null $token */
