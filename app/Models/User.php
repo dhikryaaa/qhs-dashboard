@@ -8,6 +8,29 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property mixed $password
+ * @property string $no_induk
+ * @property string $nama
+ * @property string $aktif
+ * @property string|null $kode_role
+ * @property string|null $kode_dept
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAktif($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereKodeDept($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereKodeRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereNama($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereNoInduk($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -25,7 +48,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'no_induk',
-        'name',
+        'nama',
         'aktif',
         'kode_role',
         'kode_dept',
