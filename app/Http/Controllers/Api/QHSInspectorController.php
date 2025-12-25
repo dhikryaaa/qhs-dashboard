@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\QHSRole;
+use App\Models\QHSInspector;
 use Illuminate\Http\Request;
 
-class QHSRoleController extends Controller
+class QHSInspectorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class QHSRoleController extends Controller
     {
         $page = $request->get('per_page', 5);
 
-        $data = QHSRole::paginate($page);
+        $data = QHSInspector::paginate($page);
 
         return $data;
     }
@@ -26,12 +26,12 @@ class QHSRoleController extends Controller
     public function store(Request $request)
     {
         $validation = $request->validate([
-            'kode_role' => 'required|string|unique:qhs_role,kode_role',
+            'no_induk' => 'required|string|unique:qhs_inspector,no_induk',
             'nama' => 'required|string',
             'aktif' => 'required|string'
         ]);
 
-        $data = QHSRole::create($validation);
+        $data = QHSInspector::create($validation);
 
         return $data;
     }
@@ -41,7 +41,7 @@ class QHSRoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = QHSRole::findOrFail($id);
+        $data = QHSInspector::findOrFail($id);
 
         return $data;
     }
@@ -51,11 +51,11 @@ class QHSRoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = QHSRole::findOrFail($id);
+        $data = QHSInspector::findOrFail($id);
 
         $validation = $request->validate([
-            'nama' => 'sometimes|required|string',
-            'aktif' => 'sometimes|required|string'
+            'nama' => 'required|string',
+            'aktif' => 'required|string'
         ]);
 
         $data->update($validation);
@@ -68,11 +68,11 @@ class QHSRoleController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = QHSRole::findOrFail($id);
+        $data = QHSInspector::findOrFail($id);
         $data->delete();
 
         return response()->json([
-            'message' => 'Role berhasil dihapus'
+            'message' => 'Inspector berhasil dihapus'
         ]);
     }
 }
