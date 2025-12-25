@@ -54,8 +54,8 @@ class QHSInspectorController extends Controller
         $data = QHSInspector::findOrFail($id);
 
         $validation = $request->validate([
-            'nama' => 'required|string',
-            'aktif' => 'required|string'
+            'nama' => 'sometimes|required|string',
+            'aktif' => 'sometimes|required|string'
         ]);
 
         $data->update($validation);
