@@ -27,6 +27,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('role', QHSRoleController::class);
     Route::apiResource('inspector', QHSInspectorController::class);
+    Route::apiResource('user', UserController::class);
 });
-
-Route::apiResource('user', UserController::class);
