@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\QHSDepartemen;
+use App\Models\QHSRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -25,6 +27,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $role = $request->get('kode_role');
+        QHSRole::findOrFail($role);
+
+        $dept = $request->get('kode_dept');
+        QHSDepartemen::findOrFail($dept);
+
         $validation = $request->validate([
             'no_induk' => 'required|string|unique:users,no_induk',
             'nama' => 'required|string',
@@ -55,6 +63,13 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $data = User::findOrFail($id);
+
+        $role = $request->get('kode_role');
+        QHSRole::findOrFail($role);
+
+        $dept = $request->get('kode_dept');
+        QHSDepartemen::findOrFail($dept);
+
 
         $validation = $request->validate([
             'nama' => 'sometimes|required|string',
