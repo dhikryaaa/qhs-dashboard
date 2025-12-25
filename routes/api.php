@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\QHSDepartemenController;
 use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSRoleController;
 use App\Http\Controllers\Api\UserController;
@@ -28,4 +29,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('role', QHSRoleController::class);
     Route::apiResource('inspector', QHSInspectorController::class);
     Route::apiResource('user', UserController::class);
+    Route::apiResource('departemen', QHSDepartemenController::class);
 });
