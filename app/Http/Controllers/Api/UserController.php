@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\QHSInspector;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class QHSInspectorController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,8 @@ class QHSInspectorController extends Controller
     public function index(Request $request)
     {
         $page = $request->get('per_page', 5);
-
-        $data = QHSInspector::paginate($page);
+        
+        $data = User::paginate($page);
 
         return $data;
     }
@@ -26,12 +26,14 @@ class QHSInspectorController extends Controller
     public function store(Request $request)
     {
         $validation = $request->validate([
-            'no_induk' => 'required|string|unique:qhs_inspector,no_induk',
+            'no_induk' => 'required|string|unique:users,no_induk',
             'nama' => 'required|string',
-            'aktif' => 'required|string'
+            'aktif' => 'required|string',
+            'kode_role' => 'required|string',
+            'kode_dept' => 'required|string'
         ]);
 
-        $data = QHSInspector::create($validation);
+        $data = User::create($validation);
 
         return $data;
     }
@@ -41,7 +43,7 @@ class QHSInspectorController extends Controller
      */
     public function show(string $id)
     {
-        $data = QHSInspector::findOrFail($id);
+        $data = User::findOrFail($id);
 
         return $data;
     }
@@ -51,14 +53,16 @@ class QHSInspectorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = QHSInspector::findOrFail($id);
+        $data = User::findOrFail($id);
 
         $validation = $request->validate([
             'nama' => 'sometimes|required|string',
-            'aktif' => 'sometimes|required|string'
+            'aktif' => 'sometimes|required|string',
+            'kode_role' => 'sometimes|required|string',
+            'kode_dept' => 'sometimes|required|string'
         ]);
 
-        $data->update($validation);
+        $data->update($$validation);
 
         return $data;
     }
@@ -68,11 +72,11 @@ class QHSInspectorController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = QHSInspector::findOrFail($id);
+        $data = User::findOrFail($id);
         $data->delete();
 
         return response()->json([
-            'message' => 'Inspector berhasil dihapus'
+            'message' => 'User berhasil dihapus'
         ]);
     }
 }
