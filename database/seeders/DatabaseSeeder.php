@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(QHSRoleSeeder::class);
         $this->call(QHSDepartemenSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(QHSInspectorSeeder::class);
     }
 }

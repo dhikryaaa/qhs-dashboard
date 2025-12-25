@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSRoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +25,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('roles', QHSRoleController::class);
+    Route::apiResource('inspector', QHSInspectorController::class);
 });
