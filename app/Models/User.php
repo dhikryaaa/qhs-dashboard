@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use \Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @property mixed $password
@@ -72,4 +74,11 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed'
     ];
+
+    protected function hashPassword(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value ? Hash::make($value) : null
+        );
+    }
 }

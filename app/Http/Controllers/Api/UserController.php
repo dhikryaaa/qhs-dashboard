@@ -30,7 +30,8 @@ class UserController extends Controller
             'nama' => 'required|string',
             'aktif' => 'required|string',
             'kode_role' => 'required|string',
-            'kode_dept' => 'required|string'
+            'kode_dept' => 'required|string',
+            'password' => 'required|string'
         ]);
 
         $data = User::create($validation);
@@ -59,10 +60,11 @@ class UserController extends Controller
             'nama' => 'sometimes|required|string',
             'aktif' => 'sometimes|required|string',
             'kode_role' => 'sometimes|required|string',
-            'kode_dept' => 'sometimes|required|string'
+            'kode_dept' => 'sometimes|required|string',
+            'password' => 'sometimes|required|string'
         ]);
 
-        $data->update($$validation);
+        $data->update($validation);
 
         return $data;
     }
