@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\QHSDepartemenController;
 use App\Http\Controllers\Api\QHSInspectorController;
+use App\Http\Controllers\Api\QHSKategoriController;
 use App\Http\Controllers\Api\QHSLokasiController;
 use App\Http\Controllers\Api\QHSRoleController;
 use App\Http\Controllers\Api\UserController;
@@ -33,3 +34,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('departemen', QHSDepartemenController::class);
     Route::apiResource('lokasi', QHSLokasiController::class);
 });
+
+Route::apiResource('kategori', QHSKategoriController::class);
