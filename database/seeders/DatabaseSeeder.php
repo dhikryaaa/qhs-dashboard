@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(QHSInspectorSeeder::class);
         $this->call(QHSLokasiSeeder::class);
+        $this->call(QHSKategoriSeeder::class);
     }
 }
