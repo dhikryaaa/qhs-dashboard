@@ -17,7 +17,7 @@ class QHSKategori extends Model
 {
     use HasFactory;
 
-    protected $table = 'qhs-kategori';
+    protected $table = 'qhs_kategori';
     protected $primaryKey = 'kode';
     public $incrementing = false;
     protected $keyType = 'string';
