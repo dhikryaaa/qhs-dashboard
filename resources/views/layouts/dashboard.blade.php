@@ -8,34 +8,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- UBS Global Variables & Utilities -->
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
+    
     <style>
-        :root {
-            --ubs-font-family: 'Poppins', sans-serif;
-            --ubs-blue: #124477;
-            --ubs-dark-grey: #344054;
-            --ubs-light-grey: #EAECF0;
-            --ubs-gold: #E3982F;
+        /* ========== FLUID REM ARCHITECTURE ========== */
+        /* Master Scale: 1rem = 16px at 1280px viewport */
+        html {
+            font-size: 1.25vw; /* 16px / 1280px = 1.25% */
         }
         
-        * { box-sizing: border-box; }
-        
-        body { 
-            font-family: var(--ubs-font-family); 
-            display: flex; 
-            min-height: 100vh; 
-            background-color: #F9FAFB; 
-            padding: 0; 
-            margin: 0; 
+        body {
+            font-family: 'Public Sans', sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #F9FAFB;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-size: 1rem;
         }
         
-        a { text-decoration: none; }
+        a { 
+            text-decoration: none; 
+        }
 
-        /* ========== GIANT SIDEBAR (550px Fixed, Left Side) ========== */
+        /* ========== SIDEBAR (16.25rem Fluid Width) ========== */
         .sidebar {
-            width: 950px;
+            width: 16.25rem; /* 260px ÷ 16 */
             background-color: #ffffff;
-            border-right: 3px solid var(--ubs-light-grey);
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            border-right: 0.0625rem solid var(--ubs-light-grey); /* 1px ÷ 16 */
+            box-shadow: 0.125rem 0 0.5rem rgba(0, 0, 0, 0.05); /* 2px 0 8px */
             display: flex;
             flex-direction: column;
             position: fixed;
@@ -47,37 +51,39 @@
         }
         
         .sidebar-logo {
-            padding: 50px;
+            padding: 1.25rem; /* 20px ÷ 16 */
             display: flex;
-            min-height: 230px;
+            min-height: 6.25rem; /* 100px ÷ 16 */
         }
         
         .sidebar-logo img { 
-            height: 230px; 
+            height: 3.75rem; /* 60px ÷ 16 */
             width: auto; 
         }
         
         /* Sidebar Section Labels */
         .sidebar-label {
-            padding: 40px 50px 15px 50px;
-            font-size: 2.5rem;
+            padding: 1rem 1.25rem 0.5rem 1.25rem; /* 16px 20px 8px 20px */
+            font-size: 0.6875rem; /* 11px ÷ 16 */
             color: #98A2B3;
-            font-weight: 100;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.03125rem; /* 0.5px ÷ 16 */
             font-family: 'Public Sans', sans-serif;
         }
         
-        /* Sidebar Links - Giant Scale */
+        /* Sidebar Links - Fluid REM Scale */
         .sidebar-link {
-            padding: 35px 50px;
+            padding: 0.75rem 1.25rem; /* 12px 20px */
             display: flex;
             align-items: center;
             color: var(--ubs-dark-grey);
             font-weight: 500;
-            font-size: 3.5rem;
-            border-left: 12px solid transparent;
+            font-size: 1rem; /* 16px ÷ 16 */
+            border-left: 0.1875rem solid transparent; /* 3px ÷ 16 */
             transition: all 0.2s ease;
             font-family: 'Public Sans', sans-serif;
+            text-decoration: none;
         }
         
         .sidebar-link:hover,
@@ -90,11 +96,11 @@
             border-left-color: var(--ubs-blue); 
         }
         
-        /* SVG Icons - Force 70px */
+        /* SVG Icons - Fluid 1.25rem */
         .sidebar-link svg { 
-            width: 70px; 
-            height: 70px; 
-            margin-right: 40px; 
+            width: 1.25rem; /* 20px ÷ 16 */
+            height: 1.25rem; 
+            margin-right: 0.75rem; /* 12px ÷ 16 */
             flex-shrink: 0; 
         }
         
@@ -108,7 +114,7 @@
         
         /* Chevron for Collapse */
         .sidebar-link .bi-chevron-down { 
-            font-size: 2.5rem; 
+            font-size: 0.75rem; /* 12px ÷ 16 */
             margin-left: auto; 
             transition: transform 0.3s; 
         }
@@ -119,15 +125,14 @@
         
         /* Submenu Links */
         .submenu-link {
-            padding-left: 60px;
-            padding-top: 30px;
-            padding-bottom: 70px;
+            padding: 0.625rem 1.25rem 0.625rem 1.5625rem; /* 10px 20px 10px 25px */
             display: flex;
             align-items: center;
             color: var(--ubs-dark-grey);
-            font-size: 3.5rem;
+            font-size: 0.875rem; /* 14px ÷ 16 */
             transition: all 0.2s ease;
             font-family: 'Public Sans', sans-serif;
+            text-decoration: none;
         }
         
         .submenu-link:hover { 
@@ -136,37 +141,37 @@
         }
         
         .submenu-link i { 
-            font-size: 3.5rem; 
-            margin-right:50px; 
+            font-size: 0.9375rem; /* 15px ÷ 16 */
+            margin-right: 0.75rem; /* 12px ÷ 16 */
         }
 
-        /* ========== MAIN CONTENT WRAPPER (Grey Background) ========== */
+        /* ========== MAIN CONTENT WRAPPER ========== */
         .main-wrapper {
-            margin-left: 550px;
+            margin-left: 16.25rem; /* 260px ÷ 16 */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             background-color: #F9FAFB;
-            padding: 60px;
-            min-height: 100vh;
+            padding: 1.25rem; /* 20px ÷ 16 */
+            height: 100vh;
+            overflow-y: auto;
         }
 
         /* ========== FLOATING HEADER CARD ========== */
         .floating-header-card {
             background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 60px rgba(0, 0, 0, 0.12);
-            padding: 60px 60px;
-            margin-bottom: 60px;
-            margin-left: auto;
-            width: 4000px;
+            border-radius: 0.5rem; /* 8px ÷ 16 */
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05); /* 0 4px 12px */
+            padding: 1.25rem 1.5rem; /* 20px 24px */
+            margin-bottom: 1.25rem; /* 20px ÷ 16 */
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 60px;
+            gap: 1.25rem; /* 20px ÷ 16 */
+            height: 4.375rem; /* 70px ÷ 16 */
         }
 
-        /* Home Icon - Clean, No Box */
+        /* Home Icon */
         .header-home-link {
             display: flex;
             align-items: center;
@@ -179,52 +184,103 @@
         }
         
         .header-home-link svg { 
-            width: 100px; 
-            height: 100px; 
+            width: 1.5rem; /* 24px ÷ 16 */
+            height: 1.5rem;
         }
 
         /* User Profile Section */
         .header-right {
             display: flex;
             align-items: center;
-            gap: 60px;
+            gap: 1rem; /* 16px ÷ 16 */
         }
         
         .user-profile { 
             display: flex; 
             align-items: center; 
-            gap: 30px; 
+            gap: 0.75rem; /* 12px ÷ 16 */
             cursor: pointer; 
         }
         
         .user-avatar { 
-            width: 100px; 
-            height: 100px; 
+            width: 2rem; /* 32px ÷ 16 */
+            height: 2rem; 
             border-radius: 50%; 
             object-fit: cover;
-            border: 2px solid var(--ubs-light-grey);
+            border: 0.0625rem solid var(--ubs-light-grey); /* 1px ÷ 16 */
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
         }
         
         .user-name { 
-            font-size: 3.5rem; 
+            font-size: 0.875rem; /* 14px ÷ 16 */
             font-weight: 600; 
-            color: var(--ubs-dark-grey); 
+            color: var(--ubs-dark-blue); 
+        }
+        
+        .user-role { 
+            font-size: 0.75rem; /* 12px ÷ 16 */
+            color: #667085; 
         }
 
-        /* Dropdown Menu - Giant Scale */
+        /* ========== CONTENT AREA (White Cards) ========== */
+        .content-area {
+            flex: 1;
+            background-color: #F9FAFB;
+        }
+
+        /* ========== RESPONSIVE BREAKPOINTS ========== */
+        @media (max-width: 61.9375rem) { /* 991px ÷ 16 */
+            html { 
+                font-size: 2vw; /* Larger base for smaller viewports */
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active { 
+                transform: translateX(0); 
+            }
+            
+            .main-wrapper { 
+                margin-left: 0; 
+            }
+        }
+        
+        @media (min-width: 93.75rem) { /* 1500px ÷ 16 */
+            html { 
+                font-size: 1.2vw; /* Slightly smaller scale for ultra-wide */
+            }
+        }
+
+        /* ========== DROPDOWN MENU ========== */
         .dropdown-menu { 
-            font-size: 3rem; 
-            padding: 20px 0; 
-            min-width: 400px; 
+            font-size: 0.875rem; /* 14px ÷ 16 */
+            border-radius: 0.5rem; /* 8px ÷ 16 */
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1); /* 0 4px 12px */
+            border: 0.0625rem solid var(--ubs-light-grey); /* 1px ÷ 16 */
+            padding: 0.5rem; /* 8px ÷ 16 */
         }
         
         .dropdown-item { 
-            padding: 20px 50px; 
+            padding: 0.5rem 0.75rem; /* 8px 12px */
+            border-radius: 0.375rem; /* 6px ÷ 16 */
+            transition: all 0.2s ease; 
         }
         
-        .dropdown-item:hover {
-            background-color: #F9FAFB;
-            color: var(--ubs-blue);
+        .dropdown-item:hover { 
+            background-color: #F9FAFB; 
+            color: var(--ubs-blue); 
+        }
+        
+        .dropdown-item i { 
+            margin-right: 0.625rem; /* 10px ÷ 16 */
+            font-size: 0.875rem; /* 14px ÷ 16 */
         }
 
         /* ========== MAIN PAGE CONTENT AREA ========== */
@@ -243,11 +299,11 @@
         
         <div class="sidebar-menu">
             <!-- Dashboard Link -->
-            <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('home') }}" class="sidebar-link {{ request()->routeIs('home') ? 'active' : '' }}">
                 <svg viewBox="0 0 17 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 17.6667V9.33333H11V17.6667M1 6.83333L8.5 1L16 6.83333V16C16 16.442 15.8244 16.866 15.5118 17.1785C15.1993 17.4911 14.7754 17.6667 14.3333 17.6667H2.66667C2.22464 17.6667 1.80072 17.4911 1.48816 17.1785C1.17559 16.866 1 16.442 1 16V6.83333Z" stroke="#344054" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Dashboard</span>
+                <span>Home</span>
             </a>
             
             <!-- Master Section -->
@@ -263,7 +319,7 @@
                 <i class="bi bi-chevron-down"></i>
             </a>
             <div class="collapse" id="masterMenu">
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Role</span></a>
+                <a href="{{ route('master.role') }}" class="submenu-link {{ request()->routeIs('master.role') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Role</span></a>
                 <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>User</span></a>
                 <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Inspector</span></a>
                 <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Departemen</span></a>
@@ -304,28 +360,32 @@
     <div class="main-wrapper">
         <!-- FLOATING HEADER CARD -->
         <div class="floating-header-card">
-            <a href="{{ route('home') }}" class="header-home-link">
-                <svg viewBox="0 0 31 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.9964 26.0917V17.7583H18.6631V26.0917C18.6631 27.0083 19.4131 27.7583 20.3298 27.7583H25.3298C26.2464 27.7583 26.9964 27.0083 26.9964 26.0917V14.425H29.8298C30.5964 14.425 30.9631 13.475 30.3798 12.975L16.4464 0.425C15.8131 -0.141667 14.8464 -0.141667 14.2131 0.425L0.279753 12.975C-0.286913 13.475 0.0630865 14.425 0.829753 14.425H3.66309V26.0917C3.66309 27.0083 4.41309 27.7583 5.32975 27.7583H10.3298C11.2464 27.7583 11.9964 27.0083 11.9964 26.0917Z" fill="#0B4A6F"/>
-                </svg>
-            </a>
+            @yield('page-title')
             
-            <div class="dropdown">
-                <div class="user-profile" data-bs-toggle="dropdown">
-                    <img src="{{ asset('img/user-avatar-default.jpg') }}" class="user-avatar" alt="User">
-                    <span class="user-name">{{ auth()->user()->name ?? 'John Doe' }}</span>
-                    <i class="bi bi-chevron-down" style="font-size: 2rem;"></i>
+            <div class="header-right">
+                <a href="{{ route('home') }}" class="header-home-link">
+                    <svg viewBox="0 0 31 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.9964 26.0917V17.7583H18.6631V26.0917C18.6631 27.0083 19.4131 27.7583 20.3298 27.7583H25.3298C26.2464 27.7583 26.9964 27.0083 26.9964 26.0917V14.425H29.8298C30.5964 14.425 30.9631 13.475 30.3798 12.975L16.4464 0.425C15.8131 -0.141667 14.8464 -0.141667 14.2131 0.425L0.279753 12.975C-0.286913 13.475 0.0630865 14.425 0.829753 14.425H3.66309V26.0917C3.66309 27.0083 4.41309 27.7583 5.32975 27.7583H10.3298C11.2464 27.7583 11.9964 27.0083 11.9964 26.0917Z" fill="#0B4A6F"/>
+                    </svg>
+                </a>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <img src="{{ asset('img/user-avatar-default.jpg') }}" class="user-avatar" alt="User">
+                        <span class="user-name">{{ auth()->user()->name ?? 'John Doe' }}</span>
+                        <i class="bi bi-chevron-down" style="font-size: 14px;"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Logout</button>
-                        </form>
-                    </li>
-                </ul>
             </div>
         </div>
 

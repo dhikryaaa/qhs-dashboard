@@ -23,32 +23,18 @@ Route::post('/login', function () {
 });
 
 Route::get('/', function () {
-    return view('home');
+    return view('pages.home');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Quality Sub-Menus
+Route::get('/quality/audit-inspection', function () {
+    return view('quality.audit-inspection');
+})->name('quality.audit-inspection');
 
-Route::get('/quality', function () {
-    return view('quality');
-})->name('quality');
-
-Route::get('/health', function () {
-    return view('health');
-})->name('health');
-
-Route::get('/safety', function () {
-    return view('safety');
-})->name('safety');
-
-Route::get('/compliance', function () {
-    return view('compliance');
-})->name('compliance');
-
-Route::get('/training', function () {
-    return view('training');
-})->name('training');
+// Master Pages
+Route::get('/master/role', function () {
+    return view('quality.master.role');
+})->name('master.role');
 
 Route::post('/logout', function () {
     // Clear session and logout

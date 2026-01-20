@@ -7,314 +7,303 @@
 
     <title>{{ config('app.name', 'QHSE Report') }} - Login</title>
 
-    <!-- Google Fonts - Poppins & Public Sans -->
+    <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- UBS Global Variables & Utilities -->
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
 
     <!-- Custom Styles -->
     <style>
-        /* UBS Brand Color Palette - CSS Variables */
-        :root {
-            --ubs-font-family: 'Poppins', sans-serif;
-            --ubs-blue: #124477;
-            --ubs-dark-blue: #264462;
-            --ubs-dark-grey: #344054;
-            --ubs-light-grey: #EAECF0;
-            --ubs-orange: #F8961E;
-            --ubs-green: #90BE6D;
-            --ubs-red-orange: #F3722C;
-            --ubs-yellow: #F9C74F;
-            --ubs-red: #F94144;
-            --ubs-bright-blue: #2090E0;
-            --ubs-gold: #E3982F;
-        }
-
-        /* Global Font Family */
-        * {
-            font-family: var(--ubs-font-family);
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: var(--ubs-font-family);
+            display: flex;
         }
 
-        /* Full Height Container */
-        .login-container {
+        /* Main Container - Full Screen */
+        .login-main-container {
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
             display: flex;
             flex-direction: row;
-            min-height: 100vh;
-        }
-
-        /* Left Side - Background */
-        .login-left {
-            background-image: url('{{ asset('img/login-bg-smoke.jpg') }}');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             flex: 1;
         }
 
-        /* Right Side - Login Form Area */
+        /* Left Side - Image Area (62%) */
+        .login-left {
+            width: 62%;
+            background: url('{{ asset('img/login-bg-smoke.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Right Side - Form Area (38%) */
         .login-right {
+            width: 38%;
             background-color: var(--ubs-blue);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            flex-shrink: 0;
-            width: 38%;
+            padding: 20px;
         }
 
-        /* Login Card */
+        /* Login Card - 381px x 465px */
         .login-card {
-            background: var(--ubs-dark-blue);
-            border-radius: 4rem;
-            padding: 4rem 3.5rem;
-            width: 100%;
-            height: 100%;
-            max-width: 1400px;
-            max-height: 1700px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.2),
-                0 0 60px rgba(255, 255, 255, 0.15),
-                0 0 100px rgba(255, 255, 255, 0.08);
-            position: relative;
-            border-top: 6px solid rgba(255, 255, 255, 0.5);
-        }
-        
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.3) 0%, 
-                rgba(255, 255, 255, 0.1) 50%, 
-                rgba(255, 255, 255, 0.05) 100%);
-            border-radius: 3rem;
-            z-index: -1;
-            filter: blur(15px);
+            width: 381px;
+            height: 465px;
+            background: rgba(68, 68, 68, 0.4);
+            border-radius: 20px;
+            padding: 40px 20px;
+            box-shadow: 0px 0px 17px rgba(205, 243, 251, 0.29);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* HSE Logo */
         .hse-logo {
-            width: 650px;
-            height: auto;
-            padding-top: 85px;
-            margin-bottom: 3rem;
+            height: 80px;
+            width: auto;
+            margin-bottom: 24px;
         }
 
-        /* Heading Text */
+        /* Welcome Text */
         .login-heading {
-            color: #ffffff;
-            font-size: 4.5rem;
-            font-weight: 600;
-            text-align: left;
-            font-family: 'Public Sans', sans-serif;
+            color: #FFFFFF;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            width: 100%;
         }
 
+        /* Subtitle */
         .login-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 3rem;
-            font-family: 'Public Sans', sans-serif;
+            color: #E6E6E6;
+            font-size: 14px;
             font-weight: 400;
-            margin-bottom: 3.5rem;
-            text-align: left;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        /* Form Container */
+        .login-form {
+            width: 100%;
         }
 
         /* Form Labels */
         .login-label {
-            color: #ffffff;
-            font-size: 2.5rem;
+            color: #F2F4F7;
+            font-size: 12px;
             font-weight: 500;
-            margin-bottom: 0.75rem;
+            margin-bottom: 6px;
             display: block;
         }
 
         /* Form Inputs */
         .login-input {
-            background-color: var(--ubs-dark-grey);
-            border: 6px solid rgba(255, 255, 255, 0.5);
-            border-top-right-color: transparent;
-            border-bottom-left-color: transparent;
-            border-radius: 3rem;
-            color: #ffffff;
-            padding: 1.25rem 1.5rem;
-            font-size: 6rem;
             width: 100%;
-            margin-bottom: 3rem;
+            height: 46px;
+            background: rgba(156, 156, 156, 0.47);
+            border: none;
+            border-radius: 10px;
+            color: #E3E3E3;
+            padding: 0 16px;
+            font-size: 14px;
+            margin-bottom: 12px;
         }
 
         .login-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(227, 227, 227, 0.5);
         }
 
         .login-input:focus {
-            background-color: var(--ubs-dark-grey);
-            border: 6px solid rgba(255, 255, 255, 0.5);
-            border-top-right-color: transparent;
-            border-bottom-left-color: transparent;
-            color: #ffffff;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            background: rgba(156, 156, 156, 0.57);
+            box-shadow: 0 0 0 2px rgba(242, 244, 247, 0.2);
         }
 
         /* Password Input Group */
         .password-group {
             position: relative;
-            margin-bottom: 3rem;
+            margin-bottom: 12px;
         }
 
         .password-toggle {
             position: absolute;
-            right: 1.5rem;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(227, 227, 227, 0.6);
             cursor: pointer;
             padding: 0;
-            font-size: 1.5rem;
+            font-size: 16px;
         }
 
         .password-toggle:hover {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(227, 227, 227, 0.9);
         }
 
         /* Login Button */
         .login-button {
-            background: linear-gradient(135deg, #0B4A6F 0%, #2090E0 100%);
-            border: 6px solid rgba(255, 255, 255, 0.5);
-            border-top-right-color: transparent;
-            border-bottom-left-color: transparent;
-            border-radius: 3rem;
-            color: #ffffff;
-            font-size: 6rem;
-            font-weight: 600;
-            padding: 1.25rem 2rem;
             width: 100%;
+            height: 48px;
+            background: linear-gradient(171.91deg, rgba(101, 167, 233, 0.264) 1.37%, rgba(50, 94, 140, 0.592) 44.22%);
+            border: none;
+            border-radius: 10px;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(32, 144, 224, 0.3);
-            margin-top: 0.25rem;
         }
 
         .login-button:hover {
-            background: linear-gradient(135deg, #2090E0 0%, #0B4A6F 100%);
-            box-shadow: 0 6px 20px rgba(32, 144, 224, 0.4);
-            transform: translateY(-2px);
+            background: linear-gradient(171.91deg, rgba(101, 167, 233, 0.364) 1.37%, rgba(50, 94, 140, 0.692) 44.22%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(101, 167, 233, 0.3);
         }
 
         .login-button:active {
             transform: translateY(0);
         }
 
+        /* Error Messages */
+        .invalid-feedback {
+            color: #FFB4AB;
+            font-size: 11px;
+            margin-top: -12px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
         /* Mobile Responsive */
-        @media (max-width: 767px) {
-            .login-card {
-                padding: 2rem 1.5rem;
+        @media (max-width: 1500px) {
+            .login-main-container {
+                width: 95vw;
+                height: auto;
+                min-height: 600px;
             }
-
-            .login-heading {
-                font-size: 1.5rem;
+            
+            .login-left {
+                width: 62%;
             }
+            
+            .login-right {
+                width: 38%;
+            }
+        }
 
-            .hse-logo {
-                width: 100px;
+        @media (max-width: 991px) {
+            .login-main-container {
+                flex-direction: column;
+                width: 90vw;
+                height: auto;
+            }
+            
+            .login-left {
+                display: none;
+            }
+            
+            .login-right {
+                width: 100%;
+                border-radius: 20px;
+                min-height: 600px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <!-- Left Side - Background Image -->
-        <div class="login-left d-none d-md-block">
-            <!-- Background image with gradient overlay applied via CSS -->
-        </div>
+    <div class="login-main-container">
+        <!-- Left Side - Background Image with Gradient -->
+        <div class="login-left"></div>
 
         <!-- Right Side - Login Form -->
         <div class="login-right">
-                <div class="login-card">
-                    <!-- HSE Logo -->
-                    <div class="text-center">
-                        <img src="{{ asset('img/hse-logo-yellow.png') }}" alt="HSE Logo" class="hse-logo">
+            <div class="login-card">
+                <!-- HSE Logo -->
+                <img src="{{ asset('img/hse-logo-yellow.png') }}" alt="HSE Logo" class="hse-logo">
+
+                <!-- Welcome Text -->
+                <h1 class="login-heading">Selamat datang.</h1>
+                <p class="login-subtitle">Silahkan isi NIK & Password anda</p>
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ route('login') }}" class="login-form">
+                    @csrf
+
+                    <!-- NIK Input -->
+                    <div class="mb-0">
+                        <label for="nik" class="login-label">NIK</label>
+                        <input 
+                            type="text" 
+                            class="login-input @error('nik') is-invalid @enderror" 
+                            id="nik" 
+                            name="nik" 
+                            value="{{ old('nik') }}" 
+                            placeholder="000001"
+                            required 
+                            autofocus
+                        >
+                        @error('nik')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
 
-                    <!-- Heading -->
-                    <h1 class="login-heading">Selamat datang.</h1>
-                    <p class="login-subtitle">Silahkan isi NIK & Password anda</p>
-
-                    <!-- Login Form -->
-                    <form method="POST" action="{{ route('login') }}" class="text-start">
-                        @csrf
-
-                        <!-- NIK Input -->
-                        <div class="mb-3">
-                            <label for="nik" class="login-label">NIK</label>
+                    <!-- Password Input -->
+                    <div class="mb-0">
+                        <label for="password" class="login-label">Password</label>
+                        <div class="password-group">
                             <input 
-                                type="text" 
-                                class="form-control login-input @error('nik') is-invalid @enderror" 
-                                id="nik" 
-                                name="nik" 
-                                value="{{ old('nik') }}" 
-                                placeholder="000001"
-                                required 
-                                autofocus
+                                type="password" 
+                                class="login-input @error('password') is-invalid @enderror" 
+                                id="password" 
+                                name="password" 
+                                placeholder="******"
+                                required
                             >
-                            @error('nik')
-                                <span class="invalid-feedback d-block text-white" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
 
-                        <!-- Password Input -->
-                        <div class="mb-3">
-                            <label for="password" class="login-label">Password</label>
-                            <div class="password-group">
-                                <input 
-                                    type="password" 
-                                    class="form-control login-input @error('password') is-invalid @enderror" 
-                                    id="password" 
-                                    name="password" 
-                                    placeholder="******"
-                                    required
-                                >
-                                <button type="button" class="password-toggle" onclick="togglePassword()">
-                                    <i class="bi bi-eye" id="toggleIcon"></i>
-                                </button>
-                            </div>
-                            @error('password')
-                                <span class="invalid-feedback d-block text-white" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-
-                        <!-- Login Button -->
-                        <button type="submit" class="login-button">
-                            Log In
-                        </button>
-                    </form>
+                    <!-- Login Button -->
+                    <button type="submit" class="login-button">
+                        Log In
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Password Toggle Script -->
     <script>
