@@ -35,6 +35,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('departemen', QHSDepartemenController::class);
     Route::apiResource('lokasi', QHSLokasiController::class);
     Route::apiResource('kategori', QHSKategoriController::class);
+    Route::apiResource('transaksi-inspeksi', TransaksiInspeksiController::class);
 });
-
-Route::apiResource('transaksi-inspeksi', TransaksiInspeksiController::class);
