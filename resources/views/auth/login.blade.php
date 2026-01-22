@@ -331,6 +331,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         no_induk: nik,
                         password: password
@@ -338,15 +339,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.token) {
-                        // Handle successful login, e.g., redirect or show success message
-                        console.log('Login successful:', data);
-
+                    if (data.user) {
                         window.location.href = '{{ route('home') }}';
                     } else {
-                        // Handle login error
-                        console.error('Login failed:', data.message);
-
                         alert('Login gagal: ' + data.message);
                     }
                 })

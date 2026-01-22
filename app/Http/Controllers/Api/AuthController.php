@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -30,29 +30,20 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $tokenResult = $user->createToken('authToken');
-
-        $token = $tokenResult->accessToken;
-        $token->expires_at = now()->addMinutes(config('sanctum.expiration'));
-        $token->save();
+        Auth::login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Login Berhasil',
-            'token' => $tokenResult->plainTextToken,
-            'expires_at' => $token->expires_at,
             'user' => $user
         ]);
     }
 
     public function logout(Request $request)
     {
-        /** @var User $user */
-        $user = $request->user();
-
-        /** @var PersonalAccessToken|null $token */
-        $token = $user->currentAccessToken();
-
-        $token?->delete();
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'Logout Berhasil'
