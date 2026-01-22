@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSKategoriController;
 use App\Http\Controllers\Api\QHSLokasiController;
 use App\Http\Controllers\Api\QHSRoleController;
+use App\Http\Controllers\Api\TransaksiClosingController;
 use App\Http\Controllers\Api\TransaksiInspeksiController;
 use App\Http\Controllers\Api\TransaksiPerbaikanController;
 use App\Http\Controllers\Api\UserController;
@@ -38,4 +39,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('kategori', QHSKategoriController::class);
     Route::apiResource('transaksi-inspeksi', TransaksiInspeksiController::class);
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
+    Route::apiResource('transaksi-closing', TransaksiClosingController::class);
 });
