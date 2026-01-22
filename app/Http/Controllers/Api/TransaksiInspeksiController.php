@@ -17,7 +17,7 @@ class TransaksiInspeksiController extends Controller
         $filter = $request->get('departemen');
 
         $data = QHSInspectD::with([
-            //TODO: optimize eager loading with specific columns
+            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
             'inspectH.departemen:kode_dept,nama_dept',
             'inspectH.lokasi:kode_lokasi,nama_lokasi',
         ]);
@@ -39,7 +39,7 @@ class TransaksiInspeksiController extends Controller
         [$no_dokumen, $sub] = explode(',', $id);
 
         $data = QHSInspectD::with([
-            //TODO: optimize eager loading with specific columns
+            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
             'inspectH.departemen:kode_dept,nama_dept',
             'inspectH.lokasi:kode_lokasi,nama_lokasi',
         ])->where('no_dokumen', $no_dokumen)->where('sub', (int) $sub)->firstOrFail();
@@ -55,7 +55,7 @@ class TransaksiInspeksiController extends Controller
         [$no_dokumen, $sub] = explode(',', $id);
 
         $data = QHSInspectD::with([
-            //TODO: optimize eager loading with specific columns
+            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
             'inspectH.departemen:kode_dept,nama_dept',
             'inspectH.lokasi:kode_lokasi,nama_lokasi',
         ])->where('no_dokumen', $no_dokumen)->where('sub', (int) $sub)->firstOrFail();
