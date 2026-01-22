@@ -46,10 +46,9 @@ class QHSInspectD extends Model
     use HasFactory;
 
     protected $table = 'qhs_inspect_d';
-    protected $primaryKey = ['no_dokumen', 'sub'];
+    protected $primaryKey = 'no_dokumen';
     public $incrementing = false;
     public $timestamps = false;
-    
     
     protected $fillable = [
         'no_dokumen',
