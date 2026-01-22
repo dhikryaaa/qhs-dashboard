@@ -73,10 +73,6 @@ class QHSInspectD extends Model
         'tgl_close' => 'date',
     ];
 
-    protected $hidden = ['inspectH'];
-
-    protected $appends = ['nama_dept', 'nama_lokasi'];
-
     public function inspectH()
     {
         return $this->belongsTo(QHSInspectH::class, 'no_dokumen', 'no_dokumen');
@@ -85,15 +81,5 @@ class QHSInspectD extends Model
     public function kategori()
     {
         return $this->belongsTo(QHSKategori::class, 'kode', 'kode');
-    }
-
-    public function getNamaDeptAttribute()
-    {
-        return $this->inspectH?->departemen?->nama_dept;
-    }
-
-    public function getNamaLokasiAttribute()
-    {
-        return $this->inspectH?->lokasi?->nama_lokasi;
     }
 }
