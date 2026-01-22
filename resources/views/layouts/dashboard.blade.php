@@ -372,7 +372,7 @@
                 <div class="dropdown">
                     <div class="user-profile" data-bs-toggle="dropdown">
                         <img src="{{ asset('img/user-avatar-default.jpg') }}" class="user-avatar" alt="User">
-                        <span class="user-name">{{ auth()->user()->name ?? 'John Doe' }}</span>
+                        <span class="user-name">{{ auth()->user()->nama ?? 'John Doe' }}</span>
                         <i class="bi bi-chevron-down" style="font-size: 14px;"></i>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">

@@ -244,7 +244,7 @@
             <a class="user-profile-link" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="user-profile">
                     <i class="bi bi-person-circle user-icon"></i>
-                    <span>{{ auth()->user()->name ?? 'John Doe' }}</span>
+                    <span>{{ auth()->user()->nama ?? 'John Doe' }}</span>
                     <svg width="15" height="8" viewBox="0 0 15 8" fill="none" xmlns="http://www.w3.org/2000/svg" class="dropdown-arrow">
                         <path d="M0 0L7.5 7.5L15 0H0Z" fill="white"/>
                     </svg>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,20 +11,22 @@
     <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
+
     <!-- UBS Global Variables & Utilities -->
     <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
 
     <!-- Custom Styles -->
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -202,11 +205,11 @@
                 height: auto;
                 min-height: 600px;
             }
-            
+
             .login-left {
                 width: 62%;
             }
-            
+
             .login-right {
                 width: 38%;
             }
@@ -218,11 +221,11 @@
                 width: 90vw;
                 height: auto;
             }
-            
+
             .login-left {
                 display: none;
             }
-            
+
             .login-right {
                 width: 100%;
                 border-radius: 20px;
@@ -231,6 +234,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-main-container">
         <!-- Left Side - Background Image with Gradient -->
@@ -247,22 +251,15 @@
                 <p class="login-subtitle">Silahkan isi NIK & Password anda</p>
 
                 <!-- Login Form -->
-                <form method="POST" action="{{ route('login') }}" class="login-form">
+                <form class="login-form"
+                    onsubmit="event.preventDefault(); loginUser();">
                     @csrf
 
                     <!-- NIK Input -->
                     <div class="mb-0">
                         <label for="nik" class="login-label">NIK</label>
-                        <input 
-                            type="text" 
-                            class="login-input @error('nik') is-invalid @enderror" 
-                            id="nik" 
-                            name="nik" 
-                            value="{{ old('nik') }}" 
-                            placeholder="000001"
-                            required 
-                            autofocus
-                        >
+                        <input type="text" class="login-input @error('nik') is-invalid @enderror" id="nik"
+                            name="nik" value="{{ old('nik') }}" placeholder="000001" required autofocus>
                         @error('nik')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -274,14 +271,8 @@
                     <div class="mb-0">
                         <label for="password" class="login-label">Password</label>
                         <div class="password-group">
-                            <input 
-                                type="password" 
-                                class="login-input @error('password') is-invalid @enderror" 
-                                id="password" 
-                                name="password" 
-                                placeholder="******"
-                                required
-                            >
+                            <input type="password" class="login-input @error('password') is-invalid @enderror"
+                                id="password" name="password" placeholder="******" required>
                             <button type="button" class="password-toggle" onclick="togglePassword()">
                                 <i class="bi bi-eye" id="toggleIcon"></i>
                             </button>
@@ -310,7 +301,7 @@
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('toggleIcon');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleIcon.classList.remove('bi-eye');
@@ -322,5 +313,41 @@
             }
         }
     </script>
+
+    <!-- Login Script -->
+    <script>
+        function loginUser() {
+            const nik = document.getElementById('nik').value;
+            const password = document.getElementById('password').value;
+
+            if (!nik || !password) {
+                alert('NIK dan Password harus diisi.');
+                return;
+            }
+
+            fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        no_induk: nik,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.user) {
+                        window.location.href = '{{ route('home') }}';
+                    } else {
+                        alert('Login gagal: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
 </body>
+
 </html>
