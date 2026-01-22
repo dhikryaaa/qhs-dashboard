@@ -251,7 +251,7 @@
                 <p class="login-subtitle">Silahkan isi NIK & Password anda</p>
 
                 <!-- Login Form -->
-                <form method="POST" action="{{ route('login') }}" class="login-form"
+                <form class="login-form"
                     onsubmit="event.preventDefault(); loginUser();">
                     @csrf
 
@@ -325,7 +325,7 @@
                 return;
             }
 
-            fetch('/api/login', {
+            fetch('/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

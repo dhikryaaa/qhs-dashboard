@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,16 +14,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/login', action: [AuthController::class, 'login']);
+
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
 Route::middleware('auth')->group(function () {
-    Route::post('/login', function () {
-        // Login logic will go here
-        return redirect()->route('home');
-    });
-
+    // Home Page
     Route::get('/', function () {
         return view('pages.home');
     })->name('home');
@@ -38,8 +37,9 @@ Route::middleware('auth')->group(function () {
     })->name('master.role');
 
     Route::post('/logout', function () {
-        // Clear session and logout
-        session()->flush();
+        auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
 });
