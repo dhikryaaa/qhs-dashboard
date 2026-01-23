@@ -1,13 +1,3 @@
-@php
-    $departemens = [
-        ['id' => '01', 'kode_dept' => 'D001', 'nama_dept' => 'IT Department', 'status' => 'Y'],
-        ['id' => '02', 'kode_dept' => 'D002', 'nama_dept' => 'HR Department', 'status' => 'N'],
-        ['id' => '03', 'kode_dept' => 'D003', 'nama_dept' => 'Finance Department', 'status' => 'Y'],
-        ['id' => '04', 'kode_dept' => 'D004', 'nama_dept' => 'Production Department', 'status' => 'Y'],
-        ['id' => '05', 'kode_dept' => 'D005', 'nama_dept' => 'Quality Department', 'status' => 'N'],
-    ];
-@endphp
-
 @extends('layouts.dashboard')
 
 @section('page-title')
@@ -548,7 +538,7 @@
     <div class="filter-bar">
         <div class="filter-left">
             <span>Show</span>
-            <select id="entriesPerPage" onchange="updateEntriesDisplay()">
+            <select id="entriesPerPage" onchange="handlePageChange()">
                 <option value="5" selected>5</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -558,7 +548,7 @@
         </div>
         <div class="filter-right">
             <span class="search-label">Search:</span>
-            <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="filterTable()">
+            <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="handleSearch()">
         </div>
     </div>
 
@@ -573,49 +563,20 @@
             </tr>
         </thead>
         <tbody id="roleTableBody">
-            @foreach($departemens as $departemen)
-            <tr class="role-row">
-                <td>{{ $departemen['id'] }}</td>
-                <td>{{ $departemen['kode_dept'] }}</td>
-                <td>{{ $departemen['nama_dept'] }}</td>
-                <td>
-                    <div class="toggle-switch {{ $departemen['status'] === 'Y' ? 'active' : '' }}" 
-                         onclick="toggleStatus(this, '{{ $departemen['id'] }}')"
-                         data-status="{{ $departemen['status'] }}">
-                        <div class="toggle-switch-knob"></div>
-                    </div>
-                </td>
-                <td>
-                    <div class="action-icons">
-                        <span class="action-icon" title="Edit" onclick="openEditModal('{{ $departemen['id'] }}', '{{ $departemen['kode_dept'] }}', '{{ $departemen['nama_dept'] }}')">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
-                                <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
-                            </svg>
-                        </span>
-                        <span class="action-icon" title="Delete" onclick="openDeleteModal('{{ $departemen['id'] }}', '{{ $departemen['nama_dept'] }}')">
-                            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z" fill="#F04438"/>
-                            </svg>
-                        </span>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
         </tbody>
     </table>
 
     <div class="table-footer">
         <div class="footer-info" id="footerInfo">
-            Showing 1 to 5 of 5 entries
+            Showing 0 to 0 of 0 entries
         </div>
         <div class="pagination">
-            <button class="pagination-btn" disabled>
+            <button class="pagination-btn" id="prevBtn" onclick="previousPage()">
                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.5 0L8 1.5L3.5 6L8 10.5L6.5 12L0.5 6L6.5 0Z" fill="#667085"/>
                 </svg>
             </button>
-            <button class="pagination-btn">
+            <button class="pagination-btn" id="nextBtn" onclick="nextPage()">
                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.5 0L0 1.5L4.5 6L0 10.5L1.5 12L7.5 6L1.5 0Z" fill="#667085"/>
                 </svg>
@@ -625,7 +586,7 @@
 </div>
 
 <!-- Modal Create Departemen -->
-<div id="createModal" class="modal-overlay">
+<div id="createRoleModal" class="modal-overlay">
     <div class="modal-window">
         <div class="modal-header">
             <h3 class="modal-title">Tambah Departemen</h3>
@@ -636,61 +597,28 @@
             </button>
         </div>
         <div class="modal-body">
-            <form>
+            <form id="departemenForm">
                 <div class="form-row">
                     <div class="form-group-half">
                         <label class="form-label">Kode Dept</label>
-                        <input type="text" class="form-input-half" placeholder="Masukkan kode departemen">
+                        <input type="text" id="kodeDeptInput" class="form-input-half" placeholder="Masukkan kode departemen">
                     </div>
                     <div class="form-group-half">
                         <label class="form-label">Nama Departemen</label>
-                        <input type="text" class="form-input-half" placeholder="Masukkan nama departemen">
+                        <input type="text" id="namaDeptInput" class="form-input-half" placeholder="Masukkan nama departemen">
                     </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-            <button class="btn-save" onclick="save()">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Departemen -->
-<div id="editModal" class="modal-overlay">
-    <div class="modal-window">
-        <div class="modal-header">
-            <h3 class="modal-title">Edit Departemen</h3>
-            <button class="modal-close" onclick="closeEditModal()">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
-                </svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form>
-                <input type="hidden" id="editId">
-                <div class="form-row">
-                    <div class="form-group-half">
-                        <label class="form-label">Kode Dept</label>
-                        <input type="text" id="editKodeDept" class="form-input-half" placeholder="Masukkan kode departemen">
-                    </div>
-                    <div class="form-group-half">
-                        <label class="form-label">Nama Departemen</label>
-                        <input type="text" id="editNamaDept" class="form-input-half" placeholder="Masukkan nama departemen">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-            <button class="btn-save" onclick="update()">Save</button>
+            <button class="btn-save" onclick="saveDepartemen()">Save</button>
         </div>
     </div>
 </div>
 
 <!-- Modal Delete Departemen -->
-<div id="deleteModal" class="modal-delete-overlay">
+<div id="deleteDepartemenModal" class="modal-delete-overlay">
     <div class="modal-delete-window">
         <div class="delete-illustration"></div>
         <h3 class="delete-title">Hapus Departemen?</h3>
@@ -702,135 +630,369 @@
 </div>
 
 <script>
-    function openModal() {
-        document.getElementById('createModal').classList.add('active');
-    }
-
-    function closeModal() {
-        document.getElementById('createModal').classList.remove('active');
-    }
-
-    function openEditModal(id, kodeDept, namaDept) {
-        document.getElementById('editId').value = id;
-        document.getElementById('editKodeDept').value = kodeDept;
-        document.getElementById('editNamaDept').value = namaDept;
-        document.getElementById('editModal').classList.add('active');
-    }
-
-    function closeEditModal() {
-        document.getElementById('editModal').classList.remove('active');
-    }
-
-    function update() {
-        const id = document.getElementById('editId').value;
-        const kodeDept = document.getElementById('editKodeDept').value;
-        const namaDept = document.getElementById('editNamaDept').value;
-        
-        console.log('Update Departemen:', { id, kodeDept, namaDept });
-        alert('Update functionality will be implemented by backend');
-        closeEditModal();
-    }
-
-    function save() {
-        alert('Save functionality will be implemented by backend');
-        closeModal();
-    }
-
-    function toggleStatus(element, id) {
-        element.classList.toggle('active');
-        const currentStatus = element.dataset.status;
-        const newStatus = currentStatus === 'Y' ? 'N' : 'Y';
-        element.dataset.status = newStatus;
-        console.log(`Departemen ID: ${id}, New Status: ${newStatus}`);
-    }
-
-    function updateEntriesDisplay() {
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        const allRows = document.querySelectorAll('.role-row');
-        const totalRows = allRows.length;
-        
-        allRows.forEach((row, index) => {
-            if (index < entriesPerPage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+    // ========== API CONFIGURATION ==========
+    const API_BASE = '/api/departemen';
+    
+    // ========== STATE VARIABLES ==========
+    let perPage = 5;
+    let currentPage = 1;
+    let searchQuery = '';
+    let editingDepartemenId = null;
+    
+    // ========== LOAD DATA FROM API ==========
+    function loadDepartemens(page = 1) {
+        const params = new URLSearchParams({
+            per_page: perPage,
+            page: page,
+            search: searchQuery
         });
         
-        const visibleCount = Math.min(entriesPerPage, totalRows);
-        document.getElementById('footerInfo').textContent = 
-            `Showing 1 to ${visibleCount} of ${totalRows} entries`;
+        fetch(`${API_BASE}?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data);
+                updatePagination(data);
+            })
+            .catch(error => {
+                console.error('Error loading departemens:', error);
+                alert('Gagal memuat data departemen');
+            });
     }
-
-    function filterTable() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        const allRows = document.querySelectorAll('.role-row');
-        let visibleCount = 0;
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
+    
+    // ========== RENDER TABLE ROWS DYNAMICALLY ==========
+    function renderTable(data) {
+        const tbody = document.getElementById('roleTableBody');
         
-        allRows.forEach((row, index) => {
-            const kodeDept = row.cells[1].textContent.toLowerCase();
-            const namaDept = row.cells[2].textContent.toLowerCase();
+        // Clear existing rows
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        if (!data.data || data.data.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 5;
+            emptyCell.style.textAlign = 'center';
+            emptyCell.style.padding = '20px';
+            emptyCell.textContent = 'Tidak ada data';
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+            return;
+        }
+        
+        data.data.forEach((departemen, index) => {
+            const row = document.createElement('tr');
+            row.className = 'role-row';
+            row.dataset.id = departemen.kode_dept;
             
-            if (kodeDept.includes(searchInput) || namaDept.includes(searchInput)) {
-                if (visibleCount < entriesPerPage) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            } else {
-                row.style.display = 'none';
-            }
+            const isActive = departemen.aktif === 'Y' || departemen.aktif === true;
+            
+            // Column 1: Index
+            const tdIndex = document.createElement('td');
+            tdIndex.textContent = (data.from || 0) + index;
+            row.appendChild(tdIndex);
+            
+            // Column 2: Kode Dept
+            const tdKode = document.createElement('td');
+            tdKode.textContent = departemen.kode_dept;
+            row.appendChild(tdKode);
+            
+            // Column 3: Nama Departemen
+            const tdNama = document.createElement('td');
+            tdNama.textContent = departemen.nama_dept;
+            row.appendChild(tdNama);
+            
+            // Column 4: Status Toggle
+            const tdStatus = document.createElement('td');
+            const toggleDiv = document.createElement('div');
+            toggleDiv.className = `toggle-switch ${isActive ? 'active' : ''}`;
+            toggleDiv.dataset.status = departemen.aktif;
+            toggleDiv.dataset.deptId = departemen.kode_dept;
+            toggleDiv.onclick = function() {
+                toggleStatus(this, departemen.kode_dept);
+            };
+            
+            const toggleKnob = document.createElement('div');
+            toggleKnob.className = 'toggle-switch-knob';
+            toggleDiv.appendChild(toggleKnob);
+            tdStatus.appendChild(toggleDiv);
+            row.appendChild(tdStatus);
+            
+            // Column 5: Action Icons
+            const tdAction = document.createElement('td');
+            const actionIcons = document.createElement('div');
+            actionIcons.className = 'action-icons';
+            
+            // Edit Icon
+            const editSpan = document.createElement('span');
+            editSpan.className = 'action-icon';
+            editSpan.title = 'Edit';
+            editSpan.onclick = function() {
+                openEditModal(departemen.kode_dept, departemen.kode_dept, departemen.nama_dept);
+            };
+            const editSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            editSvg.setAttribute('width', '18');
+            editSvg.setAttribute('height', '18');
+            editSvg.setAttribute('viewBox', '0 0 18 18');
+            editSvg.setAttribute('fill', 'none');
+            const editPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath1.setAttribute('d', 'M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z');
+            editPath1.setAttribute('fill', '#F79009');
+            const editPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath2.setAttribute('d', 'M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z');
+            editPath2.setAttribute('fill', '#F79009');
+            editSvg.appendChild(editPath1);
+            editSvg.appendChild(editPath2);
+            editSpan.appendChild(editSvg);
+            actionIcons.appendChild(editSpan);
+            
+            // Delete Icon
+            const deleteSpan = document.createElement('span');
+            deleteSpan.className = 'action-icon';
+            deleteSpan.title = 'Delete';
+            deleteSpan.onclick = function() {
+                openDeleteModal(departemen.kode_dept, departemen.nama_dept);
+            };
+            const deleteSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            deleteSvg.setAttribute('width', '18');
+            deleteSvg.setAttribute('height', '20');
+            deleteSvg.setAttribute('viewBox', '0 0 18 20');
+            deleteSvg.setAttribute('fill', 'none');
+            const deletePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            deletePath.setAttribute('d', 'M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z');
+            deletePath.setAttribute('fill', '#F04438');
+            deleteSvg.appendChild(deletePath);
+            deleteSpan.appendChild(deleteSvg);
+            actionIcons.appendChild(deleteSpan);
+            
+            tdAction.appendChild(actionIcons);
+            row.appendChild(tdAction);
+            
+            tbody.appendChild(row);
         });
+    }
+    
+    // ========== UPDATE PAGINATION INFO ==========
+    function updatePagination(data) {
+        currentPage = data.current_page || 1;
+        const total = data.total || 0;
+        const from = data.from || 0;
+        const to = data.to || 0;
         
-        const totalRows = allRows.length;
-        if (searchInput) {
-            document.getElementById('footerInfo').textContent = 
-                `Showing ${visibleCount} of ${totalRows} entries (filtered)`;
-        } else {
-            document.getElementById('footerInfo').textContent = 
-                `Showing 1 to ${Math.min(entriesPerPage, totalRows)} of ${totalRows} entries`;
+        document.getElementById('footerInfo').textContent = 
+            `Showing ${from} to ${to} of ${total} entries`;
+        
+        // Update pagination buttons
+        document.getElementById('prevBtn').disabled = !data.prev_page_url;
+        document.getElementById('nextBtn').disabled = !data.next_page_url;
+    }
+    
+    // ========== PAGINATION FUNCTIONS ==========
+    function handlePageChange() {
+        perPage = parseInt(document.getElementById('entriesPerPage').value);
+        currentPage = 1;
+        loadDepartemens(currentPage);
+    }
+    
+    function nextPage() {
+        loadDepartemens(currentPage + 1);
+    }
+    
+    function previousPage() {
+        if (currentPage > 1) {
+            loadDepartemens(currentPage - 1);
         }
     }
-
-    let itemToDelete = null;
-    let itemNameToDelete = null;
     
-    function openDeleteModal(id, name) {
-        itemToDelete = id;
-        itemNameToDelete = name;
-        document.getElementById('deleteModal').classList.add('active');
+    // ========== SEARCH FUNCTION ==========
+    function handleSearch() {
+        searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        currentPage = 1;
+        loadDepartemens(currentPage);
+    }
+    
+    // ========== MODAL FUNCTIONS ==========
+    function openModal() {
+        editingDepartemenId = null;
+        document.getElementById('departemenForm').reset();
+        document.getElementById('createRoleModal').querySelector('.modal-title').textContent = 'Tambah Departemen';
+        document.getElementById('createRoleModal').classList.add('active');
+    }
+    
+    function openEditModal(id, kode, nama) {
+        editingDepartemenId = id;
+        document.getElementById('kodeDeptInput').value = kode;
+        document.getElementById('namaDeptInput').value = nama;
+        document.getElementById('createRoleModal').querySelector('.modal-title').textContent = 'Edit Departemen';
+        document.getElementById('createRoleModal').classList.add('active');
+    }
+    
+    function closeModal() {
+        document.getElementById('createRoleModal').classList.remove('active');
+        editingDepartemenId = null;
+    }
+    
+    function saveDepartemen() {
+        const kode = document.getElementById('kodeDeptInput').value.trim();
+        const nama = document.getElementById('namaDeptInput').value.trim();
+        
+        if (!kode || !nama) {
+            alert('Kode departemen dan nama departemen harus diisi');
+            return;
+        }
+        
+        if (editingDepartemenId) {
+            // Update
+            updateDepartemen(editingDepartemenId, kode, nama);
+        } else {
+            // Create
+            createDepartemen(kode, nama);
+        }
+    }
+    
+    function createDepartemen(kode, nama) {
+        fetch(API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                kode_dept: kode,
+                nama_dept: nama,
+                aktif: 'Y'
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('Departemen berhasil ditambahkan');
+            closeModal();
+            loadDepartemens(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menambahkan departemen');
+        });
+    }
+    
+    function updateDepartemen(id, kode, nama) {
+        fetch(`${API_BASE}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                nama_dept: nama
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('Departemen berhasil diperbarui');
+            closeModal();
+            loadDepartemens(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memperbarui departemen');
+        });
+    }
+    
+    // ========== TOGGLE STATUS FUNCTION ==========
+    function toggleStatus(element, deptId) {
+        const currentStatus = element.dataset.status;
+        const newStatus = currentStatus === 'Y' || currentStatus === true ? 'N' : 'Y';
+        
+        fetch(`${API_BASE}/${deptId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                aktif: newStatus
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            element.dataset.status = newStatus;
+            element.classList.toggle('active');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal mengubah status departemen');
+            // Revert toggle on error
+            element.classList.toggle('active');
+        });
+    }
+    
+    // ========== DELETE MODAL FUNCTIONS ==========
+    let departemenToDelete = null;
+    let departemenNameToDelete = null;
+    
+    function openDeleteModal(deptId, deptName) {
+        departemenToDelete = deptId;
+        departemenNameToDelete = deptName;
+        document.getElementById('deleteDepartemenModal').classList.add('active');
     }
     
     function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('active');
-        itemToDelete = null;
-        itemNameToDelete = null;
+        document.getElementById('deleteDepartemenModal').classList.remove('active');
+        departemenToDelete = null;
+        departemenNameToDelete = null;
     }
     
     function confirmDelete() {
-        if (itemToDelete) {
-            console.log(`Deleting Departemen ID: ${itemToDelete}, Name: ${itemNameToDelete}`);
-            alert(`Departemen "${itemNameToDelete}" will be deleted (backend integration needed)`);
-            closeDeleteModal();
+        if (departemenToDelete) {
+            fetch(`${API_BASE}/${departemenToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                alert(`Departemen "${departemenNameToDelete}" berhasil dihapus`);
+                closeDeleteModal();
+                loadDepartemens(currentPage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menghapus departemen');
+            });
         }
     }
-
+    
+    // ========== EVENT LISTENERS & INITIALIZATION ==========
+    document.getElementById('createRoleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+    
+    document.getElementById('deleteDepartemenModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Load initial data
     document.addEventListener('DOMContentLoaded', function() {
-        updateEntriesDisplay();
-    });
-
-    document.getElementById('createModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-    
-    document.getElementById('editModal').addEventListener('click', function(e) {
-        if (e.target === this) closeEditModal();
-    });
-    
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeleteModal();
+        loadDepartemens(currentPage);
     });
 </script>
 
