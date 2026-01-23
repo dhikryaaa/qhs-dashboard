@@ -351,16 +351,32 @@
         padding: 20px 16px;
     }
     
+    /* Form Row for 2-column layout */
+    .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    
     .form-group {
         margin-bottom: 16px;
+    }
+    
+    /* Half-width form group (279px) */
+    .form-group-half {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 279px;
+        flex: 1;
     }
     
     .form-label {
         display: block;
         font-family: 'Public Sans', sans-serif;
         font-weight: 600;
-        font-size: 14px;
-        color: #344054;
+        font-size: 16px;
+        color: #1E1E1E;
         margin-bottom: 8px;
     }
     
@@ -372,12 +388,27 @@
         border: 1px solid #B5B5B5;
         border-radius: 8px;
         font-family: 'Public Sans', sans-serif;
-        font-size: 14px;
+        font-size: 16px;
         color: #344054;
         transition: all 0.2s ease;
     }
     
-    .form-input:focus {
+    /* Half-width form input (279px) */
+    .form-input-half {
+        width: 100%;
+        height: 46px;
+        padding: 0 14px;
+        background: #EAECF0;
+        border: 1px solid #B5B5B5;
+        border-radius: 8px;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        color: #667085;
+        transition: all 0.2s ease;
+    }
+    
+    .form-input:focus,
+    .form-input-half:focus {
         background: #FFFFFF;
         border-color: #0B4A6F;
         outline: none;
@@ -657,13 +688,15 @@
         <!-- Modal Body -->
         <div class="modal-body">
             <form>
-                <div class="form-group">
-                    <label class="form-label">Kode Role</label>
-                    <input type="text" class="form-input" placeholder="Masukkan kode role">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Role</label>
-                    <input type="text" class="form-input" placeholder="Masukkan nama role">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">Kode Role</label>
+                        <input type="text" class="form-input-half" placeholder="Masukkan kode role">
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama Role</label>
+                        <input type="text" class="form-input-half" placeholder="Masukkan nama role">
+                    </div>
                 </div>
             </form>
         </div>
@@ -690,13 +723,15 @@
         <div class="modal-body">
             <form>
                 <input type="hidden" id="editRoleId">
-                <div class="form-group">
-                    <label class="form-label">Kode Role</label>
-                    <input type="text" id="editRoleKode" class="form-input" placeholder="Masukkan kode role">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Role</label>
-                    <input type="text" id="editRoleNama" class="form-input" placeholder="Masukkan nama role">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">Kode Role</label>
+                        <input type="text" id="editRoleKode" class="form-input-half" placeholder="Masukkan kode role">
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama Role</label>
+                        <input type="text" id="editRoleNama" class="form-input-half" placeholder="Masukkan nama role">
+                    </div>
                 </div>
             </form>
         </div>
