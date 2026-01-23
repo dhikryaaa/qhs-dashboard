@@ -650,14 +650,16 @@
 
         <!-- Modal Body -->
         <div class="modal-body">
-            <form>
-                <div class="form-group">
-                    <label class="form-label">Kode Role</label>
-                    <input type="text" class="form-input" placeholder="Masukkan kode role">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Role</label>
-                    <input type="text" class="form-input" placeholder="Masukkan nama role">
+            <form id="roleForm">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">Kode Role</label>
+                        <input type="text" id="kodeRoleInput" class="form-input-half" placeholder="Masukkan kode role">
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama Role</label>
+                        <input type="text" id="namaRoleInput" class="form-input-half" placeholder="Masukkan nama role">
+                    </div>
                 </div>
             </form>
         </div>
@@ -666,39 +668,6 @@
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" onclick="saveRole()">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Role -->
-<div id="editRoleModal" class="modal-overlay">
-    <div class="modal-window">
-        <div class="modal-header">
-            <h3 class="modal-title">Edit Role</h3>
-            <button class="modal-close" onclick="closeEditModal()">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
-                </svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form>
-                <input type="hidden" id="editRoleId">
-                <div class="form-row">
-                    <div class="form-group-half">
-                        <label class="form-label">Kode Role</label>
-                        <input type="text" id="editRoleKode" class="form-input-half" placeholder="Masukkan kode role">
-                    </div>
-                    <div class="form-group-half">
-                        <label class="form-label">Nama Role</label>
-                        <input type="text" id="editRoleNama" class="form-input-half" placeholder="Masukkan nama role">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-            <button class="btn-save" onclick="updateRole()">Save</button>
         </div>
     </div>
 </div>
@@ -721,61 +690,154 @@
 </div>
 
 <script>
-    // Modal Functions
-    function openModal() {
-        document.getElementById('createRoleModal').classList.add('active');
-    }
-
-    function closeModal() {
-        document.getElementById('createRoleModal').classList.remove('active');
-    }
-
-    function saveRole() {
-        // Handle save logic here
-        alert('Save functionality will be implemented by backend');
-        closeModal();
-    }
-
-    // Toggle Status Switch
-    function toggleStatus(element, roleId) {
-        // Toggle the active class
-        element.classList.toggle('active');
-        
-        // Get current status
-        const currentStatus = element.dataset.status;
-        const newStatus = currentStatus === 'Y' ? 'N' : 'Y';
-        
-        // Update data attribute
-        element.dataset.status = newStatus;
-        
-        // Log for debugging (backend will handle actual update)
-        console.log(`Role ID: ${roleId}, New Status: ${newStatus}`);
-        
-        // TODO: Send AJAX request to backend to update status
-        // fetch('/api/role/' + roleId, {
-        //     method: 'PUT',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ aktif: newStatus })
-        // });
-    }
-
-    // Update Entries Display
-    function updateEntriesDisplay() {
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        const allRows = document.querySelectorAll('.role-row');
-        const totalRows = allRows.length;
-        
-        // Hide/show rows based on entries per page
-        allRows.forEach((row, index) => {
-            if (index < entriesPerPage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+    // API Configuration
+    const API_BASE = '/api/role';
+    let currentPage = 1;
+    let perPage = 5;
+    let searchQuery = '';
+    
+    // ========== TABLE DATA LOADING ==========
+    
+    // Load data from API
+    function loadRoles(page = 1) {
+        const params = new URLSearchParams({
+            per_page: perPage,
+            page: page,
+            search: searchQuery
         });
         
-        // Update footer text
-        const visibleCount = Math.min(entriesPerPage, totalRows);
+        fetch(`${API_BASE}?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data);
+                updatePagination(data);
+            })
+            .catch(error => {
+                console.error('Error loading roles:', error);
+                alert('Gagal memuat data role');
+            });
+    }
+    
+    // Render table rows using createElement
+    function renderTable(data) {
+        const tbody = document.getElementById('roleTableBody');
+        
+        // Clear existing rows
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        if (!data.data || data.data.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 5;
+            emptyCell.style.textAlign = 'center';
+            emptyCell.style.padding = '20px';
+            emptyCell.textContent = 'Tidak ada data';
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+            return;
+        }
+        
+        data.data.forEach((role, index) => {
+            const row = document.createElement('tr');
+            row.className = 'role-row';
+            row.dataset.id = role.kode_role;
+            
+            const isActive = role.aktif === 'Y' || role.aktif === true;
+            
+            // Column 1: Index
+            const tdIndex = document.createElement('td');
+            tdIndex.textContent = (data.from || 0) + index;
+            row.appendChild(tdIndex);
+            
+            // Column 2: Kode Role
+            const tdKode = document.createElement('td');
+            tdKode.textContent = role.kode_role;
+            row.appendChild(tdKode);
+            
+            // Column 3: Nama Role
+            const tdNama = document.createElement('td');
+            tdNama.textContent = role.nama;
+            row.appendChild(tdNama);
+            
+            // Column 4: Status Toggle
+            const tdStatus = document.createElement('td');
+            const toggleDiv = document.createElement('div');
+            toggleDiv.className = `toggle-switch ${isActive ? 'active' : ''}`;
+            toggleDiv.dataset.status = role.aktif;
+            toggleDiv.dataset.roleId = role.kode_role;
+            toggleDiv.onclick = function() {
+                toggleStatus(this, role.kode_role);
+            };
+            
+            const toggleKnob = document.createElement('div');
+            toggleKnob.className = 'toggle-switch-knob';
+            toggleDiv.appendChild(toggleKnob);
+            tdStatus.appendChild(toggleDiv);
+            row.appendChild(tdStatus);
+            
+            // Column 5: Action Icons
+            const tdAction = document.createElement('td');
+            const actionIcons = document.createElement('div');
+            actionIcons.className = 'action-icons';
+            
+            // Edit Icon
+            const editSpan = document.createElement('span');
+            editSpan.className = 'action-icon';
+            editSpan.title = 'Edit';
+            editSpan.onclick = function() {
+                openEditModal(role.kode_role, role.kode_role, role.nama);
+            };
+            const editSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            editSvg.setAttribute('width', '18');
+            editSvg.setAttribute('height', '18');
+            editSvg.setAttribute('viewBox', '0 0 18 18');
+            editSvg.setAttribute('fill', 'none');
+            const editPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath1.setAttribute('d', 'M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z');
+            editPath1.setAttribute('fill', '#F79009');
+            const editPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath2.setAttribute('d', 'M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z');
+            editPath2.setAttribute('fill', '#F79009');
+            editSvg.appendChild(editPath1);
+            editSvg.appendChild(editPath2);
+            editSpan.appendChild(editSvg);
+            actionIcons.appendChild(editSpan);
+            
+            // Delete Icon
+            const deleteSpan = document.createElement('span');
+            deleteSpan.className = 'action-icon';
+            deleteSpan.title = 'Delete';
+            deleteSpan.onclick = function() {
+                openDeleteModal(role.kode_role, role.nama);
+            };
+            const deleteSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            deleteSvg.setAttribute('width', '18');
+            deleteSvg.setAttribute('height', '20');
+            deleteSvg.setAttribute('viewBox', '0 0 18 20');
+            deleteSvg.setAttribute('fill', 'none');
+            const deletePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            deletePath.setAttribute('d', 'M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z');
+            deletePath.setAttribute('fill', '#F04438');
+            deleteSvg.appendChild(deletePath);
+            deleteSpan.appendChild(deleteSvg);
+            actionIcons.appendChild(deleteSpan);
+            
+            tdAction.appendChild(actionIcons);
+            row.appendChild(tdAction);
+            
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Update pagination info and buttons
+    function updatePagination(data) {
+        currentPage = data.current_page || 1;
+        const total = data.total || 0;
+        const from = data.from || 0;
+        const to = data.to || 0;
+        
         document.getElementById('footerInfo').textContent = 
             `Showing ${from} to ${to} of ${total} entries`;
         
@@ -898,9 +960,47 @@
         .then(data => {
             alert('Role berhasil diperbarui');
             closeModal();
-        }
-    });
+            loadRoles(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memperbarui role');
+        });
+    }
+
+    // ========== TOGGLE STATUS FUNCTION ==========
     
+    function toggleStatus(element, roleId) {
+        const currentStatus = element.dataset.status;
+        const newStatus = currentStatus === 'Y' || currentStatus === true ? 'N' : 'Y';
+        
+        fetch(`${API_BASE}/${roleId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                aktif: newStatus
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            element.dataset.status = newStatus;
+            element.classList.toggle('active');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal mengubah status role');
+            // Revert toggle on error
+            element.classList.toggle('active');
+        });
+    }
+
     // ========== DELETE MODAL FUNCTIONS ==========
     
     let roleToDelete = null;
