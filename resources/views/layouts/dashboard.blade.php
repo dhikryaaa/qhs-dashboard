@@ -140,9 +140,28 @@
             background-color: #F9FAFB; 
         }
         
+        /* Active Submenu Link - Dark Blue Background */
+        .submenu-link.active {
+            background: #0B4A6F;
+            box-shadow: 0px 0px 6px 2px rgba(15, 174, 126, 0.3);
+            border-radius: 0.25rem; /* 4px ÷ 16 */
+            color: #FCFCFD;
+            font-weight: 600;
+        }
+        
+        .submenu-link.active:hover {
+            background: #0B4A6F;
+            color: #FCFCFD;
+        }
+        
         .submenu-link i { 
             font-size: 0.9375rem; /* 15px ÷ 16 */
             margin-right: 0.75rem; /* 12px ÷ 16 */
+        }
+        
+        /* Active submenu icon color */
+        .submenu-link.active i {
+            color: #FCFCFD;
         }
 
         /* ========== MAIN CONTENT WRAPPER ========== */
@@ -320,11 +339,11 @@
             </a>
             <div class="collapse" id="masterMenu">
                 <a href="{{ route('master.role') }}" class="submenu-link {{ request()->routeIs('master.role') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Role</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>User</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Inspector</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Departemen</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Lokasi</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Kategori</span></a>
+                <a href="{{ route('master.user') }}" class="submenu-link {{ request()->routeIs('master.user') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>User</span></a>
+                <a href="{{ route('master.inspector') }}" class="submenu-link {{ request()->routeIs('master.inspector') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Inspector</span></a>
+                <a href="{{ route('master.departemen') }}" class="submenu-link {{ request()->routeIs('master.departemen') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Departemen</span></a>
+                <a href="{{ route('master.lokasi') }}" class="submenu-link {{ request()->routeIs('master.lokasi') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Lokasi</span></a>
+                <a href="{{ route('master.kategori') }}" class="submenu-link {{ request()->routeIs('master.kategori') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Kategori</span></a>
             </div>
             
             <!-- Transaction Section -->
@@ -396,5 +415,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Keep sidebar accordion open based on current route
+        // Works for all sections: Master, Transaction, Report
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any submenu link is active in any section
+            const activeSubmenuLink = document.querySelector('.submenu-link.active');
+            
+            // Only expand if there's actually an active submenu link
+            if (activeSubmenuLink) {
+                // Find the parent collapse element (masterMenu, transactionMenu, reportMenu, etc.)
+                const collapseParent = activeSubmenuLink.closest('.collapse');
+                
+                if (collapseParent) {
+                    // Add 'show' class to keep it expanded
+                    collapseParent.classList.add('show');
+                    
+                    // Update aria-expanded on the toggle link
+                    const toggleLink = document.querySelector(`[data-bs-toggle="collapse"][href="#${collapseParent.id}"]`);
+                    if (toggleLink) {
+                        toggleLink.setAttribute('aria-expanded', 'true');
+                        toggleLink.classList.add('active');
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

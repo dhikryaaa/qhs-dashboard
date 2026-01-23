@@ -20,7 +20,9 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::middleware('auth')->group(function () {
+// COMMENTED FOR FRONTEND DEVELOPMENT - BYPASS AUTH
+// Route::middleware('auth')->group(function () {
+
     // Home Page
     Route::get('/', function () {
         return view('pages.home');
@@ -36,10 +38,31 @@ Route::middleware('auth')->group(function () {
         return view('quality.master.role');
     })->name('master.role');
 
+    Route::get('/master/user', function () {
+        return view('quality.master.user');
+    })->name('master.user');
+
+    Route::get('/master/inspector', function () {
+        return view('quality.master.inspector');
+    })->name('master.inspector');
+
+    Route::get('/master/departemen', function () {
+        return view('quality.master.departemen');
+    })->name('master.departemen');
+
+    Route::get('/master/lokasi', function () {
+        return view('quality.master.lokasi');
+    })->name('master.lokasi');
+
+    Route::get('/master/kategori', function () {
+        return view('quality.master.kategori');
+    })->name('master.kategori');
+
     Route::post('/logout', function () {
-        auth()->logout();
-        session()->invalidate();
-        session()->regenerateToken();
+        // auth()->logout();
+        // session()->invalidate();
+        // session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
-});
+    
+// }); // END COMMENTED AUTH MIDDLEWARE
