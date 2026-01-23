@@ -603,7 +603,7 @@
                     </td>
                     <td>
                         <div class="action-icons">
-                            <span class="action-icon" title="Edit">
+                            <span class="action-icon" title="Edit" onclick="openEditModal('{{ $role['id'] }}', '{{ $role['kode'] }}', '{{ $role['nama'] }}')">
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
                                     <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
@@ -676,6 +676,37 @@
     </div>
 </div>
 
+<!-- Modal Edit Role -->
+<div id="editRoleModal" class="modal-overlay">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Role</h3>
+            <button class="modal-close" onclick="closeEditModal()">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <input type="hidden" id="editRoleId">
+                <div class="form-group">
+                    <label class="form-label">Kode Role</label>
+                    <input type="text" id="editRoleKode" class="form-input" placeholder="Masukkan kode role">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Role</label>
+                    <input type="text" id="editRoleNama" class="form-input" placeholder="Masukkan nama role">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+            <button class="btn-save" onclick="updateRole()">Save</button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Delete Role -->
 <div id="deleteRoleModal" class="modal-delete-overlay">
     <div class="modal-delete-window">
@@ -701,6 +732,27 @@
 
     function closeModal() {
         document.getElementById('createRoleModal').classList.remove('active');
+    }
+
+    function openEditModal(id, kode, nama) {
+        document.getElementById('editRoleId').value = id;
+        document.getElementById('editRoleKode').value = kode;
+        document.getElementById('editRoleNama').value = nama;
+        document.getElementById('editRoleModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editRoleModal').classList.remove('active');
+    }
+
+    function updateRole() {
+        const id = document.getElementById('editRoleId').value;
+        const kode = document.getElementById('editRoleKode').value;
+        const nama = document.getElementById('editRoleNama').value;
+        
+        console.log('Update Role:', { id, kode, nama });
+        alert('Update functionality will be implemented by backend');
+        closeEditModal();
     }
 
     function saveRole() {
@@ -797,6 +849,12 @@
     document.getElementById('createRoleModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
+        }
+    });
+    
+    document.getElementById('editRoleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditModal();
         }
     });
     
