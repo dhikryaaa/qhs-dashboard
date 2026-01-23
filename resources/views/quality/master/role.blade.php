@@ -426,6 +426,124 @@
     .btn-save:hover {
         background: #094161;
     }
+    
+    /* ========== DELETE MODAL STYLES ========== */
+    
+    /* Delete Modal Overlay */
+    .modal-delete-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-delete-overlay.active {
+        display: flex;
+    }
+    
+    /* Delete Modal Container */
+    .modal-delete-window {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        gap: 12px;
+        width: 338px;
+        height: 210.51px;
+        background: #FCFCFD;
+        box-shadow: 0px 0px 20px 5px rgba(20, 20, 20, 0.12);
+        border-radius: 12px;
+        position: relative;
+    }
+    
+    /* The Illustration */
+    .delete-illustration {
+        width: 63.57px;
+        height: 84px;
+        background-image: url('{{ asset("img/trash-delete-illustration.png") }}');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+    }
+    
+    /* Title Text "Hapus Role?" */
+    .delete-title {
+        width: 298px;
+        height: 24px;
+        font-family: 'Public Sans', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 24px;
+        text-align: center;
+        color: #0B4A6F;
+        flex: none;
+        order: 1;
+        align-self: stretch;
+    }
+    
+    /* Button Wrapper */
+    .delete-btn-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 0px;
+        gap: 13.39px;
+        width: 298px;
+        height: 38.51px;
+        flex: none;
+        order: 2;
+    }
+    
+    /* Button Base Styles */
+    .btn-delete-base {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 6.69663px 13.3933px;
+        gap: 6.7px;
+        width: 142.3px;
+        height: 38.51px;
+        border-radius: 6.69663px;
+        cursor: pointer;
+        font-family: 'Public Sans', sans-serif;
+        font-weight: 600;
+        font-size: 11.72px;
+        line-height: 14px;
+        filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.02)) drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.13));
+        transition: opacity 0.2s ease;
+    }
+    
+    .btn-delete-base:hover {
+        opacity: 0.85;
+    }
+    
+    /* "Tidak" Button (White) */
+    .btn-delete-cancel {
+        background: #FFFFFF;
+        border: 0.84px solid #0B4A6F;
+        box-shadow: 0px 0.84px 6.7px rgba(16, 24, 40, 0.16);
+        color: #0B4A6F;
+    }
+    
+    /* "Ya" Button (Blue) */
+    .btn-delete-confirm {
+        background: #0B4A6F;
+        border: 0.84px solid #0B4A6F;
+        box-shadow: 0px 0.84px 6.7px rgba(16, 24, 40, 0.16);
+        border-radius: 3.35px;
+        color: #F6FEF9;
+    }
 </style>
 
 <!-- Content Card -->
@@ -491,7 +609,7 @@
                                     <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
                                 </svg>
                             </span>
-                            <span class="action-icon" title="Delete">
+                            <span class="action-icon" title="Delete" onclick="openDeleteModal('{{ $role['id'] }}', '{{ $role['nama'] }}')">
                                 <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z" fill="#F04438"/>
                                 </svg>
@@ -554,6 +672,23 @@
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" onclick="saveRole()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Role -->
+<div id="deleteRoleModal" class="modal-delete-overlay">
+    <div class="modal-delete-window">
+        <!-- Illustration -->
+        <div class="delete-illustration"></div>
+        
+        <!-- Title -->
+        <h3 class="delete-title">Hapus Role?</h3>
+        
+        <!-- Buttons -->
+        <div class="delete-btn-wrapper">
+            <button class="btn-delete-base btn-delete-cancel" onclick="closeDeleteModal()">Tidak</button>
+            <button class="btn-delete-base btn-delete-confirm" onclick="confirmDelete()">Ya</button>
         </div>
     </div>
 </div>
@@ -662,6 +797,55 @@
     document.getElementById('createRoleModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
+        }
+    });
+    
+    // ========== DELETE MODAL FUNCTIONS ==========
+    
+    // Store the role ID to be deleted
+    let roleToDelete = null;
+    let roleNameToDelete = null;
+    
+    // Open Delete Modal
+    function openDeleteModal(roleId, roleName) {
+        roleToDelete = roleId;
+        roleNameToDelete = roleName;
+        document.getElementById('deleteRoleModal').classList.add('active');
+    }
+    
+    // Close Delete Modal
+    function closeDeleteModal() {
+        document.getElementById('deleteRoleModal').classList.remove('active');
+        roleToDelete = null;
+        roleNameToDelete = null;
+    }
+    
+    // Confirm Delete
+    function confirmDelete() {
+        if (roleToDelete) {
+            // Log for debugging
+            console.log(`Deleting Role ID: ${roleToDelete}, Name: ${roleNameToDelete}`);
+            
+            // TODO: Send AJAX request to backend to delete role
+            // fetch('/api/role/' + roleToDelete, {
+            //     method: 'DELETE',
+            //     headers: { 'Content-Type': 'application/json' }
+            // }).then(response => {
+            //     if (response.ok) {
+            //         // Remove row from table or reload page
+            //         location.reload();
+            //     }
+            // });
+            
+            alert(`Role "${roleNameToDelete}" will be deleted (backend integration needed)`);
+            closeDeleteModal();
+        }
+    }
+    
+    // Close delete modal when clicking outside
+    document.getElementById('deleteRoleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
         }
     });
 </script>

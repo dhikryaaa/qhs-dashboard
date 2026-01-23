@@ -266,7 +266,7 @@
 
     <!-- Secondary Navigation Header -->
     <div class="navbar-header">
-        <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">PROFIL</a>
+        <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
         
         <!-- Dashboard - Unclickable, Hover Only -->
         <div class="nav-item">
