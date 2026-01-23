@@ -316,16 +316,32 @@
         padding: 20px 16px;
     }
     
+    /* Form Row for 2-column layout */
+    .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    
     .form-group {
         margin-bottom: 16px;
+    }
+    
+    /* Half-width form group (279px) */
+    .form-group-half {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 279px;
+        flex: 1;
     }
     
     .form-label {
         display: block;
         font-family: 'Public Sans', sans-serif;
         font-weight: 600;
-        font-size: 14px;
-        color: #344054;
+        font-size: 16px;
+        color: #1E1E1E;
         margin-bottom: 8px;
     }
     
@@ -337,12 +353,27 @@
         border: 1px solid #B5B5B5;
         border-radius: 8px;
         font-family: 'Public Sans', sans-serif;
-        font-size: 14px;
+        font-size: 16px;
         color: #344054;
         transition: all 0.2s ease;
     }
     
-    .form-input:focus {
+    /* Half-width form input (279px) */
+    .form-input-half {
+        width: 100%;
+        height: 46px;
+        padding: 0 14px;
+        background: #EAECF0;
+        border: 1px solid #B5B5B5;
+        border-radius: 8px;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        color: #667085;
+        transition: all 0.2s ease;
+    }
+    
+    .form-input:focus,
+    .form-input-half:focus {
         background: #FFFFFF;
         border-color: #0B4A6F;
         outline: none;
@@ -556,7 +587,7 @@
                 </td>
                 <td>
                     <div class="action-icons">
-                        <span class="action-icon" title="Edit">
+                        <span class="action-icon" title="Edit" onclick="openEditModal('{{ $lokasi['id'] }}', '{{ $lokasi['kode_lokasi'] }}', '{{ $lokasi['nama_lokasi'] }}')">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
                                 <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
@@ -606,19 +637,54 @@
         </div>
         <div class="modal-body">
             <form>
-                <div class="form-group">
-                    <label class="form-label">Kode Lokasi</label>
-                    <input type="text" class="form-input" placeholder="Masukkan kode lokasi">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Lokasi</label>
-                    <input type="text" class="form-input" placeholder="Masukkan nama lokasi">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">Kode Lokasi</label>
+                        <input type="text" class="form-input-half" placeholder="Masukkan kode lokasi">
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama Lokasi</label>
+                        <input type="text" class="form-input-half" placeholder="Masukkan nama lokasi">
+                    </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" onclick="save()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Lokasi -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Lokasi</h3>
+            <button class="modal-close" onclick="closeEditModal()">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <input type="hidden" id="editId">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">Kode Lokasi</label>
+                        <input type="text" id="editKodeLokasi" class="form-input-half" placeholder="Masukkan kode lokasi">
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama Lokasi</label>
+                        <input type="text" id="editNamaLokasi" class="form-input-half" placeholder="Masukkan nama lokasi">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+            <button class="btn-save" onclick="update()">Save</button>
         </div>
     </div>
 </div>
@@ -642,6 +708,27 @@
 
     function closeModal() {
         document.getElementById('createModal').classList.remove('active');
+    }
+
+    function openEditModal(id, kodeLokasi, namaLokasi) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editKodeLokasi').value = kodeLokasi;
+        document.getElementById('editNamaLokasi').value = namaLokasi;
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    function update() {
+        const id = document.getElementById('editId').value;
+        const kodeLokasi = document.getElementById('editKodeLokasi').value;
+        const namaLokasi = document.getElementById('editNamaLokasi').value;
+        
+        console.log('Update Lokasi:', { id, kodeLokasi, namaLokasi });
+        alert('Update functionality will be implemented by backend');
+        closeEditModal();
     }
 
     function save() {
@@ -736,6 +823,10 @@
 
     document.getElementById('createModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
+    });
+    
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
     });
     
     document.getElementById('deleteModal').addEventListener('click', function(e) {

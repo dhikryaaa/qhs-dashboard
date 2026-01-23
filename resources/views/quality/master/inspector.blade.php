@@ -754,7 +754,7 @@
                 </td>
                 <td>
                     <div class="action-icons">
-                        <span class="action-icon" title="Edit">
+                        <span class="action-icon" title="Edit" onclick="openEditModal('{{ $inspector['id'] }}', '{{ $inspector['no_induk'] }}', '{{ $inspector['nama'] }}')">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
                                 <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
@@ -867,19 +867,51 @@
                         <input type="text" id="inspectorNama" class="form-input-half readonly-gray" placeholder="Nama" readonly>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Kualifikasi</label>
-                    <input type="text" class="form-input" placeholder="Masukkan kualifikasi">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Sertifikat</label>
-                    <input type="text" class="form-input" placeholder="Masukkan sertifikat">
-                </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
             <button class="btn-save" onclick="saveInspector()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Inspector -->
+<div id="editInspectorModal" class="modal-overlay">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Inspector</h3>
+            <button class="modal-close" onclick="closeEditModal()">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <input type="hidden" id="editInspectorId">
+                <div class="form-row">
+                    <div class="form-group-half">
+                        <label class="form-label">No Induk</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="editInspectorNoInduk" class="form-input-half" placeholder="No Induk" readonly onclick="openEditLookupPopup()">
+                            <span class="input-icon" onclick="openEditLookupPopup()">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.2939 12.5786H13.3905L13.0703 12.2699C14.191 10.9663 14.8656 9.27387 14.8656 7.43282C14.8656 3.32762 11.538 0 7.43282 0C3.32762 0 0 3.32762 0 7.43282C0 11.538 3.32762 14.8656 7.43282 14.8656C9.27387 14.8656 10.9663 14.191 12.2699 13.0703L12.5786 13.3905V14.2939L18.2962 20L20 18.2962L14.2939 12.5786ZM7.43282 12.5786C4.58548 12.5786 2.28702 10.2802 2.28702 7.43282C2.28702 4.58548 4.58548 2.28702 7.43282 2.28702C10.2802 2.28702 12.5786 4.58548 12.5786 7.43282C12.5786 10.2802 10.2802 12.5786 7.43282 12.5786Z" fill="#667085"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group-half">
+                        <label class="form-label">Nama</label>
+                        <input type="text" id="editInspectorNama" class="form-input-half readonly-gray" placeholder="Nama" readonly>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+            <button class="btn-save" onclick="updateInspector()">Save</button>
         </div>
     </div>
 </div>
@@ -935,6 +967,31 @@
 
     function closeCreateModal() {
         document.getElementById('createInspectorModal').classList.remove('active');
+    }
+
+    function openEditModal(id, noInduk, nama) {
+        document.getElementById('editInspectorId').value = id;
+        document.getElementById('editInspectorNoInduk').value = noInduk;
+        document.getElementById('editInspectorNama').value = nama;
+        document.getElementById('editInspectorModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editInspectorModal').classList.remove('active');
+    }
+
+    function openEditLookupPopup() {
+        document.getElementById('lookupPopupModal').classList.add('active');
+    }
+
+    function updateInspector() {
+        const id = document.getElementById('editInspectorId').value;
+        const noInduk = document.getElementById('editInspectorNoInduk').value;
+        const nama = document.getElementById('editInspectorNama').value;
+        
+        console.log('Update Inspector:', { id, noInduk, nama });
+        alert('Update functionality will be implemented by backend');
+        closeEditModal();
     }
 
     function saveInspector() {
@@ -1033,6 +1090,10 @@
     
     document.getElementById('createInspectorModal').addEventListener('click', function(e) {
         if (e.target === this) closeCreateModal();
+    });
+    
+    document.getElementById('editInspectorModal').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
     });
     
     document.getElementById('deleteModal').addEventListener('click', function(e) {
