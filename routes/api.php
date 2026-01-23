@@ -25,11 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', [AuthController::class, 'userData']);
 });
 
-Route::middleware('auth')->group(function() {
+//Route::middleware('auth')->group(function() {
     Route::apiResource('role', QHSRoleController::class);
     Route::apiResource('inspector', QHSInspectorController::class);
     Route::apiResource('user', UserController::class);
     Route::apiResource('departemen', QHSDepartemenController::class);
     Route::apiResource('lokasi', QHSLokasiController::class);
     Route::apiResource('kategori', QHSKategoriController::class);
-});
+//});
