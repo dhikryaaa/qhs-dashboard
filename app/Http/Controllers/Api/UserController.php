@@ -15,9 +15,23 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $page = $request->get('per_page', 5);
-        
-        $data = User::paginate($page);
+        $perPage = $request->get('per_page', 5);
+        $page = $request->get('page', 1);
+        $search = $request->get('search', '');
+
+        $query = User::query();
+
+        // Apply search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('no_induk', 'like', '%' . $search . '%')
+                  ->orWhere('nama', 'like', '%' . $search . '%')
+                  ->orWhere('kode_role', 'like', '%' . $search . '%')
+                  ->orWhere('kode_dept', 'like', '%' . $search . '%');
+            });
+        }
+
+        $data = $query->paginate($perPage, ['*'], 'page', $page);
 
         return $data;
     }
@@ -52,7 +66,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $data = User::findOrFail($id);
+        $data = User::where('no_induk', $id)->firstOrFail();
 
         return $data;
     }
@@ -62,20 +76,21 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = User::findOrFail($id);
+        $data = User::where('no_induk', $id)->firstOrFail();
 
-        $role = $request->get('kode_role');
-        QHSRole::findOrFail($role);
+        if ($request->has('kode_role') && $request->get('kode_role')) {
+            QHSRole::findOrFail($request->get('kode_role'));
+        }
 
-        $dept = $request->get('kode_dept');
-        QHSDepartemen::findOrFail($dept);
-
+        if ($request->has('kode_dept') && $request->get('kode_dept')) {
+            QHSDepartemen::findOrFail($request->get('kode_dept'));
+        }
 
         $validation = $request->validate([
             'nama' => 'sometimes|required|string',
             'aktif' => 'sometimes|required|string',
-            'kode_role' => 'sometimes|required|string',
-            'kode_dept' => 'sometimes|required|string',
+            'kode_role' => 'sometimes|nullable|string',
+            'kode_dept' => 'sometimes|nullable|string',
             'password' => 'sometimes|required|string'
         ]);
 
@@ -89,7 +104,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = User::findOrFail($id);
+        $data = User::where('no_induk', $id)->firstOrFail();
         $data->delete();
 
         return response()->json([

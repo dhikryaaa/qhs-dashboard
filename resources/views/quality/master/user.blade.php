@@ -1,13 +1,3 @@
-@php
-    $users = [
-        ['id' => '01', 'no_induk' => '001234', 'nama' => 'John Doe', 'kode_role' => 'R123', 'kode_dept' => 'D001', 'status' => 'Y'],
-        ['id' => '02', 'no_induk' => '001235', 'nama' => 'Jane Smith', 'kode_role' => 'R124', 'kode_dept' => 'D002', 'status' => 'N'],
-        ['id' => '03', 'no_induk' => '001236', 'nama' => 'Bob Johnson', 'kode_role' => 'R125', 'kode_dept' => 'D001', 'status' => 'Y'],
-        ['id' => '04', 'no_induk' => '001237', 'nama' => 'Alice Williams', 'kode_role' => 'R126', 'kode_dept' => 'D003', 'status' => 'Y'],
-        ['id' => '05', 'no_induk' => '001238', 'nama' => 'Charlie Brown', 'kode_role' => 'R127', 'kode_dept' => 'D002', 'status' => 'N'],
-    ];
-@endphp
-
 @extends('layouts.dashboard')
 
 @section('page-title')
@@ -750,7 +740,7 @@
     <!-- Table Header -->
     <div class="table-header">
         <h2 class="table-title">List User</h2>
-        <button class="btn-tambah-role" onclick="openCreateModal()">
+        <button class="btn-tambah-role" onclick="openModal()">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 0C4.489 0 0 4.489 0 10C0 15.511 4.489 20 10 20C15.511 20 20 15.511 20 10C20 4.489 15.511 0 10 0ZM10 2C14.4301 2 18 5.56988 18 10C18 14.4301 14.4301 18 10 18C5.56988 18 2 14.4301 2 10C2 5.56988 5.56988 2 10 2ZM9 5V9H5V11H9V15H11V11H15V9H11V5H9Z" fill="white"/>
             </svg>
@@ -762,7 +752,7 @@
     <div class="filter-bar">
         <div class="filter-left">
             <span>Show</span>
-            <select id="entriesPerPage" onchange="updateEntriesDisplay()">
+            <select id="entriesPerPage" onchange="handlePageChange()">
                 <option value="5" selected>5</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -772,7 +762,7 @@
         </div>
         <div class="filter-right">
             <span class="search-label">Search:</span>
-            <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="filterTable()">
+            <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="handleSearch()">
         </div>
     </div>
 
@@ -790,52 +780,22 @@
             </tr>
         </thead>
         <tbody id="roleTableBody">
-            @foreach($users as $user)
-            <tr class="role-row">
-                <td>{{ $user['id'] }}</td>
-                <td>{{ $user['no_induk'] }}</td>
-                <td>{{ $user['nama'] }}</td>
-                <td>{{ $user['kode_role'] }}</td>
-                <td>{{ $user['kode_dept'] }}</td>
-                <td>
-                    <div class="toggle-switch {{ $user['status'] === 'Y' ? 'active' : '' }}" 
-                         onclick="toggleStatus(this, '{{ $user['id'] }}')"
-                         data-status="{{ $user['status'] }}">
-                        <div class="toggle-switch-knob"></div>
-                    </div>
-                </td>
-                <td>
-                    <div class="action-icons">
-                        <span class="action-icon" title="Edit" onclick="openEditModal('{{ $user['id'] }}', '{{ $user['no_induk'] }}', '{{ $user['nama'] }}', '{{ $user['kode_role'] }}', '{{ $user['kode_dept'] }}')">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
-                                <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
-                            </svg>
-                        </span>
-                        <span class="action-icon" title="Delete" onclick="openDeleteModal('{{ $user['id'] }}', '{{ $user['nama'] }}')">
-                            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z" fill="#F04438"/>
-                            </svg>
-                        </span>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
+            <!-- Data will be loaded dynamically from API -->
         </tbody>
     </table>
 
     <!-- Table Footer -->
     <div class="table-footer">
         <div class="footer-info" id="footerInfo">
-            Showing 1 to 5 of 5 entries
+            Showing 0 to 0 of 0 entries
         </div>
         <div class="pagination">
-            <button class="pagination-btn" disabled>
+            <button class="pagination-btn" id="prevBtn" onclick="previousPage()">
                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.5 0L8 1.5L3.5 6L8 10.5L6.5 12L0.5 6L6.5 0Z" fill="#667085"/>
                 </svg>
             </button>
-            <button class="pagination-btn">
+            <button class="pagination-btn" id="nextBtn" onclick="nextPage()">
                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.5 0L0 1.5L4.5 6L0 10.5L1.5 12L7.5 6L1.5 0Z" fill="#667085"/>
                 </svg>
@@ -860,30 +820,7 @@
                     </tr>
                 </thead>
                 <tbody id="lookupTableBody">
-                    <tr onclick="selectEmployee('001234', 'John Doe', 'R123', 'D001')">
-                        <td>001234</td>
-                        <td>John Doe</td>
-                    </tr>
-                    <tr onclick="selectEmployee('001235', 'Jane Smith', 'R124', 'D002')">
-                        <td>001235</td>
-                        <td>Jane Smith</td>
-                    </tr>
-                    <tr onclick="selectEmployee('001236', 'Bob Johnson', 'R125', 'D003')">
-                        <td>001236</td>
-                        <td>Bob Johnson</td>
-                    </tr>
-                    <tr onclick="selectEmployee('001237', 'Alice Brown', 'R123', 'D001')">
-                        <td>001237</td>
-                        <td>Alice Brown</td>
-                    </tr>
-                    <tr onclick="selectEmployee('001238', 'Charlie Wilson', 'R124', 'D002')">
-                        <td>001238</td>
-                        <td>Charlie Wilson</td>
-                    </tr>
-                    <tr onclick="selectEmployee('001239', 'David Miller', 'R125', 'D003')">
-                        <td>001239</td>
-                        <td>David Miller</td>
-                    </tr>
+                    <!-- Data will be loaded dynamically from API -->
                 </tbody>
             </table>
         </div>
@@ -895,7 +832,7 @@
     <div class="modal-window-user">
         <div class="modal-header">
             <h3 class="modal-title">Tambah User</h3>
-            <button class="modal-close" onclick="closeCreateModal()">
+            <button class="modal-close" onclick="closeModal()">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
                 </svg>
@@ -929,7 +866,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" onclick="saveUser()">Save</button>
         </div>
     </div>
@@ -963,15 +900,15 @@
                     </div>
                     <div class="form-group-quarter">
                         <label class="form-label">Nama</label>
-                        <input type="text" id="editUserNama" class="form-input-quarter readonly-gray" placeholder="Nama" readonly>
+                        <input type="text" id="editUserNama" class="form-input-quarter" placeholder="Nama">
                     </div>
                     <div class="form-group-quarter">
                         <label class="form-label">Kode Role</label>
-                        <input type="text" id="editUserKodeRole" class="form-input-quarter readonly-gray" placeholder="Kode Role" readonly>
+                        <input type="text" id="editUserKodeRole" class="form-input-quarter" placeholder="Kode Role">
                     </div>
                     <div class="form-group-quarter">
                         <label class="form-label">Kode Dept</label>
-                        <input type="text" id="editUserKodeDept" class="form-input-quarter readonly-gray" placeholder="Kode Dept" readonly>
+                        <input type="text" id="editUserKodeDept" class="form-input-quarter" placeholder="Kode Dept">
                     </div>
                 </div>
             </form>
@@ -996,21 +933,325 @@
 </div>
 
 <script>
-    // Modal Functions - Lookup Popup Flow
-    function openCreateModal() {
+    // API Configuration
+    const API_BASE = '/api/user';
+    let currentPage = 1;
+    let perPage = 5;
+    let searchQuery = '';
+    
+    // ========== TABLE DATA LOADING ==========
+    
+    // Load data from API
+    function loadUsers(page = 1) {
+        const params = new URLSearchParams({
+            per_page: perPage,
+            page: page,
+            search: searchQuery
+        });
+        
+        fetch(`${API_BASE}?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data);
+                updatePagination(data);
+            })
+            .catch(error => {
+                console.error('Error loading users:', error);
+                alert('Gagal memuat data user');
+            });
+    }
+    
+    // Render table rows using createElement
+    function renderTable(data) {
+        const tbody = document.getElementById('roleTableBody');
+        
+        // Clear existing rows
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        if (!data.data || data.data.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 7;
+            emptyCell.style.textAlign = 'center';
+            emptyCell.style.padding = '20px';
+            emptyCell.textContent = 'Tidak ada data';
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+            return;
+        }
+        
+        data.data.forEach((user, index) => {
+            const row = document.createElement('tr');
+            row.className = 'role-row';
+            row.dataset.id = user.no_induk;
+            
+            const isActive = user.aktif === 'Y' || user.aktif === true;
+            
+            // Column 1: Index
+            const tdIndex = document.createElement('td');
+            tdIndex.textContent = (data.from || 0) + index;
+            row.appendChild(tdIndex);
+            
+            // Column 2: No Induk
+            const tdNoInduk = document.createElement('td');
+            tdNoInduk.textContent = user.no_induk;
+            row.appendChild(tdNoInduk);
+            
+            // Column 3: Nama
+            const tdNama = document.createElement('td');
+            tdNama.textContent = user.nama;
+            row.appendChild(tdNama);
+            
+            // Column 4: Kode Role
+            const tdKodeRole = document.createElement('td');
+            tdKodeRole.textContent = user.kode_role || '-';
+            row.appendChild(tdKodeRole);
+            
+            // Column 5: Kode Dept
+            const tdKodeDept = document.createElement('td');
+            tdKodeDept.textContent = user.kode_dept || '-';
+            row.appendChild(tdKodeDept);
+            
+            // Column 6: Status Toggle
+            const tdStatus = document.createElement('td');
+            const toggleDiv = document.createElement('div');
+            toggleDiv.className = `toggle-switch ${isActive ? 'active' : ''}`;
+            toggleDiv.dataset.status = user.aktif;
+            toggleDiv.dataset.userId = user.no_induk;
+            toggleDiv.onclick = function() {
+                toggleStatus(this, user.no_induk);
+            };
+            
+            const toggleKnob = document.createElement('div');
+            toggleKnob.className = 'toggle-switch-knob';
+            toggleDiv.appendChild(toggleKnob);
+            tdStatus.appendChild(toggleDiv);
+            row.appendChild(tdStatus);
+            
+            // Column 7: Action Icons
+            const tdAction = document.createElement('td');
+            const actionIcons = document.createElement('div');
+            actionIcons.className = 'action-icons';
+            
+            // Edit Icon
+            const editSpan = document.createElement('span');
+            editSpan.className = 'action-icon';
+            editSpan.title = 'Edit';
+            editSpan.onclick = function() {
+                openEditModal(user.no_induk, user.no_induk, user.nama, user.kode_role, user.kode_dept);
+            };
+            const editSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            editSvg.setAttribute('width', '18');
+            editSvg.setAttribute('height', '18');
+            editSvg.setAttribute('viewBox', '0 0 18 18');
+            editSvg.setAttribute('fill', 'none');
+            const editPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath1.setAttribute('d', 'M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z');
+            editPath1.setAttribute('fill', '#F79009');
+            const editPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath2.setAttribute('d', 'M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z');
+            editPath2.setAttribute('fill', '#F79009');
+            editSvg.appendChild(editPath1);
+            editSvg.appendChild(editPath2);
+            editSpan.appendChild(editSvg);
+            actionIcons.appendChild(editSpan);
+            
+            // Delete Icon
+            const deleteSpan = document.createElement('span');
+            deleteSpan.className = 'action-icon';
+            deleteSpan.title = 'Delete';
+            deleteSpan.onclick = function() {
+                openDeleteModal(user.no_induk, user.nama);
+            };
+            const deleteSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            deleteSvg.setAttribute('width', '18');
+            deleteSvg.setAttribute('height', '20');
+            deleteSvg.setAttribute('viewBox', '0 0 18 20');
+            deleteSvg.setAttribute('fill', 'none');
+            const deletePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            deletePath.setAttribute('d', 'M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z');
+            deletePath.setAttribute('fill', '#F04438');
+            deleteSvg.appendChild(deletePath);
+            deleteSpan.appendChild(deleteSvg);
+            actionIcons.appendChild(deleteSpan);
+            
+            tdAction.appendChild(actionIcons);
+            row.appendChild(tdAction);
+            
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Update pagination info and buttons
+    function updatePagination(data) {
+        currentPage = data.current_page || 1;
+        const total = data.total || 0;
+        const from = data.from || 0;
+        const to = data.to || 0;
+        
+        document.getElementById('footerInfo').textContent = 
+            `Showing ${from} to ${to} of ${total} entries`;
+        
+        // Update pagination buttons
+        document.getElementById('prevBtn').disabled = !data.prev_page_url;
+        document.getElementById('nextBtn').disabled = !data.next_page_url;
+    }
+    
+    // ========== PAGINATION FUNCTIONS ==========
+    
+    function handlePageChange() {
+        perPage = parseInt(document.getElementById('entriesPerPage').value);
+        currentPage = 1;
+        loadUsers(currentPage);
+    }
+    
+    function nextPage() {
+        loadUsers(currentPage + 1);
+    }
+    
+    function previousPage() {
+        if (currentPage > 1) {
+            loadUsers(currentPage - 1);
+        }
+    }
+    
+    // ========== SEARCH FUNCTION ==========
+    
+    function handleSearch() {
+        searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        currentPage = 1;
+        loadUsers(currentPage);
+    }
+    
+    // ========== MODAL FUNCTIONS ==========
+    
+    let editingUserId = null;
+    
+    function openModal() {
+        editingUserId = null;
+        document.getElementById('userNoInduk').value = '';
+        document.getElementById('userNama').value = '';
+        document.getElementById('userKodeRole').value = '';
+        document.getElementById('userKodeDept').value = '';
+        document.getElementById('createUserModal').querySelector('.modal-title').textContent = 'Tambah User';
         document.getElementById('createUserModal').classList.add('active');
     }
+    
+    function closeModal() {
+        document.getElementById('createUserModal').classList.remove('active');
+        editingUserId = null;
+    }
+    
+    function openEditModal(id, noInduk, nama, kodeRole, kodeDept) {
+        editingUserId = id;
+        document.getElementById('editUserId').value = id;
+        document.getElementById('editUserNoInduk').value = noInduk;
+        document.getElementById('editUserNama').value = nama;
+        document.getElementById('editUserKodeRole').value = kodeRole || '';
+        document.getElementById('editUserKodeDept').value = kodeDept || '';
+        document.getElementById('editUserModal').classList.add('active');
+    }
 
+    function closeEditModal() {
+        document.getElementById('editUserModal').classList.remove('active');
+        editingUserId = null;
+    }
+
+    function saveUser() {
+        alert('Fitur tambah user belum diimplementasikan');
+        closeModal();
+    }
+
+    function updateUser() {
+        const id = document.getElementById('editUserId').value;
+        const nama = document.getElementById('editUserNama').value.trim();
+        const kodeRole = document.getElementById('editUserKodeRole').value.trim();
+        const kodeDept = document.getElementById('editUserKodeDept').value.trim();
+        
+        if (!nama) {
+            alert('Nama user harus diisi');
+            return;
+        }
+        
+        const payload = {
+            nama: nama
+        };
+        
+        if (kodeRole) payload.kode_role = kodeRole;
+        if (kodeDept) payload.kode_dept = kodeDept;
+        
+        fetch(`${API_BASE}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('User berhasil diperbarui');
+            closeEditModal();
+            loadUsers(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memperbarui user');
+        });
+    }
+
+    // ========== LOOKUP POPUP FUNCTIONS ==========
+    
     function openLookupPopup() {
         document.getElementById('lookupPopupModal').classList.add('active');
+        loadLookupData();
     }
 
     function closeLookupPopup() {
         document.getElementById('lookupPopupModal').classList.remove('active');
         document.getElementById('lookupSearchInput').value = '';
-        // Reset table visibility
-        const rows = document.querySelectorAll('#lookupTableBody tr');
-        rows.forEach(row => row.style.display = '');
+    }
+
+    function loadLookupData() {
+        fetch(`${API_BASE}?per_page=100`)
+            .then(response => response.json())
+            .then(data => {
+                renderLookupTable(data.data || []);
+            })
+            .catch(error => {
+                console.error('Error loading lookup data:', error);
+            });
+    }
+
+    function renderLookupTable(data) {
+        const tbody = document.getElementById('lookupTableBody');
+        
+        // Clear existing rows
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        data.forEach(user => {
+            const row = document.createElement('tr');
+            row.onclick = function() {
+                selectEmployee(user.no_induk, user.nama, user.kode_role, user.kode_dept);
+            };
+            
+            const tdNoInduk = document.createElement('td');
+            tdNoInduk.textContent = user.no_induk;
+            row.appendChild(tdNoInduk);
+            
+            const tdNama = document.createElement('td');
+            tdNama.textContent = user.nama;
+            row.appendChild(tdNama);
+            
+            tbody.appendChild(row);
+        });
     }
 
     function performLookupSearch() {
@@ -1030,162 +1271,119 @@
     }
 
     function selectEmployee(noInduk, nama, kodeRole, kodeDept) {
-        // Fill the form fields in create modal
         document.getElementById('userNoInduk').value = noInduk;
         document.getElementById('userNama').value = nama;
-        document.getElementById('userKodeRole').value = kodeRole;
-        document.getElementById('userKodeDept').value = kodeDept;
+        document.getElementById('userKodeRole').value = kodeRole || '';
+        document.getElementById('userKodeDept').value = kodeDept || '';
         
-        // Close lookup popup (main modal stays open)
         closeLookupPopup();
     }
 
-    function closeCreateModal() {
-        document.getElementById('createUserModal').classList.remove('active');
-    }
-
-    function openEditModal(id, noInduk, nama, kodeRole, kodeDept) {
-        document.getElementById('editUserId').value = id;
-        document.getElementById('editUserNoInduk').value = noInduk;
-        document.getElementById('editUserNama').value = nama;
-        document.getElementById('editUserKodeRole').value = kodeRole;
-        document.getElementById('editUserKodeDept').value = kodeDept;
-        document.getElementById('editUserModal').classList.add('active');
-    }
-
-    function closeEditModal() {
-        document.getElementById('editUserModal').classList.remove('active');
-    }
-
-    function openEditLookupPopup() {
-        document.getElementById('lookupPopupModal').classList.add('active');
-    }
-
-    function updateUser() {
-        const id = document.getElementById('editUserId').value;
-        const noInduk = document.getElementById('editUserNoInduk').value;
-        const nama = document.getElementById('editUserNama').value;
-        const kodeRole = document.getElementById('editUserKodeRole').value;
-        const kodeDept = document.getElementById('editUserKodeDept').value;
-        
-        console.log('Update User:', { id, noInduk, nama, kodeRole, kodeDept });
-        alert('Update functionality will be implemented by backend');
-        closeEditModal();
-    }
-
-    function saveUser() {
-        alert('Save functionality will be implemented by backend');
-        closeCreateModal();
-    }
-
-    // Toggle Status Switch
-    function toggleStatus(element, userId) {
-        element.classList.toggle('active');
-        const currentStatus = element.dataset.status;
-        const newStatus = currentStatus === 'Y' ? 'N' : 'Y';
-        element.dataset.status = newStatus;
-        console.log(`User ID: ${userId}, New Status: ${newStatus}`);
-    }
-
-    // Update Entries Display
-    function updateEntriesDisplay() {
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        const allRows = document.querySelectorAll('.role-row');
-        const totalRows = allRows.length;
-        
-        allRows.forEach((row, index) => {
-            if (index < entriesPerPage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        const visibleCount = Math.min(entriesPerPage, totalRows);
-        document.getElementById('footerInfo').textContent = 
-            `Showing 1 to ${visibleCount} of ${totalRows} entries`;
-    }
-
-    // Filter Table by Search
-    function filterTable() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        const allRows = document.querySelectorAll('.role-row');
-        let visibleCount = 0;
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        
-        allRows.forEach((row, index) => {
-            const noInduk = row.cells[1].textContent.toLowerCase();
-            const nama = row.cells[2].textContent.toLowerCase();
-            const kodeRole = row.cells[3].textContent.toLowerCase();
-            const kodeDept = row.cells[4].textContent.toLowerCase();
-            
-            if (noInduk.includes(searchInput) || nama.includes(searchInput) || 
-                kodeRole.includes(searchInput) || kodeDept.includes(searchInput)) {
-                if (visibleCount < entriesPerPage) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        const totalRows = allRows.length;
-        if (searchInput) {
-            document.getElementById('footerInfo').textContent = 
-                `Showing ${visibleCount} of ${totalRows} entries (filtered)`;
-        } else {
-            document.getElementById('footerInfo').textContent = 
-                `Showing 1 to ${Math.min(entriesPerPage, totalRows)} of ${totalRows} entries`;
-        }
-    }
-
-    // Delete Modal Functions
-    let itemToDelete = null;
-    let itemNameToDelete = null;
+    // ========== TOGGLE STATUS FUNCTION ==========
     
-    function openDeleteModal(id, name) {
-        itemToDelete = id;
-        itemNameToDelete = name;
+    function toggleStatus(element, userId) {
+        const currentStatus = element.dataset.status;
+        const newStatus = currentStatus === 'Y' || currentStatus === true ? 'N' : 'Y';
+        
+        fetch(`${API_BASE}/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                aktif: newStatus
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            element.dataset.status = newStatus;
+            element.classList.toggle('active');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal mengubah status user');
+            // Revert toggle on error
+            element.classList.toggle('active');
+        });
+    }
+
+    // ========== DELETE MODAL FUNCTIONS ==========
+    
+    let userToDelete = null;
+    let userNameToDelete = null;
+    
+    function openDeleteModal(userId, userName) {
+        userToDelete = userId;
+        userNameToDelete = userName;
         document.getElementById('deleteModal').classList.add('active');
     }
     
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.remove('active');
-        itemToDelete = null;
-        itemNameToDelete = null;
+        userToDelete = null;
+        userNameToDelete = null;
     }
     
     function confirmDelete() {
-        if (itemToDelete) {
-            console.log(`Deleting User ID: ${itemToDelete}, Name: ${itemNameToDelete}`);
-            alert(`User "${itemNameToDelete}" will be deleted (backend integration needed)`);
-            closeDeleteModal();
+        if (userToDelete) {
+            fetch(`${API_BASE}/${userToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                alert(`User "${userNameToDelete}" berhasil dihapus`);
+                closeDeleteModal();
+                loadUsers(currentPage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menghapus user');
+            });
         }
     }
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        updateEntriesDisplay();
-    });
-
-    // Close modals when clicking outside
-    document.getElementById('lookupPopupModal').addEventListener('click', function(e) {
-        if (e.target === this) closeLookupPopup();
-    });
     
+    // ========== EVENT LISTENERS & INITIALIZATION ==========
+    
+    // Close modals when clicking outside
     document.getElementById('createUserModal').addEventListener('click', function(e) {
-        if (e.target === this) closeCreateModal();
+        if (e.target === this) {
+            closeModal();
+        }
     });
     
     document.getElementById('editUserModal').addEventListener('click', function(e) {
-        if (e.target === this) closeEditModal();
+        if (e.target === this) {
+            closeEditModal();
+        }
     });
     
     document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeleteModal();
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    document.getElementById('lookupPopupModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLookupPopup();
+        }
+    });
+    
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUsers(currentPage);
     });
 </script>
 
