@@ -1,13 +1,3 @@
-@php
-    $roles = [
-        ['id' => '01', 'kode' => 'R123', 'nama' => 'Admin', 'status' => 'Y'],
-        ['id' => '02', 'kode' => 'R124', 'nama' => 'Inspector', 'status' => 'N'],
-        ['id' => '03', 'kode' => 'R125', 'nama' => 'Departemen', 'status' => 'Y'],
-        ['id' => '04', 'kode' => 'R126', 'nama' => 'Supervisor', 'status' => 'Y'],
-        ['id' => '05', 'kode' => 'R127', 'nama' => 'Manager', 'status' => 'N'],
-    ];
-@endphp
-
 @extends('layouts.dashboard')
 
 @section('page-title')
@@ -594,7 +584,7 @@
         <div class="filter-bar">
             <div class="filter-left">
                 <span>Show</span>
-                <select id="entriesPerPage" onchange="updateEntriesDisplay()">
+                <select id="entriesPerPage" onchange="handlePageChange()">
                     <option value="5" selected>5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -604,7 +594,7 @@
             </div>
             <div class="filter-right">
                 <span class="search-label">Search:</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="filterTable()">
+                <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="handleSearch()">
             </div>
         </div>
 
@@ -620,53 +610,26 @@
                 </tr>
             </thead>
             <tbody id="roleTableBody">
-                @foreach($roles as $role)
-                <tr class="role-row">
-                    <td>{{ $role['id'] }}</td>
-                    <td>{{ $role['kode'] }}</td>
-                    <td>{{ $role['nama'] }}</td>
-                    <td>
-                        <div class="toggle-switch {{ $role['status'] === 'Y' ? 'active' : '' }}" 
-                             onclick="toggleStatus(this, '{{ $role['id'] }}')"
-                             data-status="{{ $role['status'] }}">
-                            <div class="toggle-switch-knob"></div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="action-icons">
-                            <span class="action-icon" title="Edit" onclick="openEditModal('{{ $role['id'] }}', '{{ $role['kode'] }}', '{{ $role['nama'] }}')">
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z" fill="#F79009"/>
-                                    <path d="M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z" fill="#F79009"/>
-                                </svg>
-                            </span>
-                            <span class="action-icon" title="Delete" onclick="openDeleteModal('{{ $role['id'] }}', '{{ $role['nama'] }}')">
-                                <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z" fill="#F04438"/>
-                                </svg>
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
+                <!-- Data will be loaded dynamically from API -->
             </tbody>
         </table>
 
         <!-- Table Footer -->
         <div class="table-footer">
             <div class="footer-info" id="footerInfo">
-                Showing 1 to 5 of 5 entries
+                Showing 0 to 0 of 0 entries
             </div>
             <div class="pagination">
-                <button class="pagination-btn" disabled>
+                <button class="pagination-btn" id="prevBtn" onclick="previousPage()">
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M6.5 0L8 1.5L3.5 6L8 10.5L6.5 12L0.5 6L6.5 0Z" fill="#667085"/>
                     </svg>
                 </button>
-                <button class="pagination-btn">
+                <button class="pagination-btn" id="nextBtn" onclick="nextPage()">
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.5 0L0 1.5L4.5 6L0 10.5L1.5 12L7.5 6L1.5 0Z" fill="#667085"/>
                     </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -687,15 +650,15 @@
 
         <!-- Modal Body -->
         <div class="modal-body">
-            <form>
+            <form id="roleForm">
                 <div class="form-row">
                     <div class="form-group-half">
                         <label class="form-label">Kode Role</label>
-                        <input type="text" class="form-input-half" placeholder="Masukkan kode role">
+                        <input type="text" id="kodeRoleInput" class="form-input-half" placeholder="Masukkan kode role">
                     </div>
                     <div class="form-group-half">
                         <label class="form-label">Nama Role</label>
-                        <input type="text" class="form-input-half" placeholder="Masukkan nama role">
+                        <input type="text" id="namaRoleInput" class="form-input-half" placeholder="Masukkan nama role">
                     </div>
                 </div>
             </form>
@@ -705,39 +668,6 @@
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" onclick="saveRole()">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Role -->
-<div id="editRoleModal" class="modal-overlay">
-    <div class="modal-window">
-        <div class="modal-header">
-            <h3 class="modal-title">Edit Role</h3>
-            <button class="modal-close" onclick="closeEditModal()">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.18944 11.2L0 10.0106L4.41056 5.6L0 1.18944L1.18944 0L5.6 4.41056L10.0106 0L11.2 1.18944L6.78944 5.6L11.2 10.0106L10.0106 11.2L5.6 6.78944L1.18944 11.2Z" fill="#737373"/>
-                </svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form>
-                <input type="hidden" id="editRoleId">
-                <div class="form-row">
-                    <div class="form-group-half">
-                        <label class="form-label">Kode Role</label>
-                        <input type="text" id="editRoleKode" class="form-input-half" placeholder="Masukkan kode role">
-                    </div>
-                    <div class="form-group-half">
-                        <label class="form-label">Nama Role</label>
-                        <input type="text" id="editRoleNama" class="form-input-half" placeholder="Masukkan nama role">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-            <button class="btn-save" onclick="updateRole()">Save</button>
         </div>
     </div>
 </div>
@@ -760,186 +690,377 @@
 </div>
 
 <script>
-    // Modal Functions
+    // API Configuration
+    const API_BASE = '/api/role';
+    let currentPage = 1;
+    let perPage = 5;
+    let searchQuery = '';
+    
+    // ========== TABLE DATA LOADING ==========
+    
+    // Load data from API
+    function loadRoles(page = 1) {
+        const params = new URLSearchParams({
+            per_page: perPage,
+            page: page,
+            search: searchQuery
+        });
+        
+        fetch(`${API_BASE}?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data);
+                updatePagination(data);
+            })
+            .catch(error => {
+                console.error('Error loading roles:', error);
+                alert('Gagal memuat data role');
+            });
+    }
+    
+    // Render table rows using createElement
+    function renderTable(data) {
+        const tbody = document.getElementById('roleTableBody');
+        
+        // Clear existing rows
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        if (!data.data || data.data.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 5;
+            emptyCell.style.textAlign = 'center';
+            emptyCell.style.padding = '20px';
+            emptyCell.textContent = 'Tidak ada data';
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+            return;
+        }
+        
+        data.data.forEach((role, index) => {
+            const row = document.createElement('tr');
+            row.className = 'role-row';
+            row.dataset.id = role.kode_role;
+            
+            const isActive = role.aktif === 'Y' || role.aktif === true;
+            
+            // Column 1: Index
+            const tdIndex = document.createElement('td');
+            tdIndex.textContent = (data.from || 0) + index;
+            row.appendChild(tdIndex);
+            
+            // Column 2: Kode Role
+            const tdKode = document.createElement('td');
+            tdKode.textContent = role.kode_role;
+            row.appendChild(tdKode);
+            
+            // Column 3: Nama Role
+            const tdNama = document.createElement('td');
+            tdNama.textContent = role.nama;
+            row.appendChild(tdNama);
+            
+            // Column 4: Status Toggle
+            const tdStatus = document.createElement('td');
+            const toggleDiv = document.createElement('div');
+            toggleDiv.className = `toggle-switch ${isActive ? 'active' : ''}`;
+            toggleDiv.dataset.status = role.aktif;
+            toggleDiv.dataset.roleId = role.kode_role;
+            toggleDiv.onclick = function() {
+                toggleStatus(this, role.kode_role);
+            };
+            
+            const toggleKnob = document.createElement('div');
+            toggleKnob.className = 'toggle-switch-knob';
+            toggleDiv.appendChild(toggleKnob);
+            tdStatus.appendChild(toggleDiv);
+            row.appendChild(tdStatus);
+            
+            // Column 5: Action Icons
+            const tdAction = document.createElement('td');
+            const actionIcons = document.createElement('div');
+            actionIcons.className = 'action-icons';
+            
+            // Edit Icon
+            const editSpan = document.createElement('span');
+            editSpan.className = 'action-icon';
+            editSpan.title = 'Edit';
+            editSpan.onclick = function() {
+                openEditModal(role.kode_role, role.kode_role, role.nama);
+            };
+            const editSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            editSvg.setAttribute('width', '18');
+            editSvg.setAttribute('height', '18');
+            editSvg.setAttribute('viewBox', '0 0 18 18');
+            editSvg.setAttribute('fill', 'none');
+            const editPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath1.setAttribute('d', 'M0 18.0024H3.75L14.81 6.94238L11.06 3.19238L0 14.2524V18.0024ZM2 15.0824L11.06 6.02238L11.98 6.94238L2.92 16.0024H2V15.0824Z');
+            editPath1.setAttribute('fill', '#F79009');
+            const editPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            editPath2.setAttribute('d', 'M15.3699 0.2925C14.9799 -0.0975 14.3499 -0.0975 13.9599 0.2925L12.1299 2.1225L15.8799 5.8725L17.7099 4.0425C18.0999 3.6525 18.0999 3.0225 17.7099 2.6325L15.3699 0.2925Z');
+            editPath2.setAttribute('fill', '#F79009');
+            editSvg.appendChild(editPath1);
+            editSvg.appendChild(editPath2);
+            editSpan.appendChild(editSvg);
+            actionIcons.appendChild(editSpan);
+            
+            // Delete Icon
+            const deleteSpan = document.createElement('span');
+            deleteSpan.className = 'action-icon';
+            deleteSpan.title = 'Delete';
+            deleteSpan.onclick = function() {
+                openDeleteModal(role.kode_role, role.nama);
+            };
+            const deleteSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            deleteSvg.setAttribute('width', '18');
+            deleteSvg.setAttribute('height', '20');
+            deleteSvg.setAttribute('viewBox', '0 0 18 20');
+            deleteSvg.setAttribute('fill', 'none');
+            const deletePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            deletePath.setAttribute('d', 'M1 18C1 19.1 1.9 20 3 20H15C16.1 20 17 19.1 17 18V4H1V18ZM3 6H15V18H3V6ZM14.5 1L13.5 0H4.5L3.5 1H0V3H18V1H14.5Z');
+            deletePath.setAttribute('fill', '#F04438');
+            deleteSvg.appendChild(deletePath);
+            deleteSpan.appendChild(deleteSvg);
+            actionIcons.appendChild(deleteSpan);
+            
+            tdAction.appendChild(actionIcons);
+            row.appendChild(tdAction);
+            
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Update pagination info and buttons
+    function updatePagination(data) {
+        currentPage = data.current_page || 1;
+        const total = data.total || 0;
+        const from = data.from || 0;
+        const to = data.to || 0;
+        
+        document.getElementById('footerInfo').textContent = 
+            `Showing ${from} to ${to} of ${total} entries`;
+        
+        // Update pagination buttons
+        document.getElementById('prevBtn').disabled = !data.prev_page_url;
+        document.getElementById('nextBtn').disabled = !data.next_page_url;
+    }
+    
+    // ========== PAGINATION FUNCTIONS ==========
+    
+    function handlePageChange() {
+        perPage = parseInt(document.getElementById('entriesPerPage').value);
+        currentPage = 1;
+        loadRoles(currentPage);
+    }
+    
+    function nextPage() {
+        loadRoles(currentPage + 1);
+    }
+    
+    function previousPage() {
+        if (currentPage > 1) {
+            loadRoles(currentPage - 1);
+        }
+    }
+    
+    // ========== SEARCH FUNCTION ==========
+    
+    function handleSearch() {
+        searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        currentPage = 1;
+        loadRoles(currentPage);
+    }
+    
+    // ========== MODAL FUNCTIONS ==========
+    
+    let editingRoleId = null;
+    
     function openModal() {
+        editingRoleId = null;
+        document.getElementById('roleForm').reset();
+        document.getElementById('createRoleModal').querySelector('.modal-title').textContent = 'Tambah Role';
+        document.getElementById('createRoleModal').classList.add('active');
+    }
+    
+    function openEditModal(id, kode, nama) {
+        editingRoleId = id;
+        document.getElementById('kodeRoleInput').value = kode;
+        document.getElementById('namaRoleInput').value = nama;
+        document.getElementById('createRoleModal').querySelector('.modal-title').textContent = 'Edit Role';
         document.getElementById('createRoleModal').classList.add('active');
     }
 
     function closeModal() {
         document.getElementById('createRoleModal').classList.remove('active');
-    }
-
-    function openEditModal(id, kode, nama) {
-        document.getElementById('editRoleId').value = id;
-        document.getElementById('editRoleKode').value = kode;
-        document.getElementById('editRoleNama').value = nama;
-        document.getElementById('editRoleModal').classList.add('active');
-    }
-
-    function closeEditModal() {
-        document.getElementById('editRoleModal').classList.remove('active');
-    }
-
-    function updateRole() {
-        const id = document.getElementById('editRoleId').value;
-        const kode = document.getElementById('editRoleKode').value;
-        const nama = document.getElementById('editRoleNama').value;
-        
-        console.log('Update Role:', { id, kode, nama });
-        alert('Update functionality will be implemented by backend');
-        closeEditModal();
+        editingRoleId = null;
     }
 
     function saveRole() {
-        // Handle save logic here
-        alert('Save functionality will be implemented by backend');
-        closeModal();
-    }
-
-    // Toggle Status Switch
-    function toggleStatus(element, roleId) {
-        // Toggle the active class
-        element.classList.toggle('active');
+        const kode = document.getElementById('kodeRoleInput').value.trim();
+        const nama = document.getElementById('namaRoleInput').value.trim();
         
-        // Get current status
-        const currentStatus = element.dataset.status;
-        const newStatus = currentStatus === 'Y' ? 'N' : 'Y';
+        if (!kode || !nama) {
+            alert('Kode role dan nama role harus diisi');
+            return;
+        }
         
-        // Update data attribute
-        element.dataset.status = newStatus;
-        
-        // Log for debugging (backend will handle actual update)
-        console.log(`Role ID: ${roleId}, New Status: ${newStatus}`);
-        
-        // TODO: Send AJAX request to backend to update status
-        // fetch('/api/role/' + roleId, {
-        //     method: 'PUT',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ aktif: newStatus })
-        // });
-    }
-
-    // Update Entries Display
-    function updateEntriesDisplay() {
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        const allRows = document.querySelectorAll('.role-row');
-        const totalRows = allRows.length;
-        
-        // Hide/show rows based on entries per page
-        allRows.forEach((row, index) => {
-            if (index < entriesPerPage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        // Update footer text
-        const visibleCount = Math.min(entriesPerPage, totalRows);
-        document.getElementById('footerInfo').textContent = 
-            `Showing 1 to ${visibleCount} of ${totalRows} entries`;
-    }
-
-    // Filter Table by Search
-    function filterTable() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        const allRows = document.querySelectorAll('.role-row');
-        let visibleCount = 0;
-        const entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        
-        allRows.forEach((row, index) => {
-            const kodeRole = row.cells[1].textContent.toLowerCase();
-            const namaRole = row.cells[2].textContent.toLowerCase();
-            
-            if (kodeRole.includes(searchInput) || namaRole.includes(searchInput)) {
-                // Show row if it matches search AND is within entries limit
-                if (visibleCount < entriesPerPage) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        // Update footer text
-        const totalRows = allRows.length;
-        if (searchInput) {
-            document.getElementById('footerInfo').textContent = 
-                `Showing ${visibleCount} of ${totalRows} entries (filtered)`;
+        if (editingRoleId) {
+            // Update
+            updateRole(editingRoleId, kode, nama);
         } else {
-            document.getElementById('footerInfo').textContent = 
-                `Showing 1 to ${Math.min(entriesPerPage, totalRows)} of ${totalRows} entries`;
+            // Create
+            createRole(kode, nama);
         }
     }
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        updateEntriesDisplay();
-    });
-
-    // Close modal when clicking outside
-    document.getElementById('createRoleModal').addEventListener('click', function(e) {
-        if (e.target === this) {
+    
+    function createRole(kode, nama) {
+        fetch(API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                kode_role: kode,
+                nama: nama,
+                aktif: 'Y'
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('Role berhasil ditambahkan');
             closeModal();
-        }
-    });
+            loadRoles(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menambahkan role');
+        });
+    }
     
-    document.getElementById('editRoleModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeEditModal();
-        }
-    });
+    function updateRole(id, kode, nama) {
+        fetch(`${API_BASE}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                nama: nama
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('Role berhasil diperbarui');
+            closeModal();
+            loadRoles(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memperbarui role');
+        });
+    }
+
+    // ========== TOGGLE STATUS FUNCTION ==========
     
+    function toggleStatus(element, roleId) {
+        const currentStatus = element.dataset.status;
+        const newStatus = currentStatus === 'Y' || currentStatus === true ? 'N' : 'Y';
+        
+        fetch(`${API_BASE}/${roleId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                aktif: newStatus
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            element.dataset.status = newStatus;
+            element.classList.toggle('active');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal mengubah status role');
+            // Revert toggle on error
+            element.classList.toggle('active');
+        });
+    }
+
     // ========== DELETE MODAL FUNCTIONS ==========
     
-    // Store the role ID to be deleted
     let roleToDelete = null;
     let roleNameToDelete = null;
     
-    // Open Delete Modal
     function openDeleteModal(roleId, roleName) {
         roleToDelete = roleId;
         roleNameToDelete = roleName;
         document.getElementById('deleteRoleModal').classList.add('active');
     }
     
-    // Close Delete Modal
     function closeDeleteModal() {
         document.getElementById('deleteRoleModal').classList.remove('active');
         roleToDelete = null;
         roleNameToDelete = null;
     }
     
-    // Confirm Delete
     function confirmDelete() {
         if (roleToDelete) {
-            // Log for debugging
-            console.log(`Deleting Role ID: ${roleToDelete}, Name: ${roleNameToDelete}`);
-            
-            // TODO: Send AJAX request to backend to delete role
-            // fetch('/api/role/' + roleToDelete, {
-            //     method: 'DELETE',
-            //     headers: { 'Content-Type': 'application/json' }
-            // }).then(response => {
-            //     if (response.ok) {
-            //         // Remove row from table or reload page
-            //         location.reload();
-            //     }
-            // });
-            
-            alert(`Role "${roleNameToDelete}" will be deleted (backend integration needed)`);
-            closeDeleteModal();
+            fetch(`${API_BASE}/${roleToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                alert(`Role "${roleNameToDelete}" berhasil dihapus`);
+                closeDeleteModal();
+                loadRoles(currentPage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menghapus role');
+            });
         }
     }
     
-    // Close delete modal when clicking outside
+    // ========== EVENT LISTENERS & INITIALIZATION ==========
+    
+    // Close modals when clicking outside
+    document.getElementById('createRoleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+    
     document.getElementById('deleteRoleModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeDeleteModal();
         }
+    });
+    
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRoles(currentPage);
     });
 </script>
 

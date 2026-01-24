@@ -13,9 +13,21 @@ class QHSKategoriController extends Controller
      */
     public function index(Request $request)
     {
-        $page = $request->get('per_page', 5);
+        $perPage = $request->get('per_page', 5);
+        $page = $request->get('page', 1);
+        $search = $request->get('search', '');
 
-        $data = QHSKategori::paginate($page);
+        $query = QHSKategori::query();
+
+        // Apply search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('kode', 'like', '%' . $search . '%')
+                  ->orWhere('nama', 'like', '%' . $search . '%');
+            });
+        }
+
+        $data = $query->paginate($perPage, ['*'], 'page', $page);
 
         return $data;
     }
@@ -26,7 +38,7 @@ class QHSKategoriController extends Controller
     public function store(Request $request)
     {
         $validation = $request->validate([
-            'kode' => 'required|string|unique:qhs_lokasi,kode_lokasi',
+            'kode' => 'required|string|unique:qhs_kategori,kode',
             'nama' => 'required|string',
             'aktif' => 'required|string'
         ]);
@@ -41,7 +53,7 @@ class QHSKategoriController extends Controller
      */
     public function show(string $id)
     {
-        $data = QHSKategori::findOrFail($id);
+        $data = QHSKategori::where('kode', $id)->firstOrFail();
 
         return $data;
     }
@@ -51,7 +63,7 @@ class QHSKategoriController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = QHSKategori::findOrFail($id);
+        $data = QHSKategori::where('kode', $id)->firstOrFail();
 
         $validation = $request->validate([
             'nama' => 'sometimes|required|string',
@@ -68,7 +80,7 @@ class QHSKategoriController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = QHSKategori::findOrFail($id);
+        $data = QHSKategori::where('kode', $id)->firstOrFail();
         $data->delete();
 
         return response()->json([
