@@ -370,7 +370,7 @@
                 <i class="bi bi-chevron-down"></i>
             </a>
             <div class="collapse" id="reportMenu">
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Hasil Inspeksi</span></a>
+                <a href="{{ route('report.hasil-inspeksi') }}" class="submenu-link {{ request()->routeIs('report.hasil-inspeksi') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Hasil Inspeksi</span></a>
             </div>
         </div>
     </div>

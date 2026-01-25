@@ -126,3 +126,17 @@
     box-sizing: border-box;
     font-family: var(--ubs-font-family);
 }
+
+/* ========================================
+   Breadcrumb Styles for Page Titles
+   ======================================== */
+
+.breadcrumb-parent {
+    color: #98a2b3;
+    font-weight: 600;
+}
+
+.breadcrumb-active {
+    color: var(--ubs-blue);
+    font-weight: 600;
+}

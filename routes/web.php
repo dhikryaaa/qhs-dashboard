@@ -58,6 +58,11 @@ Route::get('/login', function () {
         return view('quality.master.kategori');
     })->name('master.kategori');
 
+    // Report Pages
+    Route::get('/report/hasil-inspeksi', function () {
+        return view('report.hasil-inspeksi');
+    })->name('report.hasil-inspeksi');
+
     Route::post('/logout', function () {
         // auth()->logout();
         // session()->invalidate();

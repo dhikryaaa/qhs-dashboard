@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('page-title')
-<h1 class="page-title-header">Master / Kategori</h1>
+<h1 class="page-title-header"><span class="breadcrumb-parent">Master</span> / <span class="breadcrumb-active">Kategori</span></h1>
 @endsection
 
 @section('content')
