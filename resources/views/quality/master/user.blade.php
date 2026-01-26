@@ -856,11 +856,11 @@
                     </div>
                     <div class="form-group-quarter">
                         <label class="form-label">Kode Role</label>
-                        <input type="text" id="userKodeRole" class="form-input-quarter readonly-gray" placeholder="Kode Role" readonly>
+                        <input type="text" id="userKodeRole" class="form-input-quarter" placeholder="Kode Role">
                     </div>
                     <div class="form-group-quarter">
                         <label class="form-label">Kode Departemen</label>
-                        <input type="text" id="userKodeDept" class="form-input-quarter readonly-gray" placeholder="Kode Departemen" readonly>
+                        <input type="text" id="userKodeDept" class="form-input-quarter" placeholder="Kode Departemen">
                     </div>
                 </div>
             </form>
@@ -1160,8 +1160,50 @@
     }
 
     function saveUser() {
-        alert('Fitur tambah user belum diimplementasikan');
-        closeModal();
+        const noInduk = document.getElementById('userNoInduk').value.trim();
+        const nama = document.getElementById('userNama').value.trim();
+        const kodeRole = document.getElementById('userKodeRole').value.trim();
+        const kodeDept = document.getElementById('userKodeDept').value.trim();
+        
+        if (!noInduk || !nama) {
+            alert('No Induk dan Nama harus diisi');
+            return;
+        }
+        
+        const payload = {
+            no_induk: noInduk,
+            nama: nama,
+            password: 'password123',
+            aktif: 'Y',
+            kode_role: kodeRole || null,
+            kode_dept: kodeDept || null
+        };
+        
+        fetch(API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('User berhasil ditambahkan');
+            closeModal();
+            loadUsers(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menambahkan user');
+        });
     }
 
     function updateUser() {
@@ -1218,10 +1260,10 @@
     }
 
     function loadLookupData() {
-        fetch(`${API_BASE}?per_page=100`)
+        fetch('/data/QHSKaryawanDummy.json')
             .then(response => response.json())
             .then(data => {
-                renderLookupTable(data.data || []);
+                renderLookupTable(data);
             })
             .catch(error => {
                 console.error('Error loading lookup data:', error);
@@ -1236,18 +1278,18 @@
             tbody.removeChild(tbody.firstChild);
         }
         
-        data.forEach(user => {
+        data.forEach(karyawan => {
             const row = document.createElement('tr');
             row.onclick = function() {
-                selectEmployee(user.no_induk, user.nama, user.kode_role, user.kode_dept);
+                selectEmployee(karyawan.no_induk, karyawan.nama);
             };
             
             const tdNoInduk = document.createElement('td');
-            tdNoInduk.textContent = user.no_induk;
+            tdNoInduk.textContent = karyawan.no_induk;
             row.appendChild(tdNoInduk);
             
             const tdNama = document.createElement('td');
-            tdNama.textContent = user.nama;
+            tdNama.textContent = karyawan.nama;
             row.appendChild(tdNama);
             
             tbody.appendChild(row);
@@ -1270,11 +1312,9 @@
         });
     }
 
-    function selectEmployee(noInduk, nama, kodeRole, kodeDept) {
-        document.getElementById('userNoInduk').value = noInduk;
+    function selectEmployee(noInduk, nama) {
+        document.getElementById('userNoInduk').value = noInduk || '';
         document.getElementById('userNama').value = nama;
-        document.getElementById('userKodeRole').value = kodeRole || '';
-        document.getElementById('userKodeDept').value = kodeDept || '';
         
         closeLookupPopup();
     }
