@@ -65,8 +65,9 @@ class TransaksiInspeksiController extends Controller
             'referensi' => 'sometimes|nullable|string',
             'saran_koreksi' => 'sometimes|nullable|string',
             'saran_korektif' => 'sometimes|nullable|string',
-            'status' => 'sometimes|nullable|string',
         ]);
+
+        $validation['status'] ='Open';
 
         $data->update($validation);
 
