@@ -16,12 +16,10 @@ class ReportInspeksiController extends Controller
         $departemen = $request->get('departemen');
         $bulan = $request->get('bulan');
         $status = $request->get('status');
-        $kategori = $request->get('kategori'); 
-        $perPage = $request->get('per_page', 5);
+        $page = $request->get('per_page', 5);
 
-        $query = QHSInspectD::whereIn('kode', ['001', '002'])
-            ->whereIn('sub', [1, 2])
-            ->with(['inspectH']);
+        $query = QHSInspectD::with(['inspectH.departemen'])
+            ->whereIn('kode', ['001', '002']);
 
         if ($departemen) {
             $query->whereHas('inspectH', function ($q) use ($departemen) {
@@ -31,7 +29,6 @@ class ReportInspeksiController extends Controller
 
         if ($bulan) {
             [$tahun, $bulanAngka] = explode('-', $bulan);
-
             $query->whereHas('inspectH', function ($q) use ($tahun, $bulanAngka) {
                 $q->whereYear('tanggal', $tahun)
                     ->whereMonth('tanggal', $bulanAngka);
@@ -44,74 +41,66 @@ class ReportInspeksiController extends Controller
             $query->whereNotNull('tgl_close');
         }
 
-        if ($kategori) {
-            $query->where('kode', $kategori);
-        }
-
-        $paginator = $query
-            ->paginate($perPage)
-            ->withQueryString();
+        $paginator = $query->paginate($page);
+        $paginator->appends($request->query());
 
         $data = collect($paginator->items());
 
-        $groupByTanggal = $data->groupBy(
+        $grouped = $data->groupBy(
             fn($item) =>
-            $item->inspectH->tanggal
+            $item->inspectH->tanggal . '|' . $item->inspectH->kode_dept
         );
 
         $response = [
             'K3' => [],
             'Mutu' => [],
-            'Total' => [],
         ];
 
-        foreach ($groupByTanggal as $tanggal => $itemsPerTanggal) {
-            $totalAll = $itemsPerTanggal->count();
-            $closedAll = $itemsPerTanggal->whereNotNull('tgl_close')->count();
-            $persenAll = $totalAll > 0
+        foreach ($grouped as $groupKey => $items) {
+
+            $inspectH = $items->first()->inspectH;
+            $tanggal = $inspectH->tanggal;
+            $deptName = $inspectH->departemen->nama_dept ?? '-';
+
+            $totalAll = $items->count();
+            $closedAll = $items->whereNotNull('tgl_close')->count();
+            $percentAll = $totalAll > 0
                 ? round(($closedAll / $totalAll) * 100, 2)
                 : 0;
 
-            $perKategori = $itemsPerTanggal->groupBy('kode');
+            foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
 
-            foreach ($perKategori as $kode => $items) {
-                if ($kategori && $kode !== $kategori) {
+                $perKategori = $items->where('kode', $kode);
+
+                if ($perKategori->isEmpty()) {
                     continue;
                 }
 
-                $total = $items->count();
-                $closed = $items->whereNotNull('tgl_close')->count();
+                $total = $perKategori->count();
+                $closed = $perKategori->whereNotNull('tgl_close')->count();
                 $open = $total - $closed;
-                $persenKategori = $total > 0
+
+                $percentKategori = $total > 0
                     ? round(($closed / $total) * 100, 2)
                     : 0;
 
-                $tglPerbaikan = $items
+                $tglPerbaikan = $perKategori
                     ->pluck('tgl_perbaikan')
                     ->filter()
                     ->sortDesc()
                     ->first();
 
-                $label = $kode === '001' ? 'K3' : 'Mutu';
-
                 $response[$label][] = [
                     'tgl_inspeksi' => $tanggal,
+                    'departemen' => $deptName,
                     'total_issue' => $total,
-                    'open' => $open,
-                    'closed' => $closed,
-                    'persentase_kategori' => $persenKategori,
+                    'open_issue' => $open,
+                    'closed_issue' => $closed,
+                    'persentase_per_kategori' => $percentKategori,
                     'tgl_perbaikan' => $tglPerbaikan,
-                    'persentase_semua_kategori' => $persenAll,
+                    'persentase_semua_kategori' => $percentAll,
                 ];
             }
-
-            $response['Total'][] = [
-                'tgl_inspeksi' => $tanggal,
-                'total_issue' => $totalAll,
-                'open' => $totalAll - $closedAll,
-                'closed' => $closedAll,
-                'persentase_semua_kategori' => $persenAll,
-            ];
         }
 
         return response()->json([

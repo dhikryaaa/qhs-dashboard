@@ -48,7 +48,8 @@ class TransactionSeeder extends Seeder
 
             $insertHeader('DOC-001', '2025-06-13');
             $insertDetail('DOC-001', '001', 1, true, '2025-06-20');
-            $insertDetail('DOC-001', '002', 2, true, '2025-06-20');
+            $insertDetail('DOC-001', '001', 2, true, '2025-06-20');
+            
             $insertHeader('DOC-002', '2025-06-13');
             $insertDetail('DOC-002', '001', 1, false, '2025-06-20');
             $insertDetail('DOC-002', '002', 2, true, '2025-06-20');
@@ -56,9 +57,9 @@ class TransactionSeeder extends Seeder
             $insertHeader('DOC-003', '2025-07-10');
             $insertDetail('DOC-003', '001', 1, true, '2025-07-18');
             $insertDetail('DOC-003', '002', 2, false);
-            $insertHeader('DOC-004', '2025-07-10');
-            $insertDetail('DOC-004', '001', 1, false);
-            $insertDetail('DOC-004', '002', 2, true, '2025-07-18');
+            $insertDetail('DOC-003', '001', 3, false);
+            $insertDetail('DOC-003', '002', 4, true, '2025-07-18');
+            $insertDetail('DOC-003', '002', 5, true, '2025-07-18');
         });
     }
 }
