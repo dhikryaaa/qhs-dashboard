@@ -1,0 +1,142 @@
+/* ========================================
+   UBS QHSE Dashboard - Global CSS Variables
+   ======================================== */
+
+/* UBS Brand Color Palette - CSS Variables */
+:root {
+    /* Typography */
+    --ubs-font-family: "Poppins", sans-serif;
+    --ubs-font-sidebar: "Public Sans", sans-serif;
+
+    /* Primary Colors */
+    --ubs-blue: #124477;
+    --ubs-dark-blue: #08205f;
+
+    /* Neutral Colors */
+    --ubs-dark-grey: #344054;
+    --ubs-light-grey: #eaecf0;
+    --ubs-lighter-grey: #f2f4f7;
+    --ubs-background-grey: #f9fafb;
+
+    /* Accent Colors */
+    --ubs-orange: #f8961e;
+    --ubs-green: #90be6d;
+    --ubs-red-orange: #f3722c;
+    --ubs-yellow: #f9c74f;
+    --ubs-red: #f94144;
+    --ubs-bright-blue: #2090e0;
+    --ubs-gold: #e3982f;
+
+    /* Semantic Colors */
+    --color-success: var(--ubs-green);
+    --color-warning: var(--ubs-yellow);
+    --color-danger: var(--ubs-red);
+    --color-info: var(--ubs-bright-blue);
+}
+
+/* ========================================
+   Utility Classes for Brand Colors
+   ======================================== */
+
+/* Background Colors */
+.bg-ubs-blue {
+    background-color: var(--ubs-blue) !important;
+}
+.bg-ubs-dark-blue {
+    background-color: var(--ubs-dark-blue) !important;
+}
+.bg-ubs-dark-grey {
+    background-color: var(--ubs-dark-grey) !important;
+}
+.bg-ubs-light-grey {
+    background-color: var(--ubs-light-grey) !important;
+}
+.bg-ubs-orange {
+    background-color: var(--ubs-orange) !important;
+}
+.bg-ubs-green {
+    background-color: var(--ubs-green) !important;
+}
+.bg-ubs-red-orange {
+    background-color: var(--ubs-red-orange) !important;
+}
+.bg-ubs-yellow {
+    background-color: var(--ubs-yellow) !important;
+}
+.bg-ubs-red {
+    background-color: var(--ubs-red) !important;
+}
+.bg-ubs-bright-blue {
+    background-color: var(--ubs-bright-blue) !important;
+}
+.bg-ubs-gold {
+    background-color: var(--ubs-gold) !important;
+}
+
+/* Text Colors */
+.text-ubs-blue {
+    color: var(--ubs-blue) !important;
+}
+.text-ubs-dark-blue {
+    color: var(--ubs-dark-blue) !important;
+}
+.text-ubs-dark {
+    color: var(--ubs-dark-grey) !important;
+}
+.text-ubs-light-grey {
+    color: var(--ubs-light-grey) !important;
+}
+.text-ubs-orange {
+    color: var(--ubs-orange) !important;
+}
+.text-ubs-green {
+    color: var(--ubs-green) !important;
+}
+.text-ubs-red-orange {
+    color: var(--ubs-red-orange) !important;
+}
+.text-ubs-yellow {
+    color: var(--ubs-yellow) !important;
+}
+.text-ubs-red {
+    color: var(--ubs-red) !important;
+}
+.text-ubs-bright-blue {
+    color: var(--ubs-bright-blue) !important;
+}
+.text-ubs-gold {
+    color: var(--ubs-gold) !important;
+}
+
+/* Border Colors */
+.border-ubs-blue {
+    border-color: var(--ubs-blue) !important;
+}
+.border-ubs-light-grey {
+    border-color: var(--ubs-light-grey) !important;
+}
+
+/* ========================================
+   Global Base Styles
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--ubs-font-family);
+}
+
+/* ========================================
+   Breadcrumb Styles for Page Titles
+   ======================================== */
+
+.breadcrumb-parent {
+    color: #98a2b3;
+    font-weight: 600;
+}
+
+.breadcrumb-active {
+    color: var(--ubs-blue);
+    font-weight: 600;
+}

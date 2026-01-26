@@ -13,9 +13,21 @@ class QHSLokasiController extends Controller
      */
     public function index(Request $request)
     {
-        $page = $request->get('per_page', 5);
+        $perPage = $request->get('per_page', 5);
+        $page = $request->get('page', 1);
+        $search = $request->get('search', '');
 
-        $data = QHSLokasi::paginate($page);
+        $query = QHSLokasi::query();
+
+        // Apply search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('kode_lokasi', 'like', '%' . $search . '%')
+                  ->orWhere('nama_lokasi', 'like', '%' . $search . '%');
+            });
+        }
+
+        $data = $query->paginate($perPage, ['*'], 'page', $page);
 
         return $data;
     }
@@ -41,7 +53,7 @@ class QHSLokasiController extends Controller
      */
     public function show(string $id)
     {
-        $data = QHSLokasi::findOrFail($id);
+        $data = QHSLokasi::where('kode_lokasi', $id)->firstOrFail();
 
         return $data;
     }
@@ -51,7 +63,7 @@ class QHSLokasiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = QHSLokasi::findOrFail($id);
+        $data = QHSLokasi::where('kode_lokasi', $id)->firstOrFail();
 
         $validation = $request->validate([
             'nama_lokasi' => 'sometimes|required|string',
@@ -68,7 +80,7 @@ class QHSLokasiController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = QHSLokasi::findOrFail($id);
+        $data = QHSLokasi::where('kode_lokasi', $id)->firstOrFail();
         $data->delete();
 
         return response()->json([

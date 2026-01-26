@@ -24,14 +24,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'userData']);
 });
 
-Route::middleware('auth:sanctum')->group(function() {
+//Route::middleware('auth')->group(function() {
     Route::apiResource('role', QHSRoleController::class);
     Route::apiResource('inspector', QHSInspectorController::class);
     Route::apiResource('user', UserController::class);
@@ -42,4 +40,4 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
-});
+//});
