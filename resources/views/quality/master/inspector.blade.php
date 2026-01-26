@@ -1166,10 +1166,10 @@
     }
 
     function loadLookupData() {
-        fetch('/api/user?per_page=100')
+        fetch('/data/QHSKaryawanDummy.json')
             .then(response => response.json())
             .then(data => {
-                renderLookupTable(data.data || []);
+                renderLookupTable(data);
             })
             .catch(error => {
                 console.error('Error loading lookup data:', error);
