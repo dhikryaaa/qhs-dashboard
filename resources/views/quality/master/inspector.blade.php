@@ -1084,8 +1084,39 @@
     }
 
     function saveInspector() {
-        alert('Fitur tambah inspector belum diimplementasikan');
-        closeModal();
+        const noInduk = document.getElementById('inspectorNoInduk').value.trim();
+        const nama = document.getElementById('inspectorNama').value.trim();
+        
+        if (!noInduk || !nama) {
+            alert('No Induk dan Nama harus diisi');
+            return;
+        }
+        
+        fetch(API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({
+                no_induk: noInduk,
+                nama: nama,
+                aktif: 'Y'
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            alert('Inspector berhasil ditambahkan');
+            closeModal();
+            loadInspectors(currentPage);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menambahkan inspector');
+        });
     }
 
     function updateInspector() {
@@ -1135,7 +1166,7 @@
     }
 
     function loadLookupData() {
-        fetch(`${API_BASE}?per_page=100`)
+        fetch('/api/user?per_page=100')
             .then(response => response.json())
             .then(data => {
                 renderLookupTable(data.data || []);
@@ -1153,18 +1184,18 @@
             tbody.removeChild(tbody.firstChild);
         }
         
-        data.forEach(inspector => {
+        data.forEach(user => {
             const row = document.createElement('tr');
             row.onclick = function() {
-                selectEmployee(inspector.no_induk, inspector.nama);
+                selectEmployee(user.no_induk, user.nama);
             };
             
             const tdNoInduk = document.createElement('td');
-            tdNoInduk.textContent = inspector.no_induk;
+            tdNoInduk.textContent = user.no_induk || '-';
             row.appendChild(tdNoInduk);
             
             const tdNama = document.createElement('td');
-            tdNama.textContent = inspector.nama;
+            tdNama.textContent = user.nama;
             row.appendChild(tdNama);
             
             tbody.appendChild(row);
