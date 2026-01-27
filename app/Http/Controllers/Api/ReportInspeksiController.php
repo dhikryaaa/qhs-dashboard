@@ -126,11 +126,55 @@ class ReportInspeksiController extends Controller
             $perPage
         );
 
+        $summary = [
+            'K3' => [
+                'total_temuan' => 0,
+                'total_open' => 0,
+                'total_closed' => 0,
+                'persentase' => 0,
+            ],
+            'Mutu' => [
+                'total_temuan' => 0,
+                'total_open' => 0,
+                'total_closed' => 0,
+                'persentase' => 0,
+            ],
+        ];
+
+        foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
+
+            // ===== DATA FILTERED (jumlah mengikuti filter status)
+            $filteredPerKategori = $filteredData->where('kode', $kode);
+
+            $total = $filteredPerKategori->count();
+            $closed = $filteredPerKategori->whereNotNull('tgl_close')->count();
+            $open = $total - $closed;
+
+            // ===== DATA ALL (untuk persentase)
+            $allPerKategori = $allData->where('kode', $kode);
+            $allTotal = $allPerKategori->count();
+            $allClosed = $allPerKategori->whereNotNull('tgl_close')->count();
+
+            $persentase = $allTotal > 0
+                ? round(($allClosed / $allTotal) * 100, 2)
+                : 0;
+
+            $summary[$label] = [
+                'total_temuan' => $total,
+                'total_open' => $open,
+                'total_closed' => $closed,
+                'persentase' => $persentase,
+            ];
+        }
+
         return response()->json([
             'success' => true,
             'kategori' => [
                 'K3' => $paginate($response['K3']),
+                'Total_K3' => $summary['K3'],
+
                 'Mutu' => $paginate($response['Mutu']),
+                'Total_Mutu' => $summary['Mutu'],
             ],
             'pagination' => [
                 'current_page' => $page,

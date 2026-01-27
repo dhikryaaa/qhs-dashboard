@@ -499,7 +499,7 @@
         <!-- Table Header -->
         <div class="table-header">
             <h2 class="table-title">List Hasil Inspeksi</h2>
-            <button class="btn-export">
+            <button class="btn-export" onclick="exportToExcel()">
                 <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11.167 13V13.667H0.5V13H11.167ZM7.83301 0.5V5.5H10.46L5.83301 10.126L1.20703 5.5H3.83301V0.5H7.83301ZM4.5 6.16699H2.81836L5.83301 9.18164L6.18652 8.82812L7.99512 7.02051L8.84863 6.16699H7.16699V1.16699H4.5V6.16699Z" fill="black" stroke="#FCFAFF"/>
                 </svg>
@@ -599,6 +599,7 @@
     // API Base URL
     const API_BASE_URL = '{{ url("/api/report-inspeksi") }}';
     const API_DEPARTEMEN_URL = '{{ url("/api/departemen") }}';
+    const EXPORT_URL = '{{ url("/api/export-report-inspeksi") }}';
     
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
@@ -988,6 +989,38 @@
             applyClientSideFilter();
         }
     });
+    
+    // Export to Excel Function
+    function exportToExcel() {
+        // Get filter values
+        const periode = document.getElementById('filterPeriode').value || '';
+        const departemen = document.getElementById('filterDepartemen').value || '';
+        const status = document.getElementById('filterStatus').value || '';
+        
+        // Check if at least one filter is set
+        if (!periode && !departemen && !status) {
+            alert('Silakan pilih minimal satu filter sebelum export!');
+            return;
+        }
+        
+        // Build export URL with parameters
+        const params = new URLSearchParams();
+        if (periode) params.append('bulan', periode);
+        if (departemen) params.append('departemen', departemen);
+        if (status) params.append('status', status);
+        
+        const exportUrlWithParams = `${EXPORT_URL}${params.toString() ? '?' + params.toString() : ''}`;
+        
+        console.log('Exporting to:', exportUrlWithParams);
+        
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = exportUrlWithParams;
+        link.download = 'rekap-inspeksi.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
 
 @endsection
