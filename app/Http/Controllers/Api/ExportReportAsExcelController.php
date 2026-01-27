@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\QHSInspectD;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class ExportReportAsExcelController extends Controller
 {
@@ -37,85 +39,240 @@ class ExportReportAsExcelController extends Controller
         $row = 6;
         $no = 1;
 
-        // Process K3 data
+        // Group data by departemen and date
+        $groupedData = [];
         foreach ($data['K3']['items'] as $item) {
-            $sheet->setCellValue("A{$row}", $no++);
-            $sheet->setCellValue("B{$row}", \Carbon\Carbon::parse($item['tgl_inspeksi'])->format('d/m/Y'));
-            $sheet->setCellValue("C{$row}", $item['departemen']);
-
-            // K3 columns
-            $sheet->setCellValue("D{$row}", $item['total_issue']);
-            $sheet->setCellValue("E{$row}", $item['open_issue']);
-            $sheet->setCellValue("F{$row}", $item['closed_issue']);
-            $sheet->setCellValue("G{$row}", $item['persentase_per_kategori'] . '%');
-
-            // Mutu (empty for K3 rows)
-            $sheet->setCellValue("H{$row}", '');
-            $sheet->setCellValue("I{$row}", '');
-            $sheet->setCellValue("J{$row}", '');
-            $sheet->setCellValue("K{$row}", '');
-
-            // Footer columns
-            $sheet->setCellValue("L{$row}", $item['tgl_perbaikan'] ? \Carbon\Carbon::parse($item['tgl_perbaikan'])->format('d/m/Y') : '');
-            $sheet->setCellValue("M{$row}", $item['persentase_semua_kategori'] . '%');
-
-            $row++;
+            $key = $item['tgl_inspeksi'] . '|' . $item['departemen'];
+            if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
+                    'tgl_inspeksi' => $item['tgl_inspeksi'],
+                    'departemen' => $item['departemen'],
+                    'K3' => null,
+                    'Mutu' => null,
+                ];
+            }
+            $groupedData[$key]['K3'] = $item;
         }
 
-        // Add empty row between K3 and Mutu
-        $row++;
-
-        // Process Mutu data
         foreach ($data['Mutu']['items'] as $item) {
+            $key = $item['tgl_inspeksi'] . '|' . $item['departemen'];
+            if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
+                    'tgl_inspeksi' => $item['tgl_inspeksi'],
+                    'departemen' => $item['departemen'],
+                    'K3' => null,
+                    'Mutu' => null,
+                ];
+            }
+            $groupedData[$key]['Mutu'] = $item;
+        }
+
+        // Display grouped data by department
+        foreach ($groupedData as $group) {
             $sheet->setCellValue("A{$row}", $no++);
-            $sheet->setCellValue("B{$row}", \Carbon\Carbon::parse($item['tgl_inspeksi'])->format('d/m/Y'));
-            $sheet->setCellValue("C{$row}", $item['departemen']);
+            
+            // Tanggal Inspeksi - Center
+            $sheet->setCellValue("B{$row}", \Carbon\Carbon::parse($group['tgl_inspeksi'])->format('d/m/Y'));
+            $sheet->getStyle("B{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            
+            // Departemen - Left
+            $sheet->setCellValue("C{$row}", $group['departemen']);
+            $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
-            // K3 (empty for Mutu rows)
-            $sheet->setCellValue("D{$row}", '');
-            $sheet->setCellValue("E{$row}", '');
-            $sheet->setCellValue("F{$row}", '');
-            $sheet->setCellValue("G{$row}", '');
+            // K3 columns - Center
+            if ($group['K3']) {
+                $sheet->setCellValue("D{$row}", $group['K3']['total_issue']);
+                $sheet->getStyle("D{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("E{$row}", $group['K3']['open_issue']);
+                $sheet->getStyle("E{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("F{$row}", $group['K3']['closed_issue']);
+                $sheet->getStyle("F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("G{$row}", $group['K3']['persentase_per_kategori'] . '%');
+                $sheet->getStyle("G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            }
 
-            // Mutu columns
-            $sheet->setCellValue("H{$row}", $item['total_issue']);
-            $sheet->setCellValue("I{$row}", $item['open_issue']);
-            $sheet->setCellValue("J{$row}", $item['closed_issue']);
-            $sheet->setCellValue("K{$row}", $item['persentase_per_kategori'] . '%');
+            // Mutu columns - Center
+            if ($group['Mutu']) {
+                $sheet->setCellValue("H{$row}", $group['Mutu']['total_issue']);
+                $sheet->getStyle("H{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("I{$row}", $group['Mutu']['open_issue']);
+                $sheet->getStyle("I{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("J{$row}", $group['Mutu']['closed_issue']);
+                $sheet->getStyle("J{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("K{$row}", $group['Mutu']['persentase_per_kategori'] . '%');
+                $sheet->getStyle("K{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Footer columns
-            $sheet->setCellValue("L{$row}", $item['tgl_perbaikan'] ? \Carbon\Carbon::parse($item['tgl_perbaikan'])->format('d/m/Y') : '');
-            $sheet->setCellValue("M{$row}", $item['persentase_semua_kategori'] . '%');
+                // Tanggal Perbaikan - Center (from Mutu)
+                $sheet->setCellValue("L{$row}", $group['Mutu']['tgl_perbaikan'] ? \Carbon\Carbon::parse($group['Mutu']['tgl_perbaikan'])->format('d/m/Y') : '');
+                $sheet->getStyle("L{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                // % perbaikan keseluruhan - Center (from Mutu)
+                $sheet->setCellValue("M{$row}", $group['Mutu']['persentase_semua_kategori'] . '%');
+                $sheet->getStyle("M{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            } elseif ($group['K3']) {
+                // If only K3 exists, use K3 data for L and M columns
+                $sheet->setCellValue("L{$row}", $group['K3']['tgl_perbaikan'] ? \Carbon\Carbon::parse($group['K3']['tgl_perbaikan'])->format('d/m/Y') : '');
+                $sheet->getStyle("L{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("M{$row}", $group['K3']['persentase_semua_kategori'] . '%');
+                $sheet->getStyle("M{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            }
 
             $row++;
         }
+
+        $sheet->getStyle("A6:M" . ($row - 1))->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("M6:M" . ($row - 1))->getBorders()->getRight()->setBorderStyle(Border::BORDER_THIN);
+
+        // Add empty row as separator
+        $row++;
+        $summaryStartRow = $row;
 
         // === TOTAL SUMMARY ===
         // K3 Summary
         $k3Summary = $data['K3']['summary'];
-        $sheet->setCellValue('D12', $k3Summary['total_temuan']);
-        $sheet->setCellValue('E12', $k3Summary['total_open']);
-        $sheet->setCellValue('F12', $k3Summary['total_closed']);
-        $sheet->setCellValue('G12', $k3Summary['persentase'] . '%');
-
+        $k3EndRow = $row + 2;
+        
+        // Total temuan K3
+        $sheet->setCellValue("A{$row}", "Total temuan K3");
+        $sheet->setCellValue("C{$row}", ": " . $k3Summary['total_temuan']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $row++;
+        
+        // Temuan Closed K3
+        $sheet->setCellValue("A{$row}", "Temuan Closed");
+        $sheet->setCellValue("C{$row}", ": " . $k3Summary['total_closed']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $row++;
+        
+        // Temuan Open K3
+        $sheet->setCellValue("A{$row}", "Temuan Open");
+        $sheet->setCellValue("C{$row}", ": " . $k3Summary['total_open']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        // Merge D column for K3 percentage
+        $sheet->mergeCells("D{$summaryStartRow}:D{$row}");
+        $sheet->setCellValue("D{$summaryStartRow}", $k3Summary['persentase'] . '%');
+        $sheet->getStyle("D{$summaryStartRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("D{$summaryStartRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle("D{$summaryStartRow}")->getFont()->setBold(true);
+        $sheet->getStyle("D{$summaryStartRow}")->getFont()->setSize(12);
+        
+        // Add borders to K3 summary
+        $this->addSummaryBorders($sheet, $summaryStartRow, $row);
+        
+        $row++;
+        
+        // Add empty row
+        $row++;
+        
         // Mutu Summary
         $mutuSummary = $data['Mutu']['summary'];
-        $sheet->setCellValue('H12', $mutuSummary['total_temuan']);
-        $sheet->setCellValue('I12', $mutuSummary['total_open']);
-        $sheet->setCellValue('J12', $mutuSummary['total_closed']);
-        $sheet->setCellValue('K12', $mutuSummary['persentase'] . '%');
+        $mutuStartRow = $row;
+        $mutuEndRow = $row + 2;
+        
+        // Total temuan Mutu
+        $sheet->setCellValue("A{$row}", "Total temuan Mutu");
+        $sheet->setCellValue("C{$row}", ": " . $mutuSummary['total_temuan']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $row++;
+        
+        // Temuan Closed Mutu
+        $sheet->setCellValue("A{$row}", "Temuan Closed");
+        $sheet->setCellValue("C{$row}", ": " . $mutuSummary['total_closed']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $row++;
+        
+        // Temuan Open Mutu
+        $sheet->setCellValue("A{$row}", "Temuan Open");
+        $sheet->setCellValue("C{$row}", ": " . $mutuSummary['total_open']);
+        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        // Merge D column for Mutu percentage
+        $sheet->mergeCells("D{$mutuStartRow}:D{$row}");
+        $sheet->setCellValue("D{$mutuStartRow}", $mutuSummary['persentase'] . '%');
+        $sheet->getStyle("D{$mutuStartRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("D{$mutuStartRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle("D{$mutuStartRow}")->getFont()->setBold(true);
+        $sheet->getStyle("D{$mutuStartRow}")->getFont()->setSize(12);
+        
+        // Add borders to Mutu summary
+        $this->addSummaryBorders($sheet, $mutuStartRow, $row);
+        
+        $row++;
 
         // === TTD ===
-        $sheet->setCellValue('L14', 'Surabaya, ' . now()->format('d F Y'));
+        $ttdRow = $summaryStartRow;
+        $sheet->mergeCells("L{$ttdRow}:M{$ttdRow}");
+        $sheet->setCellValue("L{$ttdRow}", 'Surabaya, ' . now()->format('d F Y'));
+        $sheet->getStyle("L{$ttdRow}")->getFont()->setSize(10);
+        $sheet->getStyle("L{$ttdRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // TTD Header Row
+        $ttdStartRow = $ttdRow + 2;
+        $sheet->setCellValue("L{$ttdStartRow}", "Disetujui");
+        $sheet->setCellValue("M{$ttdStartRow}", "Dibuat & Diperiksa");
+        $sheet->getStyle("L{$ttdStartRow}")->getFont()->setSize(8);
+        $sheet->getStyle("M{$ttdStartRow}")->getFont()->setSize(8);
+        $sheet->getStyle("L{$ttdStartRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("M{$ttdStartRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("L{$ttdStartRow}:M{$ttdStartRow}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // TTD Names and Positions
+        $ttdNameRow = $ttdStartRow + 3;
+        $sheet->setCellValue("L{$ttdNameRow}", "Yanata Candra");
+        $sheet->setCellValue("M{$ttdNameRow}", "Javiero Isroj W");
+        $sheet->getStyle("L{$ttdNameRow}")->getFont()->setSize(8);
+        $sheet->getStyle("M{$ttdNameRow}")->getFont()->setSize(8);
+        $sheet->getStyle("L{$ttdNameRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("M{$ttdNameRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("L{$ttdStartRow}:L" . $ttdStartRow + 4)->getBorders()->getLeft()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("L{$ttdStartRow}:L" . $ttdStartRow + 4)->getBorders()->getRight()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("M{$ttdStartRow}:M" . $ttdStartRow + 4)->getBorders()->getRight()->setBorderStyle(Border::BORDER_THIN);
+        
+        $ttdPosRow = $ttdNameRow + 1;
+        $sheet->setCellValue("L{$ttdPosRow}", "Ass Man QMS");
+        $sheet->setCellValue("M{$ttdPosRow}", "QHS Assisten Officer");
+        $sheet->getStyle("L{$ttdPosRow}")->getFont()->setSize(8);
+        $sheet->getStyle("M{$ttdPosRow}")->getFont()->setSize(8);
+        $sheet->getStyle("L{$ttdPosRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("M{$ttdPosRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("L{$ttdPosRow}:M{$ttdPosRow}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
-        $filename = 'rekap-inspeksi-' . now()->format('Y-m-d-His') . '.xlsx';
+        $filename = 'Rekap-Inspeksi-' . $monthName . $tahun . '.xlsx';
         $tempPath = storage_path("app/{$filename}");
 
         $writer->save($tempPath);
 
         return response()->download($tempPath)->deleteFileAfterSend();
+    }
+
+    private function addSummaryBorders($sheet, $startRow, $endRow)
+    {
+        // Apply top and bottom borders to A-D columns
+        for ($col = 'A'; $col <= 'D'; $col++) {
+            $sheet->getStyle("{$col}{$startRow}")->getBorders()->getTop()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle("{$col}{$endRow}")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+        }
+
+        // Apply border between C and D columns for all rows
+        for ($i = $startRow; $i <= $endRow; $i++) {
+            $sheet->getStyle("D{$i}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        }
     }
 
     private function getData($departemen = null, $bulan = null, $status = null)
