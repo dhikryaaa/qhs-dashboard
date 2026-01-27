@@ -16,39 +16,48 @@ class ReportInspeksiController extends Controller
         $departemen = $request->get('departemen');
         $bulan = $request->get('bulan');
         $status = $request->get('status');
-        $page = $request->get('per_page', 5);
+        $page = (int) $request->get('page', 1);
+        $perPage = (int) $request->get('per_page', 5);
 
-        $query = QHSInspectD::with(['inspectH.departemen'])
+        $baseQuery = QHSInspectD::with(['inspectH.departemen'])
             ->whereIn('kode', ['001', '002']);
 
         if ($departemen) {
-            $query->whereHas('inspectH', function ($q) use ($departemen) {
-                $q->where('kode_dept', $departemen);
-            });
+            $baseQuery->whereHas(
+                'inspectH',
+                fn($q) =>
+                $q->where('kode_dept', $departemen)
+            );
         }
 
         if ($bulan) {
             [$tahun, $bulanAngka] = explode('-', $bulan);
-            $query->whereHas('inspectH', function ($q) use ($tahun, $bulanAngka) {
+            $baseQuery->whereHas(
+                'inspectH',
+                fn($q) =>
                 $q->whereYear('tanggal', $tahun)
-                    ->whereMonth('tanggal', $bulanAngka);
-            });
+                    ->whereMonth('tanggal', $bulanAngka)
+            );
         }
 
-        if ($status === 'open') {
-            $query->whereNull('tgl_close');
-        } elseif ($status === 'closed') {
-            $query->whereNotNull('tgl_close');
+        $allData = $baseQuery->get();
+
+        $filteredQuery = clone $baseQuery;
+
+        if ($status === 'Open') {
+            $filteredQuery->whereNull('tgl_close');
+        } elseif ($status === 'Closed') {
+            $filteredQuery->whereNotNull('tgl_close');
         }
 
-        $paginator = $query->paginate($page);
-        $paginator->appends($request->query());
+        $filteredData = $filteredQuery->get();
 
-        $data = collect($paginator->items());
+        $groupAll = $allData->groupBy(
+            fn($item) => $item->inspectH->tanggal . '|' . $item->inspectH->kode_dept
+        );
 
-        $grouped = $data->groupBy(
-            fn($item) =>
-            $item->inspectH->tanggal . '|' . $item->inspectH->kode_dept
+        $groupFiltered = $filteredData->groupBy(
+            fn($item) => $item->inspectH->tanggal . '|' . $item->inspectH->kode_dept
         );
 
         $response = [
@@ -56,35 +65,43 @@ class ReportInspeksiController extends Controller
             'Mutu' => [],
         ];
 
-        foreach ($grouped as $groupKey => $items) {
+        foreach ($groupAll as $key => $itemsAll) {
 
-            $inspectH = $items->first()->inspectH;
+            $itemsFiltered = $groupFiltered->get($key, collect());
+
+            $inspectH = $itemsAll->first()->inspectH;
             $tanggal = $inspectH->tanggal;
             $deptName = $inspectH->departemen->nama_dept ?? '-';
 
-            $totalAll = $items->count();
-            $closedAll = $items->whereNotNull('tgl_close')->count();
+            $totalAll = $itemsAll->count();
+            $closedAll = $itemsAll->whereNotNull('tgl_close')->count();
+
             $percentAll = $totalAll > 0
                 ? round(($closedAll / $totalAll) * 100, 2)
                 : 0;
 
             foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
 
-                $perKategori = $items->where('kode', $kode);
+                $allPerKategori = $itemsAll->where('kode', $kode);
+                $filteredPerKategori = $itemsFiltered->where('kode', $kode);
 
-                if ($perKategori->isEmpty()) {
+                if ($allPerKategori->isEmpty()) {
                     continue;
                 }
 
-                $total = $perKategori->count();
-                $closed = $perKategori->whereNotNull('tgl_close')->count();
-                $open = $total - $closed;
+                $totalFiltered = $filteredPerKategori->count();
+                $closed = $filteredPerKategori->whereNotNull('tgl_close')->count();
+                $open = $totalFiltered - $closed;
 
-                $percentKategori = $total > 0
-                    ? round(($closed / $total) * 100, 2)
+                $percentKategori = $allPerKategori->count() > 0
+                    ? round(
+                        ($allPerKategori->whereNotNull('tgl_close')->count()
+                            / $allPerKategori->count()) * 100,
+                        2
+                    )
                     : 0;
 
-                $tglPerbaikan = $perKategori
+                $tglPerbaikan = $allPerKategori
                     ->pluck('tgl_perbaikan')
                     ->filter()
                     ->sortDesc()
@@ -93,7 +110,7 @@ class ReportInspeksiController extends Controller
                 $response[$label][] = [
                     'tgl_inspeksi' => $tanggal,
                     'departemen' => $deptName,
-                    'total_issue' => $total,
+                    'total_issue' => $totalFiltered,
                     'open_issue' => $open,
                     'closed_issue' => $closed,
                     'persentase_per_kategori' => $percentKategori,
@@ -103,15 +120,74 @@ class ReportInspeksiController extends Controller
             }
         }
 
+        $paginate = fn($items) => array_slice(
+            $items,
+            ($page - 1) * $perPage,
+            $perPage
+        );
+
+        $summary = [
+            'K3' => [
+                'total_temuan' => 0,
+                'total_open' => 0,
+                'total_closed' => 0,
+                'persentase' => 0,
+            ],
+            'Mutu' => [
+                'total_temuan' => 0,
+                'total_open' => 0,
+                'total_closed' => 0,
+                'persentase' => 0,
+            ],
+        ];
+
+        foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
+
+            // ===== DATA FILTERED (jumlah mengikuti filter status)
+            $filteredPerKategori = $filteredData->where('kode', $kode);
+
+            $total = $filteredPerKategori->count();
+            $closed = $filteredPerKategori->whereNotNull('tgl_close')->count();
+            $open = $total - $closed;
+
+            // ===== DATA ALL (untuk persentase)
+            $allPerKategori = $allData->where('kode', $kode);
+            $allTotal = $allPerKategori->count();
+            $allClosed = $allPerKategori->whereNotNull('tgl_close')->count();
+
+            $persentase = $allTotal > 0
+                ? round(($allClosed / $allTotal) * 100, 2)
+                : 0;
+
+            $summary[$label] = [
+                'total_temuan' => $total,
+                'total_open' => $open,
+                'total_closed' => $closed,
+                'persentase' => $persentase,
+            ];
+        }
+
         return response()->json([
             'success' => true,
-            'kategori' => $response,
+            'kategori' => [
+                'K3' => $paginate($response['K3']),
+                'Total_K3' => $summary['K3'],
+
+                'Mutu' => $paginate($response['Mutu']),
+                'Total_Mutu' => $summary['Mutu'],
+            ],
             'pagination' => [
-                'current_page' => $paginator->currentPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-                'last_page' => $paginator->lastPage(),
-            ]
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => [
+                    'K3' => count($response['K3']),
+                    'Mutu' => count($response['Mutu']),
+                ],
+                'last_page' => [
+                    'K3' => ceil(count($response['K3']) / $perPage),
+                    'Mutu' => ceil(count($response['Mutu']) / $perPage),
+                ],
+            ],
         ]);
     }
 
