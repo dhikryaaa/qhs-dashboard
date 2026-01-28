@@ -92,192 +92,196 @@
 
 @section('content')
 <style>
-    /* ========== HASIL INSPEKSI PAGE STYLES ========== */
-    
-    /* Override Floating Header to include page title */
+    /* ========================================
+       1. LAYOUT & STRUCTURE
+       ======================================== */
     .floating-header-card {
         justify-content: space-between !important;
     }
-    
-    /* Page Title in Header */
+
     .page-title-header {
+        color: #98A2B3;
+        flex: none;
+        flex-grow: 0;
         font-family: var(--ubs-font-sidebar);
+        font-size: 20px;
         font-style: normal;
         font-weight: 700;
-        font-size: 20px;
-        line-height: 24px;
-        color: #98A2B3;
-        margin: 0;
-        width: auto;
         height: 24px;
-        flex: none;
+        line-height: 24px;
+        margin: 0;
         order: 0;
-        flex-grow: 0;
+        width: auto;
     }
-    
-    /* Main Container - Flexbox Column Layout */
+
     .hasil-inspeksi-container {
         display: flex;
         flex-direction: column;
         gap: 20px;
         width: 100%;
     }
-    
-    /* ========== TABS SECTION ========== */
+
+    /* ========================================
+       2. TABS - CONTAINER & ITEMS
+       ======================================== */
     .tabs-section {
         background: #FFFFFF;
         border-radius: 12px;
         box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
-        padding: 0;
         overflow: hidden;
+        padding: 0;
     }
-    
+
     .tabs-container {
-        display: flex;
         border-bottom: 1px solid var(--ubs-light-grey);
+        display: flex;
     }
-    
+
     .tab-item {
-        flex: 1;
-        padding: 4px 24px;
-        text-align: center;
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 700;
-        font-size: 16px;
+        border-bottom: 3px solid transparent;
         color: #667085;
         cursor: pointer;
-        border-bottom: 3px solid transparent;
+        flex: 1;
+        font-family: var(--ubs-font-sidebar);
+        font-size: 16px;
+        font-weight: 700;
+        padding: 4px 24px;
+        text-align: center;
         transition: all 0.2s ease;
     }
-    
+
     .tab-item:hover {
-        color: var(--ubs-bright-blue);
         background: var(--ubs-background-grey);
-    }
-    
-    .tab-item.active {
         color: var(--ubs-bright-blue);
-        border-bottom-color: var(--ubs-bright-blue);
     }
-    
-    /* ========== FILTER SECTION ========== */
+
+    .tab-item.active {
+        border-bottom-color: var(--ubs-bright-blue);
+        color: var(--ubs-bright-blue);
+    }
+
+    /* ========================================
+       3. FILTER SECTION
+       ======================================== */
     .filter-section {
         background: #FFFFFF;
         border-radius: 12px;
         box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
-        padding: 24px;
         display: flex;
         flex-direction: column;
         gap: 16px;
+        padding: 24px;
     }
-    
+
     .filter-title {
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 600;
-        font-size: 18px;
         color: var(--ubs-blue);
+        font-family: var(--ubs-font-sidebar);
+        font-size: 18px;
+        font-weight: 600;
         margin: 0;
     }
-    
+
     .filter-inputs {
+        align-items: flex-end;
         display: flex;
         gap: 16px;
-        align-items: flex-end;
     }
-    
+
     .filter-group {
-        flex: 1;
         display: flex;
+        flex: 1;
         flex-direction: column;
         gap: 8px;
     }
-    
+
     .filter-label {
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 600;
-        font-size: 14px;
         color: var(--ubs-dark-grey);
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        font-weight: 600;
     }
-    
+
     .filter-input-wrapper {
         position: relative;
     }
-    
+
     .filter-input {
-        width: 100%;
+        background: #FFFFFF;
+        border: 1px solid #D0D5DD;
+        border-radius: 8px;
+        color: var(--ubs-dark-grey);
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
         height: 46px;
         padding: 0 14px 0 36px;
-        background: #FFFFFF;
-        border: 1px solid #D0D5DD;
-        border-radius: 8px;
-        font-family: var(--ubs-font-sidebar);
-        font-size: 14px;
-        color: var(--ubs-dark-grey);
         transition: all 0.2s ease;
+        width: 100%;
     }
-    
+
     .filter-input:focus {
-        outline: none;
         border-color: var(--ubs-blue);
         box-shadow: 0 0 0 3px rgba(18, 68, 119, 0.1);
+        outline: none;
     }
-    
+
     .filter-select {
-        width: 100%;
-        height: 46px;
-        padding: 0 36px 0 14px;
+        appearance: none;
         background: #FFFFFF;
+        background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.666016 0.666504L4.66602 4.6665L8.66602 0.666504' stroke='black' stroke-width='1.33333' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-position: right 14px center;
+        background-repeat: no-repeat;
         border: 1px solid #D0D5DD;
         border-radius: 8px;
-        font-family: var(--ubs-font-sidebar);
-        font-size: 14px;
         color: var(--ubs-dark-grey);
         cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.666016 0.666504L4.66602 4.6665L8.66602 0.666504' stroke='black' stroke-width='1.33333' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 14px center;
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        height: 46px;
+        padding: 0 36px 0 14px;
         transition: all 0.2s ease;
+        width: 100%;
     }
-    
+
     .filter-select:focus {
-        outline: none;
         border-color: var(--ubs-blue);
         box-shadow: 0 0 0 3px rgba(18, 68, 119, 0.1);
+        outline: none;
     }
-    
+
     .filter-icon {
-        position: absolute;
         left: 14px;
+        pointer-events: none;
+        position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        pointer-events: none;
     }
-    
+
     .btn-filter {
-        height: 46px;
-        padding: 0 24px;
+        align-items: center;
         background: var(--ubs-blue);
         border: none;
         border-radius: 8px;
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 600;
-        font-size: 14px;
         color: #FFFFFF;
         cursor: pointer;
         display: flex;
-        align-items: center;
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        font-weight: 600;
         gap: 8px;
+        height: 46px;
+        padding: 0 24px;
         transition: all 0.2s ease;
     }
-    
+
     .btn-filter:hover {
         background: var(--ubs-dark-blue);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(18, 68, 119, 0.2);
+        transform: translateY(-1px);
     }
-    
-    /* ========== DATA TABLE SECTION ========== */
+
+    /* ========================================
+       4. DATA TABLE - STRUCTURE & HEADER
+       ======================================== */
     .table-section {
         background: #FFFFFF;
         border-radius: 12px;
@@ -285,241 +289,248 @@
         display: none;
         overflow-x: auto;
     }
-    
+
     .table-section.visible {
         display: block;
     }
-    
+
     .table-header {
-        height: 70px;
-        border-bottom: 1px solid #D0D5DD;
-        padding: 0 20px;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
+        border-bottom: 1px solid #D0D5DD;
+        display: flex;
+        height: 70px;
+        justify-content: space-between;
+        padding: 0 20px;
     }
-    
+
     .table-title {
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 600;
-        font-size: 20px;
         color: var(--ubs-bright-blue);
+        font-family: var(--ubs-font-sidebar);
+        font-size: 20px;
+        font-weight: 600;
         margin: 0;
     }
-    
+
     .btn-export {
-        background: var(--ubs-bright-blue);
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 600;
-        font-size: 14px;
-        color: #FFFFFF;
-        border: none;
-        display: flex;
         align-items: center;
-        gap: 8px;
+        background: var(--ubs-bright-blue);
+        border: none;
+        border-radius: 8px;
+        color: #FFFFFF;
         cursor: pointer;
+        display: flex;
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        font-weight: 600;
+        gap: 8px;
+        padding: 8px 16px;
         transition: background 0.2s ease;
     }
-    
+
     .btn-export:hover {
         background: var(--ubs-blue);
     }
-    
-    /* Table Controls */
+
+    /* ========================================
+       5. DATA TABLE - CONTROLS & SEARCH
+       ======================================== */
     .table-controls {
-        padding: 16px 20px;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid var(--ubs-lighter-grey);
-    }
-    
-    .controls-left {
         display: flex;
+        justify-content: space-between;
+        padding: 16px 20px;
+    }
+
+    .controls-left {
         align-items: center;
-        gap: 8px;
+        color: var(--ubs-dark-grey);
+        display: flex;
         font-family: var(--ubs-font-sidebar);
         font-size: 14px;
-        color: var(--ubs-dark-grey);
+        gap: 8px;
     }
-    
+
     .controls-left select {
-        padding: 6px 12px;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
+        color: var(--ubs-dark-grey);
         font-family: var(--ubs-font-sidebar);
         font-size: 14px;
-        color: var(--ubs-dark-grey);
-        background: #FFFFFF;
+        padding: 6px 12px;
     }
-    
+
     .controls-right {
-        display: flex;
         align-items: center;
+        display: flex;
         gap: 8px;
     }
-    
+
     .search-label {
+        color: var(--ubs-dark-grey);
         font-family: var(--ubs-font-sidebar);
         font-size: 14px;
-        color: var(--ubs-dark-grey);
     }
-    
+
     .search-input-wrapper {
         position: relative;
     }
-    
+
     .search-input {
-        padding: 8px 12px 8px 36px;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
         font-family: var(--ubs-font-sidebar);
         font-size: 14px;
+        padding: 8px 12px 8px 36px;
         width: 200px;
-        background: #FFFFFF;
     }
-    
+
     .search-icon {
-        position: absolute;
         left: 10px;
+        pointer-events: none;
+        position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        pointer-events: none;
     }
-    
-    /* Table Styles */
+
+    /* ========================================
+       6. DATA TABLE - TABLE STRUCTURE & CELLS
+       ======================================== */
     .inspeksi-table {
-        width: 100%;
         border-collapse: collapse;
+        width: 100%;
     }
-    
+
     .inspeksi-table thead tr {
         background: #F5FBFF;
         height: 45px;
     }
-    
+
     .inspeksi-table th {
-        padding: 0px 20px;
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 700;
-        font-size: 14px;
-        color: var(--ubs-dark-grey);
-        text-align: left;
         border-bottom: 1px solid var(--ubs-light-grey);
-        white-space: nowrap;
+        color: var(--ubs-dark-grey);
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        font-weight: 700;
+        padding: 0px 20px;
+        text-align: left;
         vertical-align: middle;
+        white-space: nowrap;
     }
-    
+
     .inspeksi-table th.center {
         text-align: center;
     }
-    
+
     .inspeksi-table tbody tr {
-        height: 45px;
         border-bottom: 1px solid var(--ubs-lighter-grey);
+        height: 45px;
     }
-    
+
     .inspeksi-table tbody tr:hover {
         background: var(--ubs-background-grey);
     }
-    
+
     .inspeksi-table tbody tr.empty-state {
         height: 120px;
     }
-    
+
     .inspeksi-table tbody tr.empty-state:hover {
         background: transparent;
     }
-    
+
     .inspeksi-table td {
-        padding: 0px 20px;
-        font-family: var(--ubs-font-sidebar);
-        font-weight: 400;
-        font-size: 14px;
         color: var(--ubs--black);
-        white-space: nowrap;
+        font-family: var(--ubs-font-sidebar);
+        font-size: 14px;
+        font-weight: 400;
+        padding: 0px 20px;
         vertical-align: middle;
+        white-space: nowrap;
     }
-    
+
     .inspeksi-table td.center {
         text-align: center;
     }
-    
+
     .empty-message {
-        text-align: center;
         color: #98A2B3;
         font-style: italic;
+        text-align: center;
     }
-    
-    /* Status Badges */
+
+    /* ========================================
+       7. STATUS BADGES
+       ======================================== */
     .status-badge {
-        display: inline-block;
-        padding: 4px 12px;
         border-radius: 16px;
+        display: inline-block;
         font-family: var(--ubs-font-sidebar);
-        font-weight: 500;
         font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
     }
-    
+
     .status-badge.complete {
         background: #D1FADF;
         color: #039855;
     }
-    
+
     .status-badge.partial {
         background: #FEF0C7;
         color: #DC6803;
     }
-    
+
     .status-badge.incomplete {
         background: #FEE4E2;
         color: #D92D20;
     }
-    
-    /* Table Footer */
+
+    /* ========================================
+       8. TABLE FOOTER & PAGINATION
+       ======================================== */
     .table-footer {
-        padding: 16px 20px;
+        align-items: center;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        padding: 16px 20px;
     }
-    
+
     .footer-info {
+        color: #667085;
         font-family: var(--ubs-font-sidebar);
         font-size: 14px;
-        color: #667085;
     }
-    
-    /* Pagination */
+
     .pagination {
+        align-items: center;
         display: flex;
         gap: 8px;
-        align-items: center;
     }
-    
+
     .pagination-btn {
-        width: 32px;
-        height: 32px;
+        align-items: center;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
-        background: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         cursor: pointer;
+        display: flex;
+        height: 32px;
+        justify-content: center;
         transition: all 0.2s ease;
+        width: 32px;
     }
-    
+
     .pagination-btn:hover:not(:disabled) {
         background: #F9FAFB;
         border-color: #0B4A6F;
     }
-    
+
     .pagination-btn:disabled {
-        opacity: 0.4;
         cursor: not-allowed;
+        opacity: 0.4;
     }
 </style>
 
@@ -664,36 +675,31 @@
 </div>
 
 <script>
-    // Full table data from PHP
+    // ========== GLOBAL STATE ==========
     const fullTableData = @json($tableData);
     let filteredData = [];
     let currentPage = 1;
     let entriesPerPage = 5;
     let activeTab = 'mutu';
-    
-    // Switch Tab Function
-    function switchTab(tab) {
-        activeTab = tab;
-        
-        // Update tab UI
-        const tabs = document.querySelectorAll('.tab-item');
-        tabs.forEach(tabEl => {
-            tabEl.classList.remove('active');
-        });
-        event.currentTarget.classList.add('active');
-        
-        // Reset filters and hide table
-        document.getElementById('filterPeriode').value = '';
-        document.getElementById('filterDepartemen').value = '';
-        document.getElementById('filterStatus').value = '';
-        document.getElementById('searchInput').value = '';
-        
-        // Hide table section and reset data
-        document.getElementById('tableSection').classList.remove('visible');
-        filteredData = [];
-        currentPage = 1;
-        
-        // Reset table to empty state
+
+    // ========== HELPER FUNCTIONS ==========
+    function formatDate(dateStr) {
+        if (!dateStr || dateStr === '-') return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function getStatusBadge(percentComplete) {
+        if (percentComplete === 100) {
+            return '<span class="status-badge complete">Complete</span>';
+        } else if (percentComplete === 0) {
+            return '<span class="status-badge incomplete">Incomplete</span>';
+        } else {
+            return '<span class="status-badge partial">In Progress</span>';
+        }
+    }
+
+    function resetTableToEmptyState() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = `
             <tr class="empty-state">
@@ -702,22 +708,50 @@
                 </td>
             </tr>
         `;
-        
-        // Both tabs use the same data for now
-        // If you need different data later, you can filter here based on activeTab
     }
-    
-    // Apply Filter Function
+
+    function showNoDataMessage() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = `
+            <tr class="empty-state">
+                <td colspan="9" class="empty-message">
+                    Tidak ada data ditemukan
+                </td>
+            </tr>
+        `;
+    }
+
+    // ========== TAB FUNCTIONS ==========
+    function switchTab(tab) {
+        activeTab = tab;
+        
+        const tabs = document.querySelectorAll('.tab-item');
+        tabs.forEach(tabEl => {
+            tabEl.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+        
+        document.getElementById('filterPeriode').value = '';
+        document.getElementById('filterDepartemen').value = '';
+        document.getElementById('filterStatus').value = '';
+        document.getElementById('searchInput').value = '';
+        
+        document.getElementById('tableSection').classList.remove('visible');
+        filteredData = [];
+        currentPage = 1;
+        
+        resetTableToEmptyState();
+    }
+
+    // ========== FILTER FUNCTIONS ==========
     function applyFilter() {
         const periode = document.getElementById('filterPeriode').value;
         const departemen = document.getElementById('filterDepartemen').value;
         const status = document.getElementById('filterStatus').value;
         
-        // Filter the data
         filteredData = fullTableData.filter(row => {
             let matches = true;
             
-            // Filter by periode (match month/year from YYYY-MM format)
             if (periode) {
                 const [selectedYear, selectedMonth] = periode.split('-').map(Number);
                 const rowDate = new Date(row.tanggal);
@@ -727,14 +761,10 @@
                 }
             }
             
-            // Filter by departemen
-            if (departemen) {
-                if (row.kode_dept !== departemen) {
-                    matches = false;
-                }
+            if (departemen && row.kode_dept !== departemen) {
+                matches = false;
             }
             
-            // Filter by status
             if (status) {
                 if (status === 'complete' && row.percent_complete !== 100) matches = false;
                 if (status === 'partial' && (row.percent_complete === 0 || row.percent_complete === 100)) matches = false;
@@ -744,68 +774,47 @@
             return matches;
         });
         
-        // Show table section
         document.getElementById('tableSection').classList.add('visible');
-        
-        // Reset to page 1
         currentPage = 1;
-        
-        // Render table
         renderTable();
     }
-    
-    // Render Table
+
+    function filterTable() {
+        currentPage = 1;
+        renderTable();
+    }
+
+    function updateEntriesDisplay() {
+        entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
+        currentPage = 1;
+        renderTable();
+    }
+
+    // ========== RENDER FUNCTIONS ==========
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         
-        // Further filter by search
         let displayData = filteredData.filter(row => {
             return row.no_dokumen.toLowerCase().includes(searchTerm) ||
                    row.departemen.toLowerCase().includes(searchTerm);
         });
         
-        // Pagination
         const startIndex = (currentPage - 1) * entriesPerPage;
         const endIndex = Math.min(startIndex + entriesPerPage, displayData.length);
         const pageData = displayData.slice(startIndex, endIndex);
         
-        // Clear tbody
         tbody.innerHTML = '';
         
-        // If no data
         if (pageData.length === 0) {
-            tbody.innerHTML = `
-                <tr class="empty-state">
-                    <td colspan="9" class="empty-message">
-                        Tidak ada data ditemukan
-                    </td>
-                </tr>
-            `;
+            showNoDataMessage();
             updateFooter(0, 0, 0);
             return;
         }
         
-        // Render rows
         pageData.forEach((row, index) => {
             const rowNum = startIndex + index + 1;
-            
-            // Determine status badge
-            let statusBadge = '';
-            if (row.percent_complete === 100) {
-                statusBadge = '<span class="status-badge complete">Complete</span>';
-            } else if (row.percent_complete === 0) {
-                statusBadge = '<span class="status-badge incomplete">Incomplete</span>';
-            } else {
-                statusBadge = '<span class="status-badge partial">In Progress</span>';
-            }
-            
-            // Format date
-            const formatDate = (dateStr) => {
-                if (!dateStr) return '-';
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-            };
+            const statusBadge = getStatusBadge(row.percent_complete);
             
             tbody.innerHTML += `
                 <tr class="data-row">
@@ -822,11 +831,9 @@
             `;
         });
         
-        // Update footer
         updateFooter(startIndex + 1, endIndex, displayData.length);
     }
-    
-    // Update Footer Info
+
     function updateFooter(start, end, total) {
         const footerInfo = document.getElementById('footerInfo');
         if (total === 0) {
@@ -835,33 +842,19 @@
             footerInfo.textContent = `Showing ${start} to ${end} of ${total} entries`;
         }
         
-        // Update pagination buttons
         const totalPages = Math.ceil(total / entriesPerPage);
         document.getElementById('prevBtn').disabled = currentPage === 1;
         document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
     }
-    
-    // Update Entries Per Page
-    function updateEntriesDisplay() {
-        entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
-        currentPage = 1;
-        renderTable();
-    }
-    
-    // Filter Table (Search)
-    function filterTable() {
-        currentPage = 1;
-        renderTable();
-    }
-    
-    // Pagination
+
+    // ========== EVENT LISTENERS ==========
     document.getElementById('prevBtn').addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             renderTable();
         }
     });
-    
+
     document.getElementById('nextBtn').addEventListener('click', () => {
         const totalPages = Math.ceil(filteredData.length / entriesPerPage);
         if (currentPage < totalPages) {

@@ -6,69 +6,75 @@
 
 @section('content')
 <style>
-    /* ========== MASTER USER PAGE STYLES ========== */
+    /* ========================================
+       1. LAYOUT & STRUCTURE
+       ======================================== */
     
-    /* Override Floating Header to include page title */
+    /* Override Floating Header */
     .floating-header-card {
         justify-content: space-between !important;
     }
     
     /* Page Title in Header */
     .page-title-header {
+        color: #98A2B3;
+        flex: none;
+        flex-grow: 0;
         font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
         font-style: normal;
         font-weight: 700;
-        font-size: 20px;
-        line-height: 24px;
-        color: #98A2B3;
-        margin: 0;
-        width: auto;
         height: 24px;
-        flex: none;
+        line-height: 24px;
+        margin: 0;
         order: 0;
-        flex-grow: 0;
+        width: auto;
     }
     
     /* Content Card */
     .content-card {
         background: #FFFFFF;
-        box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
         border-radius: 12px;
+        box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
         width: 100%;
     }
     
+    /* ========================================
+       2. DATA TABLE - CONTAINER & CONTROLS
+       ======================================== */
+    
     /* Table Header Section */
     .table-header {
-        height: 70px;
-        border-bottom: 1px solid #D0D5DD;
-        padding: 0 20px;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
+        border-bottom: 1px solid #D0D5DD;
+        display: flex;
+        height: 70px;
+        justify-content: space-between;
+        padding: 0 20px;
     }
     
     .table-title {
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 20px;
         color: #0B4A6F;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
         margin: 0;
     }
     
     /* Tambah User Button */
     .btn-tambah-role {
-        background: #0B4A6F;
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 16px;
-        color: #F6FEF9;
-        border: none;
-        display: flex;
         align-items: center;
-        gap: 8px;
+        background: #0B4A6F;
+        border: none;
+        border-radius: 8px;
+        color: #F6FEF9;
         cursor: pointer;
+        display: flex;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        gap: 8px;
+        padding: 8px 16px;
         transition: background 0.2s ease;
     }
     
@@ -78,58 +84,61 @@
     
     /* Filter Bar */
     .filter-bar {
-        padding: 16px 20px;
-        display: flex;
-        justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #F2F4F7;
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 20px;
     }
     
     .filter-left {
-        display: flex;
         align-items: center;
-        gap: 8px;
+        color: #344054;
+        display: flex;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
+        gap: 8px;
     }
     
     .filter-left select {
-        padding: 6px 12px;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
-        background: #FFFFFF;
+        padding: 6px 12px;
     }
     
     .filter-right {
-        display: flex;
         align-items: center;
+        display: flex;
         gap: 8px;
     }
     
     .search-label {
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
     }
     
     .search-input {
-        padding: 8px 12px;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
+        padding: 8px 12px;
         width: 200px;
-        background: #FFFFFF;
     }
     
-    /* Table Styles */
+    /* ========================================
+       3. DATA TABLE - STRUCTURE & CELLS
+       ======================================== */
+    
     .role-table {
-        width: 100%;
         border-collapse: collapse;
+        width: 100%;
     }
     
     .role-table thead tr {
@@ -138,18 +147,18 @@
     }
     
     .role-table th {
-        padding: 12px 20px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 700;
-        font-size: 16px;
-        color: #344054;
-        text-align: left;
         border-bottom: 1px solid #E5E7EB;
+        color: #344054;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 12px 20px;
+        text-align: left;
     }
     
     .role-table tbody tr {
-        height: 59px;
         border-bottom: 1px solid #F2F4F7;
+        height: 59px;
     }
     
     .role-table tbody tr:hover {
@@ -157,23 +166,23 @@
     }
     
     .role-table td {
-        padding: 12px 20px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 400;
-        font-size: 16px;
         color: #344054;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        padding: 12px 20px;
     }
     
     /* Toggle Switch */
     .toggle-switch {
-        width: 42px;
-        height: 24px;
         background: #D0D5DD;
         border-radius: 12px;
-        position: relative;
         cursor: pointer;
-        transition: background 0.3s ease;
         display: inline-block;
+        height: 24px;
+        position: relative;
+        transition: background 0.3s ease;
+        width: 42px;
     }
     
     .toggle-switch.active {
@@ -181,22 +190,25 @@
     }
     
     .toggle-switch-knob {
-        width: 18px;
-        height: 18px;
         background: white;
         border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        height: 18px;
+        left: 3px;
         position: absolute;
         top: 3px;
-        left: 3px;
         transition: left 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        width: 18px;
     }
     
     .toggle-switch.active .toggle-switch-knob {
         left: 21px;
     }
     
-    /* Action Icons */
+    /* ========================================
+       4. ACTION BUTTONS
+       ======================================== */
+    
     .action-icons {
         display: flex;
         gap: 12px;
@@ -213,36 +225,36 @@
     
     /* Table Footer */
     .table-footer {
-        padding: 16px 20px;
+        align-items: center;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        padding: 16px 20px;
     }
     
     .footer-info {
+        color: #667085;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #667085;
     }
     
     /* Pagination */
     .pagination {
+        align-items: center;
         display: flex;
         gap: 8px;
-        align-items: center;
     }
     
     .pagination-btn {
-        width: 32px;
-        height: 32px;
+        align-items: center;
+        background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
-        background: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         cursor: pointer;
+        display: flex;
+        height: 32px;
+        justify-content: center;
         transition: all 0.2s ease;
+        width: 32px;
     }
     
     .pagination-btn:hover {
@@ -251,64 +263,63 @@
     }
     
     .pagination-btn:disabled {
-        opacity: 0.4;
         cursor: not-allowed;
+        opacity: 0.4;
     }
     
-    /* ========== MODAL STYLES ========== */
+    /* ========================================
+       5. MODALS - BASE & OVERLAY
+       ======================================== */
     
-    /* Modal Overlay */
     .modal-overlay {
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
         display: none;
+        height: 100%;
+        justify-content: center;
+        left: 0;
         position: fixed;
         top: 0;
-        left: 0;
         width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
         z-index: 9999;
-        align-items: center;
-        justify-content: center;
     }
     
     .modal-overlay.active {
         display: flex;
     }
     
-    /* Modal Window */
     .modal-window {
-        width: 600px;
         background: #FFFFFF;
         border-radius: 9.6px;
         box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
         overflow: hidden;
+        width: 600px;
     }
     
-    /* Modal Header */
     .modal-header {
-        padding: 20px 16px;
+        align-items: center;
         border-bottom: 1px solid #E5E7EB;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        padding: 20px 16px;
     }
     
     .modal-title {
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 700;
-        font-size: 20px;
         color: #0B4A6F;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
         margin: 0;
     }
     
     .modal-close {
+        align-items: center;
         background: none;
         border: none;
         cursor: pointer;
-        padding: 4px;
         display: flex;
-        align-items: center;
         justify-content: center;
+        padding: 4px;
         transition: opacity 0.2s ease;
     }
     
@@ -316,7 +327,6 @@
         opacity: 0.6;
     }
     
-    /* Modal Body */
     .modal-body {
         padding: 20px 16px;
     }
@@ -326,25 +336,25 @@
     }
     
     .form-label {
+        color: #344054;
         display: block;
         font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
         font-size: 14px;
-        color: #344054;
+        font-weight: 600;
         margin-bottom: 8px;
     }
     
     .form-input {
-        width: 100%;
-        height: 46px;
-        padding: 0 14px;
         background: #EAECF0;
         border: 1px solid #B5B5B5;
         border-radius: 8px;
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
+        height: 46px;
+        padding: 0 14px;
         transition: all 0.2s ease;
+        width: 100%;
     }
     
     .form-input:focus {
@@ -359,16 +369,16 @@
     }
     
     .form-select {
-        width: 100%;
-        height: 46px;
-        padding: 0 14px;
         background: #EAECF0;
         border: 1px solid #B5B5B5;
         border-radius: 8px;
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
+        height: 46px;
+        padding: 0 14px;
         transition: all 0.2s ease;
+        width: 100%;
     }
     
     .form-select:focus {
@@ -377,26 +387,25 @@
         outline: none;
     }
     
-    /* Modal Footer */
     .modal-footer {
         background: #F9FAFB;
         border-top: 1px solid #9A9A9A;
-        padding: 16px;
         display: flex;
-        justify-content: flex-end;
         gap: 12px;
+        justify-content: flex-end;
+        padding: 16px;
     }
     
     .btn-cancel {
-        padding: 10px 20px;
         background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 8px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 16px;
         color: #344054;
         cursor: pointer;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 10px 20px;
         transition: all 0.2s ease;
     }
     
@@ -405,20 +414,84 @@
     }
     
     .btn-save {
-        padding: 10px 20px;
         background: #0B4A6F;
         border: none;
         border-radius: 8px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 16px;
         color: #FFFFFF;
         cursor: pointer;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 10px 20px;
         transition: background 0.2s ease;
     }
     
     .btn-save:hover {
         background: #094161;
+    }
+    
+    /* ========================================
+       6. MODALS - ADD/EDIT USER MODAL
+       ======================================== */
+    
+    /* Modal Window for User (800px wide) */
+    .modal-window-user {
+        background: #FFFFFF;
+        border-radius: 9.6px;
+        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        width: 800px;
+    }
+    
+    /* Form Row for Four Inputs Side-by-Side */
+    .form-row-four {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    
+    .form-group-quarter {
+        flex: 1;
+        position: relative;
+    }
+    
+    .form-input-quarter {
+        background: #FFFFFF;
+        border: 1px solid #B5B5B5;
+        border-radius: 8px;
+        color: #344054;
+        cursor: pointer;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 14px;
+        height: 46px;
+        padding: 0 40px 0 14px;
+        width: 184.5px;
+    }
+    
+    .form-input-quarter.readonly-gray {
+        background: #EAECF0;
+        cursor: not-allowed;
+        padding: 0 14px;
+    }
+    
+    .input-with-icon {
+        position: relative;
+    }
+    
+    .input-icon {
+        align-items: center;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        pointer-events: all;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .input-icon:hover svg path {
+        fill: #0B4A6F;
     }
     
     /* Lookup Input with Search Button */
@@ -432,36 +505,38 @@
     }
     
     .btn-search {
-        width: 46px;
-        height: 46px;
+        align-items: center;
         background: #0B4A6F;
         border: none;
         border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         cursor: pointer;
-        transition: background 0.2s ease;
+        display: flex;
         flex-shrink: 0;
+        height: 46px;
+        justify-content: center;
+        transition: background 0.2s ease;
+        width: 46px;
     }
     
     .btn-search:hover {
         background: #094161;
     }
     
-    /* ========== DELETE MODAL STYLES ========== */
+    /* ========================================
+       7. MODALS - DELETE MODAL
+       ======================================== */
     
     .modal-delete-overlay {
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
         display: none;
+        height: 100%;
+        justify-content: center;
+        left: 0;
         position: fixed;
         top: 0;
-        left: 0;
         width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
         z-index: 10000;
-        align-items: center;
-        justify-content: center;
     }
     
     .modal-delete-overlay.active {
@@ -469,75 +544,75 @@
     }
     
     .modal-delete-window {
+        align-items: center;
+        background: #FCFCFD;
+        border-radius: 12px;
+        box-shadow: 0px 0px 20px 5px rgba(20, 20, 20, 0.12);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        padding: 20px;
         gap: 12px;
-        width: 338px;
         height: 210.51px;
-        background: #FCFCFD;
-        box-shadow: 0px 0px 20px 5px rgba(20, 20, 20, 0.12);
-        border-radius: 12px;
+        padding: 20px;
         position: relative;
+        width: 338px;
     }
     
     .delete-illustration {
-        width: 63.57px;
-        height: 84px;
         background-image: url('{{ asset("img/trash-delete-illustration.png") }}');
-        background-size: contain;
-        background-repeat: no-repeat;
         background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
         flex: none;
-        order: 0;
         flex-grow: 0;
+        height: 84px;
+        order: 0;
+        width: 63.57px;
     }
     
     .delete-title {
-        width: 298px;
-        height: 24px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 24px;
-        text-align: center;
+        align-self: stretch;
         color: #0B4A6F;
         flex: none;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        height: 24px;
+        line-height: 24px;
         order: 1;
-        align-self: stretch;
+        text-align: center;
+        width: 298px;
     }
     
     .delete-btn-wrapper {
-        display: flex;
-        flex-direction: row;
         align-items: flex-start;
-        padding: 0px;
-        gap: 13.39px;
-        width: 298px;
-        height: 38.51px;
+        display: flex;
         flex: none;
+        flex-direction: row;
+        gap: 13.39px;
+        height: 38.51px;
         order: 2;
+        padding: 0px;
+        width: 298px;
     }
     
     .btn-delete-base {
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
         align-items: center;
-        padding: 6.69663px 13.3933px;
-        gap: 6.7px;
-        width: 142.3px;
-        height: 38.51px;
         border-radius: 6.69663px;
+        box-sizing: border-box;
         cursor: pointer;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 11.72px;
-        line-height: 14px;
+        display: flex;
         filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.02)) drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.13));
+        flex-direction: row;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 11.72px;
+        font-weight: 600;
+        gap: 6.7px;
+        height: 38.51px;
+        justify-content: center;
+        line-height: 14px;
+        padding: 6.69663px 13.3933px;
         transition: opacity 0.2s ease;
+        width: 142.3px;
     }
     
     .btn-delete-base:hover {
@@ -554,47 +629,48 @@
     .btn-delete-confirm {
         background: #0B4A6F;
         border: 0.84px solid #0B4A6F;
-        box-shadow: 0px 0.84px 6.7px rgba(16, 24, 40, 0.16);
         border-radius: 3.35px;
+        box-shadow: 0px 0.84px 6.7px rgba(16, 24, 40, 0.16);
         color: #F6FEF9;
     }
     
-    /* ========== LOOKUP POPUP STYLES ========== */
+    /* ========================================
+       8. MODALS - LOOKUP POPUP
+       ======================================== */
     
-    /* Lookup popup needs higher z-index than main modal */
     #lookupPopupModal.modal-overlay {
         z-index: 10000 !important;
     }
     
     .lookup-popup-window {
-        width: 468px;
-        height: 359px;
         background: #FFFFFF;
         border-radius: 9.6px;
         box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
         display: flex;
         flex-direction: column;
+        height: 359px;
+        overflow: hidden;
+        width: 468px;
     }
     
     .lookup-popup-header {
-        padding: 16px;
+        align-items: center;
         border-bottom: 1px solid #E5E7EB;
         display: flex;
         gap: 8px;
-        align-items: center;
+        padding: 16px;
     }
     
     .lookup-search-input {
-        width: 197.6px;
-        height: 32px;
-        padding: 0 12px;
         background: #FFFFFF;
         border: 1px solid #D0D5DD;
         border-radius: 6px;
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
+        height: 32px;
+        padding: 0 12px;
+        width: 197.6px;
     }
     
     .lookup-search-input:focus {
@@ -603,17 +679,17 @@
     }
     
     .btn-search-lookup {
-        width: 93.4px;
-        height: 32px;
         background: #0B4A6F;
         border: none;
         border-radius: 6px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 600;
-        font-size: 14px;
         color: #FFFFFF;
         cursor: pointer;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        height: 32px;
         transition: background 0.2s ease;
+        width: 93.4px;
     }
     
     .btn-search-lookup:hover {
@@ -621,32 +697,32 @@
     }
     
     .lookup-popup-body {
-        height: 279px;
-        overflow-y: auto;
         border: 1px solid #E5E7EB;
+        height: 279px;
         margin: 0 16px 16px 16px;
+        overflow-y: auto;
     }
     
     .lookup-table {
-        width: 100%;
         border-collapse: collapse;
+        width: 100%;
     }
     
     .lookup-table thead {
+        background: #F5FBFF;
         position: sticky;
         top: 0;
-        background: #F5FBFF;
         z-index: 1;
     }
     
     .lookup-table th {
-        padding: 12px 16px;
-        font-family: 'Public Sans', sans-serif;
-        font-weight: 700;
-        font-size: 14px;
-        color: #344054;
-        text-align: left;
         border-bottom: 1px solid #E5E7EB;
+        color: #344054;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 12px 16px;
+        text-align: left;
     }
     
     .lookup-table th:first-child {
@@ -667,71 +743,11 @@
     }
     
     .lookup-table td {
-        padding: 12px 16px;
-        font-family: 'Public Sans', sans-serif;
-        font-size: 14px;
-        color: #344054;
         border-bottom: 1px solid #F2F4F7;
-    }
-    
-    /* Modal Window for User (800px wide) */
-    .modal-window-user {
-        width: 800px;
-        background: #FFFFFF;
-        border-radius: 9.6px;
-        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-    }
-    
-    /* Form Row for Four Inputs Side-by-Side */
-    .form-row-four {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 16px;
-    }
-    
-    .form-group-quarter {
-        flex: 1;
-        position: relative;
-    }
-    
-    .form-input-quarter {
-        width: 184.5px;
-        height: 46px;
-        padding: 0 40px 0 14px;
-        background: #FFFFFF;
-        border: 1px solid #B5B5B5;
-        border-radius: 8px;
+        color: #344054;
         font-family: 'Public Sans', sans-serif;
         font-size: 14px;
-        color: #344054;
-        cursor: pointer;
-    }
-    
-    .form-input-quarter.readonly-gray {
-        background: #EAECF0;
-        cursor: not-allowed;
-        padding: 0 14px;
-    }
-    
-    .input-with-icon {
-        position: relative;
-    }
-    
-    .input-icon {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: all;
-    }
-    
-    .input-icon:hover svg path {
-        fill: #0B4A6F;
+        padding: 12px 16px;
     }
 </style>
 
@@ -933,15 +949,22 @@
 </div>
 
 <script>
-    // API Configuration
+    /* ========================================
+       MODULE 1: GLOBAL STATE
+       ======================================== */
+    
     const API_BASE = '/api/user';
     let currentPage = 1;
     let perPage = 5;
     let searchQuery = '';
+    let editingUserId = null;
+    let userToDelete = null;
+    let userNameToDelete = null;
     
-    // ========== TABLE DATA LOADING ==========
+    /* ========================================
+       MODULE 2: TABLE DATA OPERATIONS
+       ======================================== */
     
-    // Load data from API
     function loadUsers(page = 1) {
         const params = new URLSearchParams({
             per_page: perPage,
@@ -961,7 +984,6 @@
             });
     }
     
-    // Render table rows using createElement
     function renderTable(data) {
         const tbody = document.getElementById('roleTableBody');
         
@@ -1084,7 +1106,6 @@
         });
     }
     
-    // Update pagination info and buttons
     function updatePagination(data) {
         currentPage = data.current_page || 1;
         const total = data.total || 0;
@@ -1094,12 +1115,13 @@
         document.getElementById('footerInfo').textContent = 
             `Showing ${from} to ${to} of ${total} entries`;
         
-        // Update pagination buttons
         document.getElementById('prevBtn').disabled = !data.prev_page_url;
         document.getElementById('nextBtn').disabled = !data.next_page_url;
     }
     
-    // ========== PAGINATION FUNCTIONS ==========
+    /* ========================================
+       MODULE 3: FILTER FUNCTIONS
+       ======================================== */
     
     function handlePageChange() {
         perPage = parseInt(document.getElementById('entriesPerPage').value);
@@ -1117,17 +1139,15 @@
         }
     }
     
-    // ========== SEARCH FUNCTION ==========
-    
     function handleSearch() {
         searchQuery = document.getElementById('searchInput').value.toLowerCase();
         currentPage = 1;
         loadUsers(currentPage);
     }
     
-    // ========== MODAL FUNCTIONS ==========
-    
-    let editingUserId = null;
+    /* ========================================
+       MODULE 4: MODAL FUNCTIONS - ADD
+       ======================================== */
     
     function openModal() {
         editingUserId = null;
@@ -1144,6 +1164,15 @@
         editingUserId = null;
     }
     
+    function saveUser() {
+        alert('Fitur tambah user belum diimplementasikan');
+        closeModal();
+    }
+    
+    /* ========================================
+       MODULE 5: MODAL FUNCTIONS - EDIT
+       ======================================== */
+    
     function openEditModal(id, noInduk, nama, kodeRole, kodeDept) {
         editingUserId = id;
         document.getElementById('editUserId').value = id;
@@ -1157,11 +1186,6 @@
     function closeEditModal() {
         document.getElementById('editUserModal').classList.remove('active');
         editingUserId = null;
-    }
-
-    function saveUser() {
-        alert('Fitur tambah user belum diimplementasikan');
-        closeModal();
     }
 
     function updateUser() {
@@ -1204,8 +1228,10 @@
             alert('Gagal memperbarui user');
         });
     }
-
-    // ========== LOOKUP POPUP FUNCTIONS ==========
+    
+    /* ========================================
+       MODULE 6: LOOKUP FUNCTIONS
+       ======================================== */
     
     function openLookupPopup() {
         document.getElementById('lookupPopupModal').classList.add('active');
@@ -1278,8 +1304,10 @@
         
         closeLookupPopup();
     }
-
-    // ========== TOGGLE STATUS FUNCTION ==========
+    
+    /* ========================================
+       MODULE 7: STATUS TOGGLE
+       ======================================== */
     
     function toggleStatus(element, userId) {
         const currentStatus = element.dataset.status;
@@ -1300,22 +1328,19 @@
             return response.json();
         })
         .then(data => {
-            // Update UI
             element.dataset.status = newStatus;
             element.classList.toggle('active');
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Gagal mengubah status user');
-            // Revert toggle on error
             element.classList.toggle('active');
         });
     }
-
-    // ========== DELETE MODAL FUNCTIONS ==========
     
-    let userToDelete = null;
-    let userNameToDelete = null;
+    /* ========================================
+       MODULE 8: MODAL FUNCTIONS - DELETE
+       ======================================== */
     
     function openDeleteModal(userId, userName) {
         userToDelete = userId;
@@ -1354,9 +1379,10 @@
         }
     }
     
-    // ========== EVENT LISTENERS & INITIALIZATION ==========
+    /* ========================================
+       MODULE 9: EVENT LISTENERS
+       ======================================== */
     
-    // Close modals when clicking outside
     document.getElementById('createUserModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
@@ -1381,7 +1407,10 @@
         }
     });
     
-    // Load initial data
+    /* ========================================
+       MODULE 10: INITIALIZATION
+       ======================================== */
+    
     document.addEventListener('DOMContentLoaded', function() {
         loadUsers(currentPage);
     });

@@ -356,8 +356,8 @@
                 <i class="bi bi-chevron-down"></i>
             </a>
             <div class="collapse" id="transactionMenu">
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Inspeksi</span></a>
-                <a href="#" class="submenu-link"><i class="bi bi-circle"></i><span>Perbaikan</span></a>
+                <a href="{{ route('transaction.inspeksi') }}" class="submenu-link {{ request()->routeIs('transaction.inspeksi') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Inspeksi</span></a>
+                <a href="{{ route('transaction.perbaikan') }}" class="submenu-link {{ request()->routeIs('transaction.perbaikan') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Perbaikan</span></a>
             </div>
             
             <!-- Report Section -->

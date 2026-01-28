@@ -58,6 +58,15 @@ Route::get('/login', function () {
         return view('quality.master.kategori');
     })->name('master.kategori');
 
+    // Transaction Pages
+    Route::get('/transaction/inspeksi', function () {
+        return view('transaction.inspeksi');
+    })->name('transaction.inspeksi');
+
+    Route::get('/transaction/perbaikan', function () {
+        return view('transaction.perbaikan');
+    })->name('transaction.perbaikan');
+
     // Report Pages
     Route::get('/report/hasil-inspeksi', function () {
         return view('report.hasil-inspeksi');
