@@ -14,27 +14,31 @@ class TransaksiClosingController extends Controller
     public function update(Request $request, string $id)
     {
         [$no_dokumen, $sub] = explode(',', $id);
+        $sub = (int) $sub;
 
         $user = $request->user();
+        
+        $data = QHSInspectD::where('no_dokumen', $no_dokumen)
+            ->where('sub', $sub)
+            ->get('status');
 
-        $data = QHSInspectD::with([
-            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
-            'inspectH.departemen:kode_dept,nama_dept',
-            'inspectH.lokasi:kode_lokasi,nama_lokasi',
-        ])->where('no_dokumen', $no_dokumen)->where('sub', (int) $sub)->firstOrFail();
-
-        if ($data->status === 'Closed') {
+        if ($data === 'Closed') {
             return response()->json([
                 'message' => 'Inspeksi sudah dalam status Closed'
             ], 409);
         }
 
-        $data->update([
-            'status' => 'Closed',
-            'tgl_close' => now(),
-            'user_close' => $user->no_induk
-        ]);
+        QHSInspectD::where('no_dokumen', $no_dokumen)
+            ->where('sub', $sub)
+            ->update([
+                'status' => 'Closed',
+                'tgl_close' => now(),
+                'user_close' => $user->no_induk
+            ]);
 
-        return $data;
+        return QHSInspectD::where('no_dokumen', $no_dokumen)->where('sub', $sub)->with([
+            'inspectH:no_dokumen,tanggal,kode_lokasi',
+            'inspectH.lokasi:kode_lokasi,nama_lokasi'
+        ])->firstOrFail();
     }
 }

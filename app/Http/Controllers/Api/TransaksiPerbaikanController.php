@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\QHSInspectD;
+use Date;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TransaksiPerbaikanController extends Controller
 {
@@ -15,7 +17,7 @@ class TransaksiPerbaikanController extends Controller
     {
         $page = $request->get('per_page', 5);
 
-        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen'])
+        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
             ->with([
                 'inspectH:no_dokumen,tanggal,kode_lokasi',
                 'inspectH.lokasi:kode_lokasi,nama_lokasi'
@@ -32,7 +34,7 @@ class TransaksiPerbaikanController extends Controller
     {
         [$no_dokumen, $sub] = explode(',', $id);
 
-        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen'])
+        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
             ->with([
                 'inspectH:no_dokumen,tanggal,kode_lokasi',
                 'inspectH.lokasi:kode_lokasi,nama_lokasi',
@@ -50,24 +52,23 @@ class TransaksiPerbaikanController extends Controller
     public function update(Request $request, string $id)
     {
         [$no_dokumen, $sub] = explode(',', $id);
-
-        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen'])
-            ->with([
-                'inspectH:no_dokumen,tanggal,kode_lokasi',
-                'inspectH.lokasi:kode_lokasi,nama_lokasi',
-            ])
-            ->where('no_dokumen', $no_dokumen)
-            ->where('sub', (int) $sub)
-            ->firstOrFail();
+        $sub = (int) $sub;
 
         $validation = $request->validate([
-            'bukti_perbaikan' => 'sometimes|nullable|string'
+            'bukti_perbaikan' => 'sometimes|nullable|string',
         ]);
+        $validation['tgl_perbaikan'] = $request->input('tgl_perbaikan', Date::now());
 
-        $validation['tgl_perbaikan'] = now(); 
+        // Ensure we get the exact record
+        QHSInspectD::where('no_dokumen', $no_dokumen)
+            ->where('sub', $sub)
+            ->update($validation);
 
-        $data->update($validation);
-
-        return $data;
+        // Update only this specific record
+        return QHSInspectD::where('no_dokumen', $no_dokumen)->where('sub', $sub)->with([
+            'inspectH:no_dokumen,tanggal,kode_lokasi',
+            'inspectH.lokasi:kode_lokasi,nama_lokasi'
+        ])
+        ->firstOrFail();
     }
 }

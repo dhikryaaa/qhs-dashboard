@@ -53,24 +53,41 @@ class TransaksiInspeksiController extends Controller
     public function update(Request $request, string $id)
     {
         [$no_dokumen, $sub] = explode(',', $id);
-
-        $data = QHSInspectD::with([
-            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
-            'inspectH.departemen:kode_dept,nama_dept',
-            'inspectH.lokasi:kode_lokasi,nama_lokasi',
-        ])->where('no_dokumen', $no_dokumen)->where('sub', (int) $sub)->firstOrFail();
+        $sub = (int) $sub;
 
         $validation = $request->validate([
             'dokumen' => 'sometimes|nullable|string',
             'referensi' => 'sometimes|nullable|string',
             'saran_koreksi' => 'sometimes|nullable|string',
             'saran_korektif' => 'sometimes|nullable|string',
+            'status' => 'sometimes|nullable|string',
         ]);
 
-        $validation['status'] ='Open';
+        QHSInspectD::where('no_dokumen', $no_dokumen)
+            ->where('sub', $sub)
+            ->update($validation);
 
-        $data->update($validation);
+        return QHSInspectD::where('no_dokumen', $no_dokumen)->where('sub', $sub)->with([
+            'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',
+            'inspectH.departemen:kode_dept,nama_dept',
+            'inspectH.lokasi:kode_lokasi,nama_lokasi',
+        ])->firstOrFail();
+    }
 
-        return $data;
+    /**
+     * Delete the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        [$no_dokumen, $sub] = explode(',', $id);
+        $sub = (int) $sub;
+
+        QHSInspectD::where('no_dokumen', $no_dokumen)
+            ->where('sub', $sub)
+            ->delete();
+
+        return response()->json([
+            'message' => 'Data inspeksi berhasil dihapus'
+        ], 200);
     }
 }
