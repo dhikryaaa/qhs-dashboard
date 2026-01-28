@@ -17,7 +17,7 @@ class TransaksiPerbaikanController extends Controller
     {
         $page = $request->get('per_page', 5);
 
-        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_temuan', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
+        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_temuan', 'deskripsi', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
             ->with([
                 'inspectH:no_dokumen,tanggal,kode_lokasi',
                 'inspectH.lokasi:kode_lokasi,nama_lokasi'
@@ -34,7 +34,7 @@ class TransaksiPerbaikanController extends Controller
     {
         [$no_dokumen, $sub] = explode(',', $id);
 
-        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_temuan', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
+        $data = QHSInspectD::select(['no_dokumen', 'sub', 'bukti_temuan', 'deskripsi', 'bukti_perbaikan', 'saran_koreksi', 'saran_korektif', 'status', 'dokumen', 'tgl_perbaikan'])
             ->with([
                 'inspectH:no_dokumen,tanggal,kode_lokasi',
                 'inspectH.lokasi:kode_lokasi,nama_lokasi',

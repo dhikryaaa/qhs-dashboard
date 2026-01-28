@@ -797,7 +797,7 @@
                 <td>${item.bukti_temuan ? `<img src="/storage/bukti_temuan/${item.bukti_temuan}" alt="Bukti Temuan" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
                 <td>${tanggal}</td>
                 <td>${item.inspect_h?.lokasi?.nama_lokasi || '-'}</td>
-                <td><div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${item.saran_koreksi || '-'}</div></td>
+                <td><div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${item.deskripsi || '-'}</div></td>
                 <td><div class="saran-box"><strong>Koreksi:</strong><p>${item.saran_koreksi || '-'}</p><strong>Korektif:</strong><p>${item.saran_korektif || '-'}</p></div></td>
                 <td class="status-icon">
                     <span class="status-indicator" data-status="${item.status}">
