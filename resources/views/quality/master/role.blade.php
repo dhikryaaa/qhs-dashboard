@@ -6,34 +6,33 @@
 
 @section('content')
 <style>
-    /* ========== MASTER ROLE PAGE STYLES ========== */
+    /* ========================================
+       1. LAYOUT & STRUCTURE
+       ======================================== */
     
-    /* Override Floating Header to include page title */
     .floating-header-card {
         justify-content: space-between !important;
     }
     
-    /* Page Title in Header */
     .page-title-header {
+        color: #98A2B3;
+        flex: none;
+        flex-grow: 0;
         font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
         font-style: normal;
         font-weight: 700;
-        font-size: 20px;
-        line-height: 24px;
-        color: #98A2B3;
-        margin: 0;
-        width: auto;
         height: 24px;
-        flex: none;
+        line-height: 24px;
+        margin: 0;
         order: 0;
-        flex-grow: 0;
+        width: auto;
     }
     
-    /* Content Card */
     .content-card {
         background: #FFFFFF;
-        box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
         border-radius: 12px;
+        box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
         width: 100%;
     }
     
