@@ -38,7 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('lokasi', QHSLokasiController::class);
     Route::apiResource('kategori', QHSKategoriController::class);
     Route::apiResource('transaksi-inspeksi', TransaksiInspeksiController::class);
+    Route::post('transaksi-inspeksi/upload', [TransaksiInspeksiController::class, 'uploadFile']);
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
+    Route::post('transaksi-perbaikan/upload', [TransaksiPerbaikanController::class, 'uploadFile']);
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);

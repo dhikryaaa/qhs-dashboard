@@ -229,6 +229,15 @@
         width: 150px;
     }
 
+    .dokumen-image {
+        border: 1px solid #EAECF0;
+        border-radius: 8px;
+        cursor: zoom-in;
+        height: 150px;
+        object-fit: cover;
+        width: 150px;
+    }
+
     .status-icon {
         align-items: flex-start;
         display: flex;
@@ -1103,6 +1112,7 @@
         <div class="modal-edit-body">
             <div class="modal-edit-image-section">
                 <img id="editImage" src="" alt="Bukti Inspeksi" class="modal-edit-image">
+                <input type="file" id="fileImageInput" style="display: none;" accept="image/*">
                 <button class="btn-upload-image" onclick="uploadNewImage()">Upload Gambar Baru</button>
             </div>
             
@@ -1259,7 +1269,7 @@
             
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td><img src="${item.dokumen || '#'}" alt="Bukti" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)"></td>
+                <td>${item.bukti_temuan ? `<img src="/storage/bukti_temuan/${item.bukti_temuan}" alt="Bukti Temuan" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
                 <td>${tanggal}</td>
                 <td>${item.inspect_h?.departemen?.nama_dept || '-'}</td>
                 <td>${item.inspect_h?.lokasi?.nama_lokasi || '-'}</td>
@@ -1302,7 +1312,7 @@
                         ` : ''}`}
                     </div>
                 </td>
-                <td>${item.bukti_perbaikan ? `<img src="${item.bukti_perbaikan}" alt="Dokumen" class="dokumen-image" onclick="openImageZoom(this.src)">` : '-'}</td>
+                <td>${item.bukti_perbaikan ? `<img src="/storage/bukti_perbaikan/${item.bukti_perbaikan}" alt="Dokumen" class="dokumen-image" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
             `;
             
             tbody.appendChild(row);
@@ -1478,7 +1488,13 @@
         const data = inspectionsData.find(item => item.no_dokumen + ',' + item.sub === id);
         
         if (data) {
-            document.getElementById('editImage').src = data.dokumen || '';
+            // Display existing bukti_temuan image if available
+            if (data.bukti_temuan) {
+                document.getElementById('editImage').src = '/storage/bukti_temuan/' + data.bukti_temuan;
+            } else {
+                document.getElementById('editImage').src = '';
+            }
+            
             document.getElementById('editDept').value = data.inspect_h?.departemen?.nama_dept || '';
             document.getElementById('editLokasi').value = data.inspect_h?.lokasi?.nama_lokasi || '';
             document.getElementById('editDeskripsi').value = data.deskripsi || '';
@@ -1486,6 +1502,10 @@
             document.getElementById('editSumber').value = data.referensi || '';
             document.getElementById('editSaranKoreksi').value = data.saran_koreksi || '';
             document.getElementById('editSaranKorektif').value = data.saran_korektif || '';
+            
+            // Clear file input
+            const fileInput = document.getElementById('fileImageInput');
+            if (fileInput) fileInput.value = '';
         }
         
         document.getElementById('modal-edit').classList.add('active');
@@ -1497,8 +1517,21 @@
     }
 
     function uploadNewImage() {
-        alert('Upload gambar akan diintegrasikan oleh backend developer');
+        document.getElementById('fileImageInput').click();
     }
+
+    // Handle file selection
+    document.getElementById('fileImageInput')?.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('editImage').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
 
     async function saveEdit() {
         if (currentInspectionId) {
@@ -1509,6 +1542,33 @@
 
                 const lokasiSelect = document.getElementById('editLokasi');
                 const lokasiCode = lokasiSelect.options[lokasiSelect.selectedIndex]?.dataset.id || '';
+
+                let buktiTemuanPath = '';
+                
+                // Check if there's a new image file selected
+                const fileInput = document.getElementById('fileImageInput');
+                if (fileInput && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const [no_dokumen, sub] = currentInspectionId.split(',');
+                    
+                    // Upload file and get path
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('no_dokumen', no_dokumen);
+                    
+                    const uploadResponse = await fetch('/api/transaksi-inspeksi/upload', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                        },
+                        body: formData
+                    });
+                    
+                    if (!uploadResponse.ok) throw new Error('Failed to upload image');
+                    
+                    const uploadData = await uploadResponse.json();
+                    buktiTemuanPath = uploadData.file_name;
+                }
 
                 const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
                     method: 'PUT',
@@ -1523,11 +1583,17 @@
                         saran_koreksi: document.getElementById('editSaranKoreksi').value,
                         saran_korektif: document.getElementById('editSaranKorektif').value,
                         kode_dept: deptCode,
-                        kode_lokasi: lokasiCode
+                        kode_lokasi: lokasiCode,
+                        bukti_temuan: buktiTemuanPath
                     })
                 });
                 
                 if (!response.ok) throw new Error('Failed to update');
+                
+                // Clear file input after successful save
+                if (fileInput) {
+                    fileInput.value = '';
+                }
                 
                 await loadInspections(document.getElementById('filterDepartemen').value);
                 alert('Data berhasil diperbarui');

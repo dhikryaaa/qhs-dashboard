@@ -188,9 +188,9 @@
         border: 1px solid #EAECF0;
         border-radius: 8px;
         cursor: zoom-in;
-        height: 100px;
+        height: 150px;
         object-fit: cover;
-        width: 100px;
+        width: 150px;
     }
 
     .status-icon {
@@ -336,7 +336,162 @@
     }
 
     /* ========================================
-       7. MODALS - IMAGE ZOOM
+       7. MODALS - EDIT/UPLOAD MODAL
+       ======================================== */
+    .modal-edit {
+        background: var(--ubs-background-grey);
+        border-radius: 9.6px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 19.2px 16px;
+        width: 689.6px;
+    }
+
+    .modal-edit-header {
+        align-items: center;
+        border-bottom: 0.8px solid #9A9A9A;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 0 12.8px 0;
+    }
+
+    .modal-edit-title {
+        color: var(--ubs-blue);
+        font-family: 'Public Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 24px;
+        margin: 0;
+    }
+
+    .btn-close {
+        align-items: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        height: 22.4px;
+        justify-content: center;
+        padding: 0;
+        width: 22.4px;
+    }
+
+    .btn-close svg {
+        height: 100%;
+        width: 100%;
+    }
+
+    .btn-close:hover svg path {
+        stroke: var(--ubs-dark-grey);
+    }
+
+    .modal-edit-body {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .modal-edit-image-section {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-edit-image {
+        border-radius: 8px;
+        height: 200px;
+        object-fit: cover;
+        width: 200px;
+    }
+
+    .btn-upload-image {
+        align-items: center;
+        background: #0B4A6F;
+        border: none;
+        border-radius: 6px;
+        box-shadow: 0px 0.8px 6.4px rgba(16, 24, 40, 0.16);
+        color: #FFFFFF;
+        cursor: pointer;
+        display: flex;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 11.2px;
+        font-weight: 600;
+        gap: 6.4px;
+        height: 36px;
+        justify-content: center;
+        line-height: 13px;
+        padding: 6.4px 12.8px;
+        width: auto;
+    }
+
+    .btn-upload-image:hover {
+        opacity: 0.9;
+    }
+
+    .modal-edit-footer {
+        border-top: 1px solid #9A9A9A;
+        display: flex;
+        gap: 12.8px;
+        justify-content: flex-end;
+        padding: 12px 0 0 0;
+    }
+
+    .modal-edit-footer .btn-modal-cancel {
+        align-items: center;
+        background: #F6FEF9;
+        border: 0.8px solid #0B4A6F;
+        border-radius: 6.4px;
+        box-shadow: 0px 0.8px 6.4px rgba(16, 24, 40, 0.16), 0px 4px 8px 2px rgba(56, 56, 56, 0.1);
+        box-sizing: border-box;
+        color: #0B4A6F;
+        cursor: pointer;
+        display: flex;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 11.2px;
+        font-weight: 600;
+        gap: 6.4px;
+        height: 36.8px;
+        justify-content: center;
+        line-height: 13px;
+        padding: 6.4px 12.8px;
+        width: 100px;
+    }
+
+    .modal-edit-footer .btn-modal-cancel:hover {
+        opacity: 0.9;
+    }
+
+    .btn-save {
+        align-items: center;
+        background: #0B4A6F;
+        border: none;
+        border-radius: 6px;
+        box-shadow: 0px 0.8px 6.4px rgba(16, 24, 40, 0.16), 0px 4px 8px 2px rgba(56, 56, 56, 0.1);
+        color: #FFFFFF;
+        cursor: pointer;
+        display: flex;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 11.2px;
+        font-weight: 600;
+        gap: 6.4px;
+        height: 36.8px;
+        justify-content: center;
+        line-height: 13px;
+        padding: 6.4px 12.8px;
+        width: 100px;
+    }
+
+    .btn-save:hover {
+        opacity: 0.9;
+    }
+
+    /* ========================================
+       8. MODALS - IMAGE ZOOM
        ======================================== */
     .modal-image-zoom {
         align-items: center;
@@ -389,7 +544,7 @@
     }
 
     /* ========================================
-       8. TABLE FOOTER & PAGINATION
+       9. TABLE FOOTER & PAGINATION
        ======================================== */
     .table-footer {
         align-items: center;
@@ -520,6 +675,31 @@
     </div>
 </div>
 
+<!-- ========== UPLOAD MODAL ========== -->
+<div id="modal-upload" class="modal-overlay">
+    <div class="modal-edit">
+        <div class="modal-edit-header">
+            <h3 class="modal-edit-title">Upload Bukti Perbaikan</h3>
+            <button class="btn-close" onclick="closeUploadModal()">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16.5 5.5L5.5 16.5M5.5 5.5L16.5 16.5" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-edit-body">
+            <div class="modal-edit-image-section">
+                <img id="uploadPreviewImage" src="" alt="Bukti Perbaikan" class="modal-edit-image">
+                <input type="file" id="fileUploadInput" style="display: none;" accept="image/*">
+                <button class="btn-upload-image" onclick="selectUploadFile()">Upload Gambar Baru</button>
+            </div>
+        </div>
+        <div class="modal-edit-footer">
+            <button class="btn-modal-cancel" onclick="closeUploadModal()">Batal</button>
+            <button class="btn-save" onclick="saveUploadedFile()">Simpan</button>
+        </div>
+    </div>
+</div>
+
 <!-- ========== SEND MODAL ========== -->
 <div id="modal-send" class="modal-overlay">
     <div class="modal-send">
@@ -614,7 +794,7 @@
             
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td><img src="${item.dokumen || '#'}" alt="Bukti" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)"></td>
+                <td>${item.bukti_temuan ? `<img src="/storage/bukti_temuan/${item.bukti_temuan}" alt="Bukti Temuan" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
                 <td>${tanggal}</td>
                 <td>${item.inspect_h?.lokasi?.nama_lokasi || '-'}</td>
                 <td><div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${item.saran_koreksi || '-'}</div></td>
@@ -638,7 +818,7 @@
                         </button>
                     </div>
                 </td>
-                <td>${item.bukti_perbaikan ? `<img src="${item.bukti_perbaikan}" alt="Dokumen" class="dokumen-image" onclick="openImageZoom(this.src)">` : '-'}</td>
+                <td>${item.bukti_perbaikan ? `<img src="/storage/bukti_perbaikan/${item.bukti_perbaikan}" alt="Bukti Perbaikan" class="dokumen-image" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
             `;
             
             tbody.appendChild(row);
@@ -717,6 +897,96 @@
         }
     }
 
+    // ========== MODAL FUNCTIONS: UPLOAD ==========
+    function openUploadModal(id) {
+        currentImprovementId = id;
+        
+        // Clear file input dan preview
+        const fileInput = document.getElementById('fileUploadInput');
+        if (fileInput) fileInput.value = '';
+        document.getElementById('uploadPreviewImage').src = '';
+        
+        document.getElementById('modal-upload').classList.add('active');
+    }
+
+    function closeUploadModal() {
+        document.getElementById('modal-upload').classList.remove('active');
+        currentImprovementId = null;
+        uploadedFile = null;
+    }
+
+    function selectUploadFile() {
+        document.getElementById('fileUploadInput').click();
+    }
+
+    // Handle file selection
+    document.getElementById('fileUploadInput')?.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('uploadPreviewImage').src = event.target.result;
+            uploadedFile = file;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    async function saveUploadedFile() {
+        if (!currentImprovementId || !uploadedFile) {
+            alert('Silakan pilih file terlebih dahulu');
+            return;
+        }
+
+        try {
+            const [no_dokumen, sub] = currentImprovementId.split(',');
+            
+            // Upload file
+            const formData = new FormData();
+            formData.append('file', uploadedFile);
+            formData.append('no_dokumen', no_dokumen);
+            
+            const uploadResponse = await fetch('/api/transaksi-perbaikan/upload', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: formData
+            });
+            
+            if (!uploadResponse.ok) throw new Error('Failed to upload image');
+            
+            const uploadData = await uploadResponse.json();
+            const buktiPerbaikanPath = uploadData.file_name;
+            
+            // Update record with bukti_perbaikan path
+            const updateResponse = await fetch('/api/transaksi-perbaikan/' + currentImprovementId, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    bukti_perbaikan: buktiPerbaikanPath
+                })
+            });
+            
+            if (!updateResponse.ok) throw new Error('Failed to update');
+            
+            // Clear file input after successful save
+            const fileInput = document.getElementById('fileUploadInput');
+            if (fileInput) fileInput.value = '';
+            
+            await loadImprovements();
+            alert('Bukti perbaikan berhasil diupload');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Gagal upload bukti perbaikan');
+        }
+        
+        closeUploadModal();
+    }
 
     // ========== MODAL FUNCTIONS: SEND ==========
     function openSendModal(id) {
