@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\QHSInspectD;
+use App\Models\QHSInspectH;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class TransaksiInspeksiController extends Controller
@@ -58,14 +60,45 @@ class TransaksiInspeksiController extends Controller
         $validation = $request->validate([
             'dokumen' => 'sometimes|nullable|string',
             'referensi' => 'sometimes|nullable|string',
+            'deskripsi' => 'sometimes|nullable|string',
             'saran_koreksi' => 'sometimes|nullable|string',
             'saran_korektif' => 'sometimes|nullable|string',
             'status' => 'sometimes|nullable|string',
+            'kode_dept' => 'sometimes|nullable|string',
+            'kode_lokasi' => 'sometimes|nullable|string',
         ]);
 
-        QHSInspectD::where('no_dokumen', $no_dokumen)
-            ->where('sub', $sub)
-            ->update($validation);
+        // Start transaction
+        DB::beginTransaction();
+        try {
+            // Update QHSInspectH if kode_dept or kode_lokasi is provided
+            if (isset($validation['kode_dept']) || isset($validation['kode_lokasi'])) {
+                $inspectH_updates = [];
+                
+                if (isset($validation['kode_dept'])) {
+                    $inspectH_updates['kode_dept'] = $validation['kode_dept'];
+                    unset($validation['kode_dept']);
+                }
+                
+                if (isset($validation['kode_lokasi'])) {
+                    $inspectH_updates['kode_lokasi'] = $validation['kode_lokasi'];
+                    unset($validation['kode_lokasi']);
+                }
+
+                QHSInspectH::where('no_dokumen', $no_dokumen)
+                    ->update($inspectH_updates);
+            }
+
+            // Update QHSInspectD
+            QHSInspectD::where('no_dokumen', $no_dokumen)
+                ->where('sub', $sub)
+                ->update($validation);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         return QHSInspectD::where('no_dokumen', $no_dokumen)->where('sub', $sub)->with([
             'inspectH:no_dokumen,tanggal,kode_lokasi,kode_dept',

@@ -1503,6 +1503,13 @@
     async function saveEdit() {
         if (currentInspectionId) {
             try {
+                // Get the ID values from the selected dropdown options
+                const deptSelect = document.getElementById('editDept');
+                const deptCode = deptSelect.options[deptSelect.selectedIndex]?.dataset.id || '';
+
+                const lokasiSelect = document.getElementById('editLokasi');
+                const lokasiCode = lokasiSelect.options[lokasiSelect.selectedIndex]?.dataset.id || '';
+
                 const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
                     method: 'PUT',
                     headers: {
@@ -1514,7 +1521,9 @@
                         referensi: document.getElementById('editSumber').value,
                         deskripsi: document.getElementById('editDeskripsi').value,
                         saran_koreksi: document.getElementById('editSaranKoreksi').value,
-                        saran_korektif: document.getElementById('editSaranKorektif').value
+                        saran_korektif: document.getElementById('editSaranKorektif').value,
+                        kode_dept: deptCode,
+                        kode_lokasi: lokasiCode
                     })
                 });
                 
