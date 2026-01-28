@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\QHSDepartemen;
 use App\Models\QHSRole;
 use App\Models\User;
+use Hash;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -41,20 +42,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $role = $request->get('kode_role');
-        QHSRole::findOrFail($role);
-
-        $dept = $request->get('kode_dept');
-        QHSDepartemen::findOrFail($dept);
-
         $validation = $request->validate([
             'no_induk' => 'required|string|unique:users,no_induk',
             'nama' => 'required|string',
             'aktif' => 'required|string',
-            'kode_role' => 'required|string',
-            'kode_dept' => 'required|string',
+            'kode_role' => 'nullable|string',
+            'kode_dept' => 'nullable|string',
             'password' => 'required|string'
         ]);
+
+        $validation['password'] = Hash::make($validation['password']);
 
         $data = User::create($validation);
 

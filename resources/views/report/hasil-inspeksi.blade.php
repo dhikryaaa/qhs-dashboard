@@ -1,89 +1,3 @@
-@php
-    // ========== DATA FETCHING ==========
-    // TODO: Replace this section with controller data when backend is ready
-    // Expected controller code:
-    //   $inspections = QHSInspectH::with(['details', 'inspectors', 'departemen', 'lokasi'])->get();
-    //   return view('report.hasil-inspeksi', compact('inspections'));
-    
-    // DUMMY DATA - DELETE THIS BLOCK WHEN SWITCHING TO DATABASE
-    // Simplified data matching screenshot
-    $tableData = [
-        [
-            'no_dokumen' => 'INS-001',
-            'tanggal' => '2026-01-13',
-            'kode_dept' => 'MKT',
-            'departemen' => 'MKT EKSPOR',
-            'jumlah' => 4,
-            'open' => 0,
-            'closed' => 4,
-            'percent_complete' => 100,
-            'tgl_perbaikan' => '2026-01-23',
-            'percent_perbaikan' => 100
-        ],
-        [
-            'no_dokumen' => 'INS-002',
-            'tanggal' => '2026-01-27',
-            'kode_dept' => 'COR',
-            'departemen' => 'COR',
-            'jumlah' => 2,
-            'open' => 0,
-            'closed' => 2,
-            'percent_complete' => 100,
-            'tgl_perbaikan' => '2026-1-29',
-            'percent_perbaikan' => 50
-        ],
-        [
-            'no_dokumen' => 'INS-003',
-            'tanggal' => '2026-1-28',
-            'kode_dept' => 'HOLLOW',
-            'departemen' => 'HOLLOW',
-            'jumlah' => 1,
-            'open' => 0,
-            'closed' => 1,
-            'percent_complete' => 100,
-            'tgl_perbaikan' => '2025-10-30',
-            'percent_perbaikan' => 100
-        ],
-        [
-            'no_dokumen' => 'INS-004',
-            'tanggal' => '2025-11-15',
-            'kode_dept' => 'MKT',
-            'departemen' => 'MKT EKSPOR',
-            'jumlah' => 3,
-            'open' => 1,
-            'closed' => 2,
-            'percent_complete' => 67,
-            'tgl_perbaikan' => '2025-11-20',
-            'percent_perbaikan' => 33
-        ],
-        [
-            'no_dokumen' => 'INS-005',
-            'tanggal' => '2025-12-05',
-            'kode_dept' => 'COR',
-            'departemen' => 'COR',
-            'jumlah' => 5,
-            'open' => 5,
-            'closed' => 0,
-            'percent_complete' => 0,
-            'tgl_perbaikan' => '-',
-            'percent_perbaikan' => 0
-        ],
-        [
-            'no_dokumen' => 'INS-006',
-            'tanggal' => '2025-12-18',
-            'kode_dept' => 'HOLLOW',
-            'departemen' => 'HOLLOW',
-            'jumlah' => 2,
-            'open' => 1,
-            'closed' => 1,
-            'percent_complete' => 50,
-            'tgl_perbaikan' => '2025-12-22',
-            'percent_perbaikan' => 50
-        ]
-    ];
-    // END DUMMY DATA
-@endphp
-
 @extends('layouts.dashboard')
 
 @section('page-title')
@@ -286,12 +200,8 @@
         background: #FFFFFF;
         border-radius: 12px;
         box-shadow: 0px 4px 4px -1px rgba(12, 12, 13, 0.1);
-        display: none;
-        overflow-x: auto;
-    }
-
-    .table-section.visible {
         display: block;
+        overflow-x: auto;
     }
 
     .table-header {
@@ -456,6 +366,15 @@
     }
 
     .empty-message {
+        text-align: center;
+        color: #344054;
+        font-family: var(--ubs-font-sidebar);
+        font-weight: 400;
+        font-size: 16px;
+        padding: 20px;
+    }
+    
+    .empty-message.filter-required {
         color: #98A2B3;
         font-style: italic;
         text-align: center;
@@ -538,8 +457,8 @@
     <!-- ========== TABS SECTION ========== -->
     <div class="tabs-section">
         <div class="tabs-container">
-            <div class="tab-item active" onclick="switchTab('mutu')">Mutu</div>
-            <div class="tab-item" onclick="switchTab('k3')">K3</div>
+            <div class="tab-item active" onclick="switchTab('K3')">K3</div>
+            <div class="tab-item" onclick="switchTab('Mutu')">Mutu</div>
         </div>
     </div>
 
@@ -564,9 +483,6 @@
                 <label class="filter-label">Departemen</label>
                 <select id="filterDepartemen" class="filter-select">
                     <option value="">Semua Departemen</option>
-                    <option value="MKT">MKT EKSPOR</option>
-                    <option value="COR">COR</option>
-                    <option value="HOLLOW">HOLLOW</option>
                 </select>
             </div>
 
@@ -575,9 +491,8 @@
                 <label class="filter-label">Status Temuan</label>
                 <select id="filterStatus" class="filter-select">
                     <option value="">Semua Status</option>
-                    <option value="complete">Complete (100%)</option>
-                    <option value="partial">Partial (1-99%)</option>
-                    <option value="incomplete">Incomplete (0%)</option>
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
                 </select>
             </div>
 
@@ -596,7 +511,7 @@
         <!-- Table Header -->
         <div class="table-header">
             <h2 class="table-title">List Hasil Inspeksi</h2>
-            <button class="btn-export">
+            <button class="btn-export" onclick="exportToExcel()">
                 <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11.167 13V13.667H0.5V13H11.167ZM7.83301 0.5V5.5H10.46L5.83301 10.126L1.20703 5.5H3.83301V0.5H7.83301ZM4.5 6.16699H2.81836L5.83301 9.18164L6.18652 8.82812L7.99512 7.02051L8.84863 6.16699H7.16699V1.16699H4.5V6.16699Z" fill="black" stroke="#FCFAFF"/>
                 </svg>
@@ -624,7 +539,7 @@
                             <path d="M16 16L12.375 12.375M14.3333 7.66667C14.3333 11.3486 11.3486 14.3333 7.66667 14.3333C3.98477 14.3333 1 11.3486 1 7.66667C1 3.98477 3.98477 1 7.66667 1C11.3486 1 14.3333 3.98477 14.3333 7.66667Z" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </span>
-                    <input type="text" id="searchInput" class="search-input" placeholder="" onkeyup="filterTable()">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Cari departemen..." onkeyup="filterTable()">
                 </div>
             </div>
         </div>
@@ -646,7 +561,7 @@
             </thead>
             <tbody id="tableBody">
                 <tr class="empty-state">
-                    <td colspan="9" class="empty-message">
+                    <td colspan="9" class="empty-message filter-required">
                         Harap filter periode / departemen / status terlebih dahulu
                     </td>
                 </tr>
@@ -675,108 +590,291 @@
 </div>
 
 <script>
-    // ========== GLOBAL STATE ==========
-    const fullTableData = @json($tableData);
+    // Global variables
+    let allTabData = {
+        'K3': [],
+        'Mutu': []
+    };
+    let currentPagePerTab = {
+        'K3': 1,
+        'Mutu': 1
+    };
+    let paginationInfoPerTab = {
+        'K3': { total: 0, last_page: 0, per_page: 5 },
+        'Mutu': { total: 0, last_page: 0, per_page: 5 }
+    };
     let filteredData = [];
-    let currentPage = 1;
+    let allFilteredData = [];
     let entriesPerPage = 5;
-    let activeTab = 'mutu';
-
-    // ========== HELPER FUNCTIONS ==========
-    function formatDate(dateStr) {
-        if (!dateStr || dateStr === '-') return '-';
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    let activeTab = 'K3';
+    
+    // API Base URL
+    const API_BASE_URL = '{{ url("/api/report-inspeksi") }}';
+    const API_DEPARTEMEN_URL = '{{ url("/api/departemen") }}';
+    const EXPORT_URL = '{{ url("/api/export-report-inspeksi") }}';
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up...');
+        
+        // Load departemen list first
+        loadDepartemenList();
+        
+        // Table section is always visible, just show empty state message
+        showEmptyFilterMessage();
+        
+        // Setup event listeners (if needed in future)
+        setupEventListeners();
+    });
+    
+    // Load departemen list for filter dropdown
+    function loadDepartemenList() {
+        console.log('Loading departemen list...');
+        
+        fetch(API_DEPARTEMEN_URL, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load departemen list');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Departemen list:', data);
+            
+            // Handle both array and object responses
+            const departemens = Array.isArray(data) ? data : (data.data || []);
+            
+            if (departemens.length > 0) {
+                const select = document.getElementById('filterDepartemen');
+                
+                departemens.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.kode_dept;
+                    option.textContent = dept.nama_dept;
+                    select.appendChild(option);
+                });
+                
+                console.log('Departemen dropdown populated with', departemens.length, 'items');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading departemen list:', error);
+        });
     }
-
-    function getStatusBadge(percentComplete) {
-        if (percentComplete === 100) {
-            return '<span class="status-badge complete">Complete</span>';
-        } else if (percentComplete === 0) {
-            return '<span class="status-badge incomplete">Incomplete</span>';
-        } else {
-            return '<span class="status-badge partial">In Progress</span>';
-        }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+        // Tab click listeners sudah di-handle dengan onclick di HTML
+        // Jadi tidak perlu menambahkan event listeners lagi
     }
-
-    function resetTableToEmptyState() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = `
-            <tr class="empty-state">
-                <td colspan="9" class="empty-message">
-                    Harap filter periode / departemen / status terlebih dahulu
-                </td>
-            </tr>
-        `;
-    }
-
-    function showNoDataMessage() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = `
-            <tr class="empty-state">
-                <td colspan="9" class="empty-message">
-                    Tidak ada data ditemukan
-                </td>
-            </tr>
-        `;
-    }
-
-    // ========== TAB FUNCTIONS ==========
+    
+    // Switch Tab Function
     function switchTab(tab) {
-        activeTab = tab;
+        // Normalize tab name
+        const normalizedTab = (tab === 'K3') ? 'K3' : 'Mutu';
+        activeTab = normalizedTab;
+        console.log('Switching tab to:', activeTab);
         
         const tabs = document.querySelectorAll('.tab-item');
-        tabs.forEach(tabEl => {
+        tabs.forEach((tabEl) => {
             tabEl.classList.remove('active');
         });
-        event.currentTarget.classList.add('active');
         
-        document.getElementById('filterPeriode').value = '';
-        document.getElementById('filterDepartemen').value = '';
-        document.getElementById('filterStatus').value = '';
-        document.getElementById('searchInput').value = '';
+        // Find and activate the clicked tab
+        const tabTexts = Array.from(tabs).map(tab => tab.textContent.trim());
+        const tabIndex = tabTexts.indexOf(activeTab);
+        if (tabIndex !== -1) {
+            tabs[tabIndex].classList.add('active');
+        }
         
-        document.getElementById('tableSection').classList.remove('visible');
-        filteredData = [];
-        currentPage = 1;
-        
-        resetTableToEmptyState();
-    }
-
-    // ========== FILTER FUNCTIONS ==========
-    function applyFilter() {
+        // Check if filters are set
         const periode = document.getElementById('filterPeriode').value;
         const departemen = document.getElementById('filterDepartemen').value;
         const status = document.getElementById('filterStatus').value;
         
-        filteredData = fullTableData.filter(row => {
-            let matches = true;
-            
-            if (periode) {
-                const [selectedYear, selectedMonth] = periode.split('-').map(Number);
-                const rowDate = new Date(row.tanggal);
-                if (selectedYear !== rowDate.getFullYear() || 
-                    selectedMonth !== (rowDate.getMonth() + 1)) {
-                    matches = false;
-                }
-            }
-            
-            if (departemen && row.kode_dept !== departemen) {
-                matches = false;
-            }
-            
-            if (status) {
-                if (status === 'complete' && row.percent_complete !== 100) matches = false;
-                if (status === 'partial' && (row.percent_complete === 0 || row.percent_complete === 100)) matches = false;
-                if (status === 'incomplete' && row.percent_complete !== 0) matches = false;
-            }
-            
-            return matches;
-        });
+        // Clear search when switching tabs
+        document.getElementById('searchInput').value = '';
         
-        document.getElementById('tableSection').classList.add('visible');
-        currentPage = 1;
-        renderTable();
+        // Reset pagination for all tabs when switching
+        currentPagePerTab['K3'] = 1;
+        currentPagePerTab['Mutu'] = 1;
+        
+        // If filters are set, reload data, otherwise show empty message
+        if (periode || departemen || status) {
+            loadDataFromAPI();
+        } else {
+            // Clear search when no filters
+            document.getElementById('searchInput').value = '';
+            showEmptyFilterMessage();
+        }
+    }
+    
+    // Load data from API - Load ALL data once
+    function loadDataFromAPI() {
+        const periode = document.getElementById('filterPeriode').value || '';
+        const departemen = document.getElementById('filterDepartemen').value || '';
+        const status = document.getElementById('filterStatus').value || '';
+        const page = currentPagePerTab[activeTab] || 1;
+        const perPage = entriesPerPage;
+        
+        // Check if at least one filter is set
+        if (!periode && !departemen && !status) {
+            showEmptyFilterMessage();
+            return;
+        }
+        
+        const params = new URLSearchParams();
+        if (periode) params.append('bulan', periode);
+        if (departemen) params.append('departemen', departemen);
+        if (status) params.append('status', status);
+        // Don't send search to API - we'll do client-side filtering
+        params.append('page', 1); // Always load page 1 to get all data for client-side search
+        params.append('per_page', 10000); // Get all data for client-side filtering (large limit)
+        
+        const url = `${API_BASE_URL}${params.toString() ? '?' + params.toString() : ''}`;
+        
+        console.log('Loading data from:', url);
+        
+        fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Full API Response:', data);
+            
+            if (data.success && data.kategori && data.pagination) {
+                console.log('Categories available:', Object.keys(data.kategori));
+                
+                // Store ALL data for both tabs (for client-side search)
+                // Use the actual returned data length, but we have the total from pagination
+                allTabData['K3'] = transformAPIData(data.kategori.K3 || []);
+                allTabData['Mutu'] = transformAPIData(data.kategori.Mutu || []);
+                
+                // Note: We use the actual loaded data for client-side filtering
+                // If there are more items than per_page limit, we'd need to load more pages
+                // For now, we work with what we have loaded
+                
+                // Apply client-side search and pagination
+                applyClientSideFilter();
+            } else {
+                console.log('Invalid response structure:', data);
+                showEmptyState();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            showEmptyState();
+        });
+    }
+    
+    // Transform API response to table format
+    function transformAPIData(apiData) {
+        if (!apiData || !Array.isArray(apiData)) {
+            return [];
+        }
+        
+        return apiData.map(item => ({
+            tgl_inspeksi: item.tgl_inspeksi,
+            departemen: item.departemen,
+            jumlah: item.total_issue,
+            open: item.open_issue,
+            closed: item.closed_issue,
+            percent_complete: item.persentase_per_kategori,
+            tgl_perbaikan: item.tgl_perbaikan,
+            percent_perbaikan: item.persentase_semua_kategori
+        }));
+    }
+    
+    // Apply Filter Function
+    function applyFilter() {
+        console.log('Apply filter clicked');
+        // Reset to page 1 when applying filter
+        currentPagePerTab['K3'] = 1;
+        currentPagePerTab['Mutu'] = 1;
+        // Clear search input
+        document.getElementById('searchInput').value = '';
+        // Load data with filters applied
+        loadDataFromAPI();
+    }
+    
+    // Show empty filter message
+    function showEmptyFilterMessage() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = `
+            <tr class="empty-state">
+                <td colspan="9" class="empty-message filter-required">
+                    Harap filter periode / departemen / status terlebih dahulu
+                </td>
+            </tr>
+        `;
+        updateFooter(0, 0, 0);
+    }
+    
+    // Apply client-side filtering (search by department)
+    function applyClientSideFilter() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const currentTabData = allTabData[activeTab] || [];
+        
+        // Filter by department name if search term exists
+        if (searchTerm) {
+            allFilteredData = currentTabData.filter(item => {
+                const deptName = (item.departemen || '').toLowerCase();
+                return deptName.includes(searchTerm);
+            });
+        } else {
+            allFilteredData = [...currentTabData];
+        }
+        
+        // Apply pagination
+        const page = currentPagePerTab[activeTab] || 1;
+        const startIndex = (page - 1) * entriesPerPage;
+        const endIndex = startIndex + entriesPerPage;
+        filteredData = allFilteredData.slice(startIndex, endIndex);
+        
+        // Update pagination info
+        const total = allFilteredData.length;
+        const lastPage = Math.ceil(total / entriesPerPage);
+        paginationInfoPerTab[activeTab] = {
+            total: total,
+            last_page: lastPage,
+            per_page: entriesPerPage,
+            current_page: page
+        };
+        
+        // Render table
+        if (filteredData.length > 0) {
+            renderTable();
+        } else {
+            showEmptyState();
+        }
+    }
+    
+    // Show empty state
+    function showEmptyState() {
+        console.log('Showing empty state');
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = `
+            <tr class="empty-state">
+                <td colspan="9" class="empty-message">
+                    Tidak ada data
+                </td>
+            </tr>
+        `;
+        updateFooter(0, 0, 0);
     }
 
     function filterTable() {
@@ -792,34 +890,52 @@
 
     // ========== RENDER FUNCTIONS ==========
     function renderTable() {
+        console.log('Rendering table with', filteredData.length, 'records');
         const tbody = document.getElementById('tableBody');
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         
-        let displayData = filteredData.filter(row => {
-            return row.no_dokumen.toLowerCase().includes(searchTerm) ||
-                   row.departemen.toLowerCase().includes(searchTerm);
-        });
-        
-        const startIndex = (currentPage - 1) * entriesPerPage;
-        const endIndex = Math.min(startIndex + entriesPerPage, displayData.length);
-        const pageData = displayData.slice(startIndex, endIndex);
+        // For display, we just show the paginated filtered data
+        const pageData = filteredData;
         
         tbody.innerHTML = '';
         
         if (pageData.length === 0) {
-            showNoDataMessage();
+            tbody.innerHTML = `
+                <tr class="empty-state">
+                    <td colspan="9" class="empty-message">
+                        Tidak ada data
+                    </td>
+                </tr>
+            `;
             updateFooter(0, 0, 0);
             return;
         }
         
         pageData.forEach((row, index) => {
+            const paginationInfo = paginationInfoPerTab[activeTab];
+            const startIndex = (paginationInfo.current_page - 1) * paginationInfo.per_page;
             const rowNum = startIndex + index + 1;
-            const statusBadge = getStatusBadge(row.percent_complete);
+            
+            // Format date to mm/dd/yyyy
+            const formatDate = (dateStr) => {
+                if (!dateStr || dateStr === '-' || dateStr === 'NULL' || dateStr === null) return '-';
+                try {
+                    const date = new Date(dateStr);
+                    if (isNaN(date.getTime())) return '-';
+                    
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const year = date.getFullYear();
+                    
+                    return `${month}/${day}/${year}`;
+                } catch (e) {
+                    return '-';
+                }
+            };
             
             tbody.innerHTML += `
                 <tr class="data-row">
                     <td class="center">${rowNum}</td>
-                    <td>${formatDate(row.tanggal)}</td>
+                    <td>${formatDate(row.tgl_inspeksi)}</td>
                     <td>${row.departemen}</td>
                     <td class="center">${row.jumlah}</td>
                     <td class="center">${row.open}</td>
@@ -831,10 +947,18 @@
             `;
         });
         
-        updateFooter(startIndex + 1, endIndex, displayData.length);
+        console.log('Rendered', pageData.length, 'rows');
+        
+        // Update footer with pagination info
+        const paginationInfo = paginationInfoPerTab[activeTab];
+        const startRow = paginationInfo.total > 0 ? ((paginationInfo.current_page - 1) * paginationInfo.per_page) + 1 : 0;
+        const endRow = Math.min(paginationInfo.current_page * paginationInfo.per_page, paginationInfo.total);
+        
+        updateFooter(startRow, endRow, paginationInfo.total, paginationInfo.last_page);
     }
-
-    function updateFooter(start, end, total) {
+    
+    // Update Footer Info
+    function updateFooter(start, end, total, lastPage) {
         const footerInfo = document.getElementById('footerInfo');
         if (total === 0) {
             footerInfo.textContent = 'Showing 0 entries';
@@ -842,26 +966,80 @@
             footerInfo.textContent = `Showing ${start} to ${end} of ${total} entries`;
         }
         
-        const totalPages = Math.ceil(total / entriesPerPage);
+        // Update pagination buttons based on pagination info
+        const currentPage = paginationInfoPerTab[activeTab].current_page;
+        const totalPages = paginationInfoPerTab[activeTab].last_page;
+        
         document.getElementById('prevBtn').disabled = currentPage === 1;
         document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
     }
-
-    // ========== EVENT LISTENERS ==========
+    
+    // Update Entries Per Page
+    function updateEntriesDisplay() {
+        entriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
+        // Reset to page 1 when changing entries per page
+        currentPagePerTab[activeTab] = 1;
+        // Apply client-side filtering with new per_page
+        applyClientSideFilter();
+    }
+    
+    // Filter Table (Search) - Client-side search by department
+    function filterTable() {
+        // Reset to page 1 when searching
+        currentPagePerTab[activeTab] = 1;
+        // Apply client-side filtering
+        applyClientSideFilter();
+    }
+    
+    // Pagination
     document.getElementById('prevBtn').addEventListener('click', () => {
+        const currentPage = currentPagePerTab[activeTab];
         if (currentPage > 1) {
-            currentPage--;
-            renderTable();
+            currentPagePerTab[activeTab]--;
+            applyClientSideFilter();
         }
     });
 
     document.getElementById('nextBtn').addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredData.length / entriesPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
+        const currentPage = currentPagePerTab[activeTab];
+        const lastPage = paginationInfoPerTab[activeTab].last_page;
+        if (currentPage < lastPage) {
+            currentPagePerTab[activeTab]++;
+            applyClientSideFilter();
         }
     });
+    
+    // Export to Excel Function
+    function exportToExcel() {
+        // Get filter values
+        const periode = document.getElementById('filterPeriode').value || '';
+        const departemen = document.getElementById('filterDepartemen').value || '';
+        const status = document.getElementById('filterStatus').value || '';
+        
+        // Check if at least one filter is set
+        if (!periode && !departemen && !status) {
+            alert('Silakan pilih minimal satu filter sebelum export!');
+            return;
+        }
+        
+        // Build export URL with parameters
+        const params = new URLSearchParams();
+        if (periode) params.append('bulan', periode);
+        if (departemen) params.append('departemen', departemen);
+        if (status) params.append('status', status);
+        
+        const exportUrlWithParams = `${EXPORT_URL}${params.toString() ? '?' + params.toString() : ''}`;
+        
+        console.log('Exporting to:', exportUrlWithParams);
+        
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = exportUrlWithParams;
+        link.download = 'rekap-inspeksi.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
 
 @endsection

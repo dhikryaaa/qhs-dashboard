@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ExportReportAsExcelController;
 use App\Http\Controllers\Api\QHSDepartemenController;
 use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSKategoriController;
@@ -40,4 +41,5 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
+    Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
 //});
