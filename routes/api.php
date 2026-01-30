@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', [AuthController::class, 'userData']);
 });
 
-Route::middleware('auth')->group(function() {
+//Route::middleware('auth')->group(function() {
     Route::apiResource('role', QHSRoleController::class);
     Route::apiResource('inspector', QHSInspectorController::class);
     Route::apiResource('user', UserController::class);
@@ -44,4 +44,4 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
-});
+//});
