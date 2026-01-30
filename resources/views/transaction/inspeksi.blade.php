@@ -1,42 +1,13 @@
-@php
-    // ========== DUMMY DATA ==========
-    $inspections = [
-        [
-            'id' => 1,
-            'dokumen' => 'INS/2026/01/001',
-            'tgl_inspeksi' => '15 Jan 2026',
-            'dept' => 'Warehouse',
-            'lokasi' => 'Loading Dock A',
-            'deskripsi' => 'Pekerja tidak menggunakan helm saat bongkar muat barang di area wajib APD.',
-            'standar' => 'SOP-WH-001: Penggunaan APD.',
-            'sumber' => 'Permenaker No. 08/2010.',
-            'saran' => 'Berikan teguran lisan.',
-            'status' => 'DRAFT',
-            'tgl_perbaikan' => '-',
-            'image' => asset('img/hero-warehouse.jpg')
-        ],
-        [
-            'id' => 2,
-            'dokumen' => 'INS/2026/01/002',
-            'tgl_inspeksi' => '16 Jan 2026',
-            'dept' => 'Production',
-            'lokasi' => 'Line 4',
-            'deskripsi' => 'Kabel mesin terkelupas.',
-            'standar' => 'ISO 45001: Electrical.',
-            'sumber' => 'PUIL 2011.',
-            'saran' => 'Ganti kabel.',
-            'status' => 'DRAFT',
-            'tgl_perbaikan' => '-',
-            'image' => asset('img/hero-warehouse.jpg')
-        ]
-    ];
-@endphp
-
 @extends('layouts.app')
 
 @section('page-title')
 <h1 class="page-title-header"><span class="breadcrumb-parent">Transaksi</span> / <span class="breadcrumb-active">Inspeksi</span></h1>
 @endsection
+
+@php
+    $departments = \App\Models\QHSDepartemen::select('kode_dept', 'nama_dept')->get();
+    $locations = \App\Models\QHSLokasi::select('kode_lokasi', 'nama_lokasi')->get();
+@endphp
 
 @section('content')
 <style>
@@ -250,6 +221,15 @@
     }
 
     .bukti-image {
+        border: 1px solid #EAECF0;
+        border-radius: 8px;
+        cursor: zoom-in;
+        height: 150px;
+        object-fit: cover;
+        width: 150px;
+    }
+
+    .dokumen-image {
         border: 1px solid #EAECF0;
         border-radius: 8px;
         cursor: zoom-in;
@@ -671,6 +651,40 @@
         outline: none;
     }
 
+    /* Saran Perbaikan Box */
+    .saran-perbaikan-box {
+        border: 1px solid #B5B5B5;
+        border-radius: 8px;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .saran-perbaikan-column {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 16px;
+    }
+
+    .saran-perbaikan-column:not(:last-child) {
+        border-right: 1px solid #B5B5B5;
+    }
+
+    .saran-perbaikan-column .form-label {
+        margin: 0;
+    }
+
+    .saran-perbaikan-column .form-textarea {
+        border: none;
+        height: 100px;
+        padding: 0;
+    }
+
+    .saran-perbaikan-column .form-textarea:focus {
+        border: none;
+    }
+
     .modal-edit-footer {
         border-top: 1px solid #9A9A9A;
         display: flex;
@@ -874,17 +888,100 @@
     .btn-closing-confirm:hover {
         background: var(--ubs-bright-blue);
     }
+
+    /* ========================================
+       12. STATUS STYLES
+       ======================================== */
+    .status-open {
+        color: #F04438;
+    }
+
+    .status-progress {
+        color: #F79009;
+    }
+
+    .status-closed {
+        color: #039855;
+    }
+
+    /* ========================================
+       13. SARAN BOX
+       ======================================== */
+    .saran-box {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .saran-box strong {
+        display: block;
+        margin-top: 8px;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+
+    .saran-box strong:first-child {
+        margin-top: 0;
+    }
+
+    .saran-box p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ========================================
+       14. TABLE FOOTER & PAGINATION
+       ======================================== */
+    .table-footer {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 20px;
+    }
+
+    .footer-info {
+        color: #667085;
+        font-family: 'Public Sans', sans-serif;
+        font-size: 14px;
+    }
+
+    .pagination {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+    }
+
+    .pagination-btn {
+        align-items: center;
+        background: #FFFFFF;
+        border: 1px solid #D0D5DD;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        height: 32px;
+        justify-content: center;
+        transition: all 0.2s ease;
+        width: 32px;
+    }
+
+    .pagination-btn:hover {
+        background: #F9FAFB;
+        border-color: var(--ubs-blue);
+    }
+
+    .pagination-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
 </style>
 
 <div class="inspeksi-container">
     <!-- ========== FILTER BAR ========== -->
     <div class="filter-bar">
         <select class="filter-select" id="filterDepartemen">
-            <option value="">Semua Departemen</option>
-            <option value="Warehouse">Warehouse</option>
-            <option value="Production">Production</option>
-            <option value="Quality Control">Quality Control</option>
-            <option value="Maintenance">Maintenance</option>
+            <option value="">Pilih Departemen</option>
+            @foreach($departments as $dept)
+            <option value="{{ $dept->nama_dept }}">{{ $dept->nama_dept }}</option>
+            @endforeach
         </select>
         <button class="btn-filter" onclick="applyFilter()">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -924,69 +1021,43 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                    <th>Bukti Inspeksi</th>
-                    <th>Tgl Inspeksi</th>
-                    <th>Dept</th>
-                    <th>Lokasi</th>
-                    <th>Deskripsi</th>
-                    <th>Standar</th>
-                    <th>Sumber Peraturan</th>
-                    <th>Saran Perbaikan</th>
-                    <th>Status Perbaikan</th>
-                    <th>Tgl Perbaikan</th>
-                    <th>Aksi</th>
-                    <th>Dokumen</th>
-                </tr>
-            </thead>
-            <tbody id="inspeksiTableBody">
-                @foreach($inspections as $index => $item)
-                <tr data-id="{{ $item['id'] }}">
-                    <td>{{ $index + 1 }}</td>
-                    <td><img src="{{ $item['image'] }}" alt="Bukti" class="bukti-image" onclick="openImageZoom('{{ $item['image'] }}')"></td>
-                    <td>{{ $item['tgl_inspeksi'] }}</td>
-                    <td>{{ $item['dept'] }}</td>
-                    <td>{{ $item['lokasi'] }}</td>
-                    <td>{{ $item['deskripsi'] }}</td>
-                    <td>{{ $item['standar'] }}</td>
-                    <td>{{ $item['sumber'] }}</td>
-                    <td>{{ $item['saran'] }}</td>
-                    <td class="status-icon">
-                        <span class="status-indicator" data-status="{{ $item['status'] }}">
-                            @if($item['status'] === 'SENT')
-                            <svg width="11" height="24" viewBox="0 0 11 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0 5.01C0 3.63 0.49 2.45 1.47 1.47C2.45 0.49 3.63 0 5.01 0C6.39 0 7.57 0.49 8.55 1.47C9.53 2.45 10.03 3.63 10.05 5.01C10.05 5.17 10.03 5.31 9.99 5.43L8.34 11.94C8.28 12.82 7.93 13.56 7.29 14.16C6.65 14.76 5.89 15.06 5.01 15.06C4.15 15.06 3.4 14.77 2.76 14.19C2.12 13.61 1.76 12.89 1.68 12.03C1.48 11.43 1.27 10.77 1.05 10.05C0.83 9.33 0.6 8.46 0.36 7.44C0.12 6.42 0 5.61 0 5.01ZM1.65 20.07C1.65 19.15 1.98 18.37 2.64 17.73C3.3 17.09 4.09 16.76 5.01 16.74C5.93 16.72 6.72 17.05 7.38 17.73C8.04 18.41 8.37 19.19 8.37 20.07C8.37 21.01 8.04 21.8 7.38 22.44C6.72 23.08 5.93 23.41 5.01 23.43C4.09 23.45 3.3 23.12 2.64 22.44C1.98 21.76 1.65 20.97 1.65 20.07Z" fill="#F04438"/>
-                            </svg>
-                            @else
-                            -
-                            @endif
-                        </span>
-                    </td>
-                    <td>{{ $item['tgl_perbaikan'] }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-action btn-edit" onclick="openEditModal({{ $item['id'] }})">
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 13.502H2.8125L11.1075 5.20703L8.295 2.39453L0 10.6895V13.502ZM1.5 11.312L8.295 4.51703L8.985 5.20703L2.19 12.002H1.5V11.312Z" fill="currentColor"/>
-                                    <path d="M11.5277 0.219375C11.2352 -0.073125 10.7627 -0.073125 10.4702 0.219375L9.09766 1.59187L11.9102 4.40438L13.2827 3.03188C13.5752 2.73938 13.5752 2.26688 13.2827 1.97438L11.5277 0.219375Z" fill="currentColor"/>
-                                </svg>
-                            </button>
-                            <button class="btn-action btn-delete" onclick="openDeleteModal({{ $item['id'] }})">
-                                <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4.5 0L3.75 0.75H0V2.25H0.75V13.5C0.75 13.8917 0.893497 14.291 1.17627 14.5737C1.45904 14.8565 1.85833 15 2.25 15H9.75C10.1417 15 10.541 14.8565 10.8237 14.5737C11.1065 14.291 11.25 13.8917 11.25 13.5V2.25H12V0.75H8.25L7.5 0H4.5ZM2.25 2.25H9.75V13.5H2.25V2.25ZM3.75 3.75V12H5.25V3.75H3.75ZM6.75 3.75V12H8.25V3.75H6.75Z" fill="currentColor"/>
-                                </svg>
-                            </button>
-                            <button class="btn-action btn-send" onclick="openSendModal({{ $item['id'] }})">
-                                <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.5075 2.2725L7.14 4.6875L1.5 3.9375L1.5075 2.2725ZM7.1325 8.8125L1.5 11.2275V9.5625L7.1325 8.8125ZM0.00749999 0L0 5.25L11.25 6.75L0 8.25L0.00749999 13.5L15.75 6.75L0.00749999 0Z" fill="white"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                    <td>{{ $item['dokumen'] }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        <th>Bukti Inspeksi</th>
+                        <th>Tgl Inspeksi</th>
+                        <th>Dept</th>
+                        <th>Lokasi</th>
+                        <th>Deskripsi</th>
+                        <th>Standar / Dokumen Terkait</th>
+                        <th>Sumber Peraturan / Persyaratan</th>
+                        <th>Saran Perbaikan</th>
+                        <th>Status Perbaikan</th>
+                        <th>Tgl Perbaikan</th>
+                        <th>Aksi</th>
+                        <th>Dokumen</th>
+                    </tr>
+                </thead>
+                <tbody id="inspeksiTableBody">
+                    <!-- Data akan diisi oleh JavaScript dari API -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Table Footer -->
+        <div class="table-footer">
+            <div class="footer-info" id="footerInfo">
+                Showing 0 to 0 of 0 entries
+            </div>
+            <div class="pagination">
+                <button class="pagination-btn" id="prevBtn" onclick="previousPage()">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6.5 0L8 1.5L3.5 6L8 10.5L6.5 12L0.5 6L6.5 0Z" fill="#667085"/>
+                    </svg>
+                </button>
+                <button class="pagination-btn" id="nextBtn" onclick="nextPage()">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.5 0L0 1.5L4.5 6L0 10.5L1.5 12L7.5 6L1.5 0Z" fill="#667085"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1041,39 +1112,28 @@
         <div class="modal-edit-body">
             <div class="modal-edit-image-section">
                 <img id="editImage" src="" alt="Bukti Inspeksi" class="modal-edit-image">
+                <input type="file" id="fileImageInput" style="display: none;" accept="image/*">
                 <button class="btn-upload-image" onclick="uploadNewImage()">Upload Gambar Baru</button>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Tanggal Inspeksi</label>
-                    <input type="date" id="editTglInspeksi" class="form-input">
-                </div>
-                <div class="form-group">
                     <label class="form-label">Departemen</label>
                     <select id="editDept" class="form-select">
                         <option value="">Pilih Departemen</option>
-                        <option value="Warehouse">Warehouse</option>
-                        <option value="Production">Production</option>
-                        <option value="Quality Control">Quality Control</option>
-                        <option value="Maintenance">Maintenance</option>
+                        @foreach($departments as $dept)
+                        <option value="{{ $dept->nama_dept }}" data-id="{{ $dept->kode_dept }}">{{ $dept->nama_dept }}</option>
+                        @endforeach
                     </select>
                 </div>
-            </div>
-
-            <div class="form-group-full">
-                <label class="form-label">Lokasi</label>
-                <input type="text" id="editLokasi" class="form-input" placeholder="Masukkan lokasi">
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Standar</label>
-                    <input type="text" id="editStandar" class="form-input" placeholder="Masukkan standar">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Sumber Peraturan</label>
-                    <input type="text" id="editSumber" class="form-input" placeholder="Masukkan sumber">
+                    <label class="form-label">Lokasi</label>
+                    <select id="editLokasi" class="form-select">
+                        <option value="">Pilih Lokasi</option>
+                        @foreach($locations as $location)
+                        <option value="{{ $location->nama_lokasi }}" data-id="{{ $location->kode_lokasi }}">{{ $location->nama_lokasi }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -1082,9 +1142,29 @@
                 <textarea id="editDeskripsi" class="form-textarea" placeholder="Masukkan deskripsi temuan"></textarea>
             </div>
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Standar / Dokumen Terkait</label>
+                    <input type="text" id="editStandar" class="form-input" placeholder="Masukkan standar">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sumber Peraturan / Persyaratan</label>
+                    <input type="text" id="editSumber" class="form-input" placeholder="Masukkan sumber">
+                </div>
+            </div>
+
             <div class="form-group-full">
                 <label class="form-label">Saran Perbaikan</label>
-                <textarea id="editSaran" class="form-textarea" placeholder="Masukkan saran perbaikan"></textarea>
+                <div class="saran-perbaikan-box">
+                    <div class="saran-perbaikan-column">
+                        <label class="form-label">Koreksi</label>
+                        <textarea id="editSaranKoreksi" class="form-textarea" placeholder="Masukkan saran koreksi"></textarea>
+                    </div>
+                    <div class="saran-perbaikan-column">
+                        <label class="form-label">Korektif</label>
+                        <textarea id="editSaranKorektif" class="form-textarea" placeholder="Masukkan saran korektif"></textarea>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-edit-footer">
@@ -1110,54 +1190,165 @@
     let allRows = [];
     let filteredRows = [];
     let currentEntriesPerPage = 5;
+    let currentPage = 1;
+    let totalRecords = 0;
+    let inspectionsData = [];
 
-    // ========== HELPER FUNCTIONS ==========
-    // Convert "15 Jan 2026" to "2026-01-15"
-    function convertToDateInput(dateStr) {
-        const months = {
-            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
-        };
-        
-        const parts = dateStr.split(' ');
-        if (parts.length === 3) {
-            const day = parts[0].padStart(2, '0');
-            const month = months[parts[1]] || '01';
-            const year = parts[2];
-            return `${year}-${month}-${day}`;
+    // ========== API FUNCTIONS ==========
+    async function loadInspections(dept = null) {
+        try {
+            let url = '/api/transaksi-inspeksi?per_page=100';
+            if (dept) {
+                url += '&departemen=' + encodeURIComponent(dept);
+            }
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('Session expired, please login again');
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to load data');
+            }
+            const data = await response.json();
+            
+            inspectionsData = data.data;
+            
+            renderTable(inspectionsData);
+        } catch (error) {
+            console.error('Error loading inspections:', error);
+            alert('Gagal memuat data inspeksi: ' + error.message);
         }
-        return '';
     }
 
-    // Convert "2026-01-15" back to "15 Jan 2026"
+    function renderTable(data) {
+        const tbody = document.getElementById('inspeksiTableBody');
+        tbody.innerHTML = '';
+        
+        data.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.dataset.id = item.no_dokumen + ',' + item.sub;
+            row.dataset.status = item.status;
+            
+            // Format tanggal
+            const tanggal = item.inspect_h?.tanggal ? new Date(item.inspect_h.tanggal).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }) : '-';
+            
+            const tglPerbaikan = item.tgl_perbaikan ? new Date(item.tgl_perbaikan).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }) : '-';
+            
+            // Determine status color
+            let statusSvg = '';
+            let statusClass = '';
+            if (item.status === null) {
+                statusSvg = '-'
+            } else if (item.status === 'Closed') {
+                statusSvg = '<svg width="11" height="24" viewBox="0 0 11 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 5.01C0 3.63 0.49 2.45 1.47 1.47C2.45 0.49 3.63 0 5.01 0C6.39 0 7.57 0.49 8.55 1.47C9.53 2.45 10.03 3.63 10.05 5.01C10.05 5.17 10.03 5.31 9.99 5.43L8.34 11.94C8.28 12.82 7.93 13.56 7.29 14.16C6.65 14.76 5.89 15.06 5.01 15.06C4.15 15.06 3.4 14.77 2.76 14.19C2.12 13.61 1.76 12.89 1.68 12.03C1.48 11.43 1.27 10.77 1.05 10.05C0.83 9.33 0.6 8.46 0.36 7.44C0.12 6.42 0 5.61 0 5.01ZM1.65 20.07C1.65 19.15 1.98 18.37 2.64 17.73C3.3 17.09 4.09 16.76 5.01 16.74C5.93 16.72 6.72 17.05 7.38 17.73C8.04 18.41 8.37 19.19 8.37 20.07C8.37 21.01 8.04 21.8 7.38 22.44C6.72 23.08 5.93 23.41 5.01 23.43C4.09 23.45 3.3 23.12 2.64 22.44C1.98 21.76 1.65 20.97 1.65 20.07Z" fill="#039855"/></svg>';
+                statusClass = 'status-closed';
+            } else if (item.tgl_perbaikan) {
+                // Jika ada tgl_perbaikan, tampilkan orange (sedang dalam perbaikan)
+                statusSvg = '<svg width="11" height="24" viewBox="0 0 11 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 5.01C0 3.63 0.49 2.45 1.47 1.47C2.45 0.49 3.63 0 5.01 0C6.39 0 7.57 0.49 8.55 1.47C9.53 2.45 10.03 3.63 10.05 5.01C10.05 5.17 10.03 5.31 9.99 5.43L8.34 11.94C8.28 12.82 7.93 13.56 7.29 14.16C6.65 14.76 5.89 15.06 5.01 15.06C4.15 15.06 3.4 14.77 2.76 14.19C2.12 13.61 1.76 12.89 1.68 12.03C1.48 11.43 1.27 10.77 1.05 10.05C0.83 9.33 0.6 8.46 0.36 7.44C0.12 6.42 0 5.61 0 5.01ZM1.65 20.07C1.65 19.15 1.98 18.37 2.64 17.73C3.3 17.09 4.09 16.76 5.01 16.74C5.93 16.72 6.72 17.05 7.38 17.73C8.04 18.41 8.37 19.19 8.37 20.07C8.37 21.01 8.04 21.8 7.38 22.44C6.72 23.08 5.93 23.41 5.01 23.43C4.09 23.45 3.3 23.12 2.64 22.44C1.98 21.76 1.65 20.97 1.65 20.07Z" fill="#F79009"/></svg>';
+                statusClass = 'status-progress';
+            } else if (item.status === 'Open') {
+                // Default status Open (merah)
+                statusSvg = '<svg width="11" height="24" viewBox="0 0 11 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 5.01C0 3.63 0.49 2.45 1.47 1.47C2.45 0.49 3.63 0 5.01 0C6.39 0 7.57 0.49 8.55 1.47C9.53 2.45 10.03 3.63 10.05 5.01C10.05 5.17 10.03 5.31 9.99 5.43L8.34 11.94C8.28 12.82 7.93 13.56 7.29 14.16C6.65 14.76 5.89 15.06 5.01 15.06C4.15 15.06 3.4 14.77 2.76 14.19C2.12 13.61 1.76 12.89 1.68 12.03C1.48 11.43 1.27 10.77 1.05 10.05C0.83 9.33 0.6 8.46 0.36 7.44C0.12 6.42 0 5.61 0 5.01ZM1.65 20.07C1.65 19.15 1.98 18.37 2.64 17.73C3.3 17.09 4.09 16.76 5.01 16.74C5.93 16.72 6.72 17.05 7.38 17.73C8.04 18.41 8.37 19.19 8.37 20.07C8.37 21.01 8.04 21.8 7.38 22.44C6.72 23.08 5.93 23.41 5.01 23.43C4.09 23.45 3.3 23.12 2.64 22.44C1.98 21.76 1.65 20.97 1.65 20.07Z" fill="#F04438"/></svg>';
+                statusClass = 'status-open';
+            }
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.bukti_temuan ? `<img src="/storage/bukti_temuan/${item.bukti_temuan}" alt="Bukti Temuan" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
+                <td>${tanggal}</td>
+                <td>${item.inspect_h?.departemen?.nama_dept || '-'}</td>
+                <td>${item.inspect_h?.lokasi?.nama_lokasi || '-'}</td>
+                <td>${item.deskripsi || '-'}</td>
+                <td>${item.dokumen || '-'}</td>
+                <td>${item.referensi || '-'}</td>
+                <td><div class="saran-box"><strong>Koreksi:</strong><p>${item.saran_koreksi || '-'}</p><strong>Korektif:</strong><p>${item.saran_korektif || '-'}</p></div></td>
+                <td class="status-icon">
+                    <span class="status-indicator ${statusClass}" data-status="${item.status}">
+                        ${statusSvg}
+                    </span>
+                </td>
+                <td>${tglPerbaikan}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="openEditModal('${item.no_dokumen},${item.sub}')">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 13.502H2.8125L11.1075 5.20703L8.295 2.39453L0 10.6895V13.502ZM1.5 11.312L8.295 4.51703L8.985 5.20703L2.19 12.002H1.5V11.312Z" fill="currentColor"/>
+                                <path d="M11.5277 0.219375C11.2352 -0.073125 10.7627 -0.073125 10.4702 0.219375L9.09766 1.59187L11.9102 4.40438L13.2827 3.03188C13.5752 2.73938 13.5752 2.26688 13.2827 1.97438L11.5277 0.219375Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="openDeleteModal('${item.no_dokumen},${item.sub}')">
+                            <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.5 0L3.75 0.75H0V2.25H0.75V13.5C0.75 13.8917 0.893497 14.291 1.17627 14.5737C1.45904 14.8565 1.85833 15 2.25 15H9.75C10.1417 15 10.541 14.8565 10.8237 14.5737C11.1065 14.291 11.25 13.8917 11.25 13.5V2.25H12V0.75H8.25L7.5 0H4.5ZM2.25 2.25H9.75V13.5H2.25V2.25ZM3.75 3.75V12H5.25V3.75H3.75ZM6.75 3.75V12H8.25V3.75H6.75Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        ${(!item.status || item.status === 'Open') && item.tgl_perbaikan ? `
+                        <button class="btn-action btn-send" onclick="openClosingModal('${item.no_dokumen},${item.sub}')">
+                            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.5075 2.2725L7.14 4.6875L1.5 3.9375L1.5075 2.2725ZM7.1325 8.8125L1.5 11.2275V9.5625L7.1325 8.8125ZM0.00749999 0L0 5.25L11.25 6.75L0 8.25L0.00749999 13.5L15.75 6.75L0.00749999 0Z" fill="white"/>
+                            </svg>
+                        </button>
+                        ` : `
+                        ${(!item.status || item.status === 'Open') && !item.tgl_perbaikan ? `
+                        <button class="btn-action btn-send" onclick="openSendModal('${item.no_dokumen},${item.sub}')">
+                            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.5075 2.2725L7.14 4.6875L1.5 3.9375L1.5075 2.2725ZM7.1325 8.8125L1.5 11.2275V9.5625L7.1325 8.8125ZM0.00749999 0L0 5.25L11.25 6.75L0 8.25L0.00749999 13.5L15.75 6.75L0.00749999 0Z" fill="white"/>
+                            </svg>
+                        </button>
+                        ` : ''}`}
+                    </div>
+                </td>
+                <td>${item.bukti_perbaikan ? `<img src="/storage/bukti_perbaikan/${item.bukti_perbaikan}" alt="Dokumen" class="dokumen-image" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+        
+        allRows = Array.from(tbody.querySelectorAll('tr'));
+        filteredRows = [...allRows];
+        applyFilters();
+    }
+
+    // ========== HELPER FUNCTIONS ==========
+    function convertToDateInput(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toISOString().split('T')[0];
+    }
+
     function convertFromDateInput(dateStr) {
         if (!dateStr) return '-';
-        
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-            const year = parts[0];
-            const month = months[parseInt(parts[1]) - 1];
-            const day = parseInt(parts[2]);
-            return `${day} ${month} ${year}`;
-        }
-        return dateStr;
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
     }
 
     // ========== INITIALIZATION ==========
     window.addEventListener('DOMContentLoaded', function() {
-        const tbody = document.getElementById('inspeksiTableBody');
-        allRows = Array.from(tbody.querySelectorAll('tr'));
-        filteredRows = [...allRows];
-        applyFilters();
+        loadInspections();
     });
 
     // ========== FILTER FUNCTIONS ==========
     function applyFilter() {
-        applyFilters();
+        const dept = document.getElementById('filterDepartemen').value;
+        loadInspections(dept || null);
     }
 
     function handleSearch() {
@@ -1166,21 +1357,14 @@
 
     function handleEntriesChange() {
         currentEntriesPerPage = parseInt(document.getElementById('entriesPerPage').value);
+        currentPage = 1;
         applyFilters();
     }
 
     function applyFilters() {
-        const dept = document.getElementById('filterDepartemen').value;
         const searchQuery = document.getElementById('searchInput').value.toLowerCase();
         
         filteredRows = allRows.filter(row => {
-            // Department filter
-            const rowDept = row.cells[3].textContent.trim();
-            if (dept !== '' && rowDept !== dept) {
-                return false;
-            }
-            
-            // Search filter - search across all visible columns
             if (searchQuery !== '') {
                 const rowText = Array.from(row.cells)
                     .map(cell => cell.textContent.toLowerCase())
@@ -1189,7 +1373,6 @@
                     return false;
                 }
             }
-            
             return true;
         });
         
@@ -1197,13 +1380,37 @@
     }
 
     function displayFilteredRows() {
-        allRows.forEach(row => {
-            row.style.display = 'none';
+        allRows.forEach((row, idx) => {
+            const start = (currentPage - 1) * currentEntriesPerPage;
+            const end = start + currentEntriesPerPage;
+            row.style.display = (idx >= start && idx < end) ? '' : 'none';
         });
-        
-        filteredRows.slice(0, currentEntriesPerPage).forEach(row => {
-            row.style.display = '';
-        });
+        updatePagination();
+    }
+
+    // ========== PAGINATION FUNCTIONS ==========
+    function updatePagination() {
+        const from = (currentPage - 1) * currentEntriesPerPage + 1;
+        const to = Math.min(currentPage * currentEntriesPerPage, filteredRows.length);
+        const total = filteredRows.length;
+        document.getElementById('footerInfo').innerHTML = 
+            `Showing ${from} to ${to} of ${total} entries`;
+        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('nextBtn').disabled = to === total;
+    }
+
+    function nextPage() {
+        if (currentPage * currentEntriesPerPage < filteredRows.length) {
+            currentPage++;
+            displayFilteredRows();
+        }
+    }
+
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayFilteredRows();
+        }
     }
 
     // ========== MODAL FUNCTIONS: SEND ==========
@@ -1217,21 +1424,25 @@
         currentInspectionId = null;
     }
 
-    function confirmSend() {
+    async function confirmSend() {
         if (currentInspectionId) {
-            const row = document.querySelector(`tr[data-id="${currentInspectionId}"]`);
-            if (row) {
-                const statusCell = row.querySelector('.status-indicator');
-                statusCell.setAttribute('data-status', 'SENT');
-                statusCell.innerHTML = `<svg width="11" height="24" viewBox="0 0 11 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 5.01C0 3.63 0.49 2.45 1.47 1.47C2.45 0.49 3.63 0 5.01 0C6.39 0 7.57 0.49 8.55 1.47C9.53 2.45 10.03 3.63 10.05 5.01C10.05 5.17 10.03 5.31 9.99 5.43L8.34 11.94C8.28 12.82 7.93 13.56 7.29 14.16C6.65 14.76 5.89 15.06 5.01 15.06C4.15 15.06 3.4 14.77 2.76 14.19C2.12 13.61 1.76 12.89 1.68 12.03C1.48 11.43 1.27 10.77 1.05 10.05C0.83 9.33 0.6 8.46 0.36 7.44C0.12 6.42 0 5.61 0 5.01ZM1.65 20.07C1.65 19.15 1.98 18.37 2.64 17.73C3.3 17.09 4.09 16.76 5.01 16.74C5.93 16.72 6.72 17.05 7.38 17.73C8.04 18.41 8.37 19.19 8.37 20.07C8.37 21.01 8.04 21.8 7.38 22.44C6.72 23.08 5.93 23.41 5.01 23.43C4.09 23.45 3.3 23.12 2.64 22.44C1.98 21.76 1.65 20.97 1.65 20.07Z" fill="#F04438"/>
-                </svg>`;
-                
-                const actionButtons = row.querySelectorAll('.btn-action');
-                actionButtons.forEach(button => {
-                    button.disabled = true;
-                    button.classList.add('disabled');
+            try {
+                const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    body: JSON.stringify({ status: 'Open' })
                 });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                await loadInspections(document.getElementById('filterDepartemen').value);
+                alert('Data berhasil diperbarui');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memperbarui data');
             }
         }
         closeSendModal();
@@ -1248,11 +1459,24 @@
         currentInspectionId = null;
     }
 
-    function confirmDelete() {
+    async function confirmDelete() {
         if (currentInspectionId) {
-            const row = document.querySelector(`tr[data-id="${currentInspectionId}"]`);
-            if (row) {
-                row.remove();
+            try {
+                const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete');
+                
+                await loadInspections(document.getElementById('filterDepartemen').value);
+                alert('Data berhasil dihapus');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal menghapus data');
             }
         }
         closeDeleteModal();
@@ -1261,23 +1485,27 @@
     // ========== MODAL FUNCTIONS: EDIT ==========
     function openEditModal(id) {
         currentInspectionId = id;
-        const row = document.querySelector(`tr[data-id="${id}"]`);
+        const data = inspectionsData.find(item => item.no_dokumen + ',' + item.sub === id);
         
-        if (row) {
-            document.getElementById('editImage').src = row.cells[1].querySelector('img').src;
+        if (data) {
+            // Display existing bukti_temuan image if available
+            if (data.bukti_temuan) {
+                document.getElementById('editImage').src = '/storage/bukti_temuan/' + data.bukti_temuan;
+            } else {
+                document.getElementById('editImage').src = '';
+            }
             
-            const dateText = row.cells[2].textContent.trim();
-            const convertedDate = convertToDateInput(dateText);
-            document.getElementById('editTglInspeksi').value = convertedDate;
+            document.getElementById('editDept').value = data.inspect_h?.departemen?.nama_dept || '';
+            document.getElementById('editLokasi').value = data.inspect_h?.lokasi?.nama_lokasi || '';
+            document.getElementById('editDeskripsi').value = data.deskripsi || '';
+            document.getElementById('editStandar').value = data.dokumen || '';
+            document.getElementById('editSumber').value = data.referensi || '';
+            document.getElementById('editSaranKoreksi').value = data.saran_koreksi || '';
+            document.getElementById('editSaranKorektif').value = data.saran_korektif || '';
             
-            const deptText = row.cells[3].textContent.trim();
-            document.getElementById('editDept').value = deptText;
-            
-            document.getElementById('editLokasi').value = row.cells[4].textContent.trim();
-            document.getElementById('editDeskripsi').value = row.cells[5].textContent.trim();
-            document.getElementById('editStandar').value = row.cells[6].textContent.trim();
-            document.getElementById('editSumber').value = row.cells[7].textContent.trim();
-            document.getElementById('editSaran').value = row.cells[8].textContent.trim();
+            // Clear file input
+            const fileInput = document.getElementById('fileImageInput');
+            if (fileInput) fileInput.value = '';
         }
         
         document.getElementById('modal-edit').classList.add('active');
@@ -1289,30 +1517,89 @@
     }
 
     function uploadNewImage() {
-        // TODO: Implement file upload - backend will handle this
-        alert('Upload gambar akan diintegrasikan oleh backend developer');
-        
-        // When integrated, this will:
-        // 1. Open file picker
-        // 2. Upload to storage/app/public/inspeksi/
-        // 3. Update preview image
-        // 4. Store filename for save
+        document.getElementById('fileImageInput').click();
     }
 
-    function saveEdit() {
+    // Handle file selection
+    document.getElementById('fileImageInput')?.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('editImage').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    async function saveEdit() {
         if (currentInspectionId) {
-            const row = document.querySelector(`tr[data-id="${currentInspectionId}"]`);
-            if (row) {
-                const dateInput = document.getElementById('editTglInspeksi').value;
-                const formattedDate = convertFromDateInput(dateInput);
+            try {
+                // Get the ID values from the selected dropdown options
+                const deptSelect = document.getElementById('editDept');
+                const deptCode = deptSelect.options[deptSelect.selectedIndex]?.dataset.id || '';
+
+                const lokasiSelect = document.getElementById('editLokasi');
+                const lokasiCode = lokasiSelect.options[lokasiSelect.selectedIndex]?.dataset.id || '';
+
+                let buktiTemuanPath = '';
                 
-                row.cells[2].textContent = formattedDate;
-                row.cells[3].textContent = document.getElementById('editDept').value;
-                row.cells[4].textContent = document.getElementById('editLokasi').value;
-                row.cells[5].textContent = document.getElementById('editDeskripsi').value;
-                row.cells[6].textContent = document.getElementById('editStandar').value;
-                row.cells[7].textContent = document.getElementById('editSumber').value;
-                row.cells[8].textContent = document.getElementById('editSaran').value;
+                // Check if there's a new image file selected
+                const fileInput = document.getElementById('fileImageInput');
+                if (fileInput && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const [no_dokumen, sub] = currentInspectionId.split(',');
+                    
+                    // Upload file and get path
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('no_dokumen', no_dokumen);
+                    
+                    const uploadResponse = await fetch('/api/transaksi-inspeksi/upload', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                        },
+                        body: formData
+                    });
+                    
+                    if (!uploadResponse.ok) throw new Error('Failed to upload image');
+                    
+                    const uploadData = await uploadResponse.json();
+                    buktiTemuanPath = uploadData.file_name;
+                }
+
+                const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    body: JSON.stringify({
+                        dokumen: document.getElementById('editStandar').value,
+                        referensi: document.getElementById('editSumber').value,
+                        deskripsi: document.getElementById('editDeskripsi').value,
+                        saran_koreksi: document.getElementById('editSaranKoreksi').value,
+                        saran_korektif: document.getElementById('editSaranKorektif').value,
+                        kode_dept: deptCode,
+                        kode_lokasi: lokasiCode,
+                        bukti_temuan: buktiTemuanPath
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                // Clear file input after successful save
+                if (fileInput) {
+                    fileInput.value = '';
+                }
+                
+                await loadInspections(document.getElementById('filterDepartemen').value);
+                alert('Data berhasil diperbarui');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memperbarui data');
             }
         }
         closeEditModal();
@@ -1339,19 +1626,28 @@
         currentInspectionId = null;
     }
 
-    function confirmClosing() {
+    async function confirmClosing() {
         if (currentInspectionId) {
-            // TODO: Backend integration - API call to close inspection
-            console.log('Closing inspection with ID:', currentInspectionId);
-            // Example API call:
-            // fetch('/api/inspeksi/' + currentInspectionId + '/close', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            // }).then(response => response.json())
-            //   .then(data => {
-            //       alert('Inspeksi berhasil ditutup');
-            //       location.reload();
-            //   });
+            try {
+                const response = await fetch('/api/transaksi-closing/' + currentInspectionId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to close inspection');
+                }
+                
+                await loadInspections(document.getElementById('filterDepartemen').value);
+                alert('Inspeksi berhasil ditutup');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal menutup inspeksi');
+            }
         }
         closeClosingModal();
     }
