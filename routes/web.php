@@ -27,6 +27,11 @@ Route::middleware('auth')->group(function () {
         return view('pages.home');
     })->name('home');
 
+    // Dashboard Page
+    Route::get('/dashboard', function () {
+        return view('pages.dashboard');
+    })->name('dashboard');
+
     // Quality Sub-Menus
     Route::get('/quality/audit-inspection', function () {
         return view('quality.audit-inspection');

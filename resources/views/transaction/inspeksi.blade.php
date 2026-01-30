@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('page-title')
 <h1 class="page-title-header"><span class="breadcrumb-parent">Transaksi</span> / <span class="breadcrumb-active">Inspeksi</span></h1>
