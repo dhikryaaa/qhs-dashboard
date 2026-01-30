@@ -268,9 +268,9 @@
     <div class="navbar-header">
         <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
         
-        <!-- Dashboard - Unclickable, Hover Only -->
+        <!-- Dashboard -->
         <div class="nav-item">
-            <span class="nav-link">DASHBOARD</span>
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">DASHBOARD</a>
         </div>
         
         <!-- Quality with Submenu -->
