@@ -63,6 +63,7 @@
             align-items: center;
             gap: 12px;
             cursor: pointer;
+            position: relative;
         }
 
         .hris-header .user-icon {
@@ -73,27 +74,131 @@
             height: 8px;
             width: auto;
             margin-left: 8px;
+            transition: transform 0.3s ease;
         }
 
-        /* Dropdown menu styling */
-        .hris-header .dropdown-menu {
+        .hris-header .user-profile.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Profile Logout Popup */
+        .popup-logout {
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 12px;
+            gap: 12px;
+            position: absolute;
+            width: 167px;
+            top: calc(100% + 12px);
+            right: 0;
+            background: #FFFFFF;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.32);
+            border-radius: 16px;
+            z-index: 1040;
+        }
+
+        .popup-logout.show {
+            display: flex;
+        }
+
+        /* User Info Frame */
+        .popup-user-info {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            width: 143px;
+            height: 40px;
+        }
+
+        /* Avatar */
+        .popup-avatar {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 9999px;
+            background: url('{{ asset('img/default-avatar.png') }}') center/cover;
+            background-color: #E0E0E0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Public Sans', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            color: #7D7D7D;
+        }
+
+        /* User Details */
+        .popup-user-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0px;
+            width: 95px;
+            height: 40px;
+            flex-grow: 1;
+        }
+
+        .popup-user-nik {
+            width: 100%;
+            font-family: 'Public Sans', sans-serif;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 19px;
+            color: #7D7D7D;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .popup-user-name {
+            width: 100%;
+            font-family: 'Public Sans', sans-serif;
+            font-style: normal;
+            font-weight: 500;
             font-size: 14px;
-            min-width: 180px;
-            padding: 8px 0;
+            line-height: 16px;
+            color: #344054;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .hris-header .dropdown-item {
-            padding: 10px 16px;
-            font-size: 14px;
+        /* Logout Button */
+        .popup-logout-btn {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 14px;
+            gap: 8px;
+            width: 143px;
+            height: 28px;
+            background: #FFFFFF;
+            border: 1px solid #D4D4D4;
+            box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .hris-header .dropdown-item i {
-            font-size: 14px;
-            margin-right: 8px;
+        .popup-logout-btn:hover {
+            background: #F9FAFB;
+            border-color: #387192;
         }
 
-        .hris-header .dropdown-divider {
-            margin: 8px 0;
+        .popup-logout-btn span {
+            font-family: 'Public Sans', sans-serif;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 20px;
+            color: #387192;
         }
 
         /* Secondary Navbar Header */
@@ -240,27 +345,39 @@
         </a>
 
         <!-- User Profile Dropdown -->
-        <div class="dropdown">
-            <a class="user-profile-link" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="user-profile">
-                    <i class="bi bi-person-circle user-icon"></i>
-                    <span>{{ auth()->user()->nama ?? 'John Doe' }}</span>
-                    <svg width="15" height="8" viewBox="0 0 15 8" fill="none" xmlns="http://www.w3.org/2000/svg" class="dropdown-arrow">
-                        <path d="M0 0L7.5 7.5L15 0H0Z" fill="white"/>
-                    </svg>
-                </div>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i>Profile</a></li>
-                <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i>Settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <form action="{{ route('logout') }}" method="POST">
+        <div style="position: relative;">
+            <div class="user-profile" id="userProfileToggle">
+                <i class="bi bi-person-circle user-icon"></i>
+                <span>{{ auth()->user()->nama ?? 'John Doe' }}</span>
+                <svg width="15" height="8" viewBox="0 0 15 8" fill="none" xmlns="http://www.w3.org/2000/svg" class="dropdown-arrow">
+                    <path d="M0 0L7.5 7.5L15 0H0Z" fill="white"/>
+                </svg>
+                
+                <!-- Popup Logout -->
+                <div class="popup-logout" id="popupLogout">
+                    <!-- User Info -->
+                    <div class="popup-user-info">
+                        <!-- Avatar -->
+                        <div class="popup-avatar">
+                            {{ strtoupper(substr(auth()->user()->nama ?? 'J', 0, 1)) }}
+                        </div>
+                        
+                        <!-- User Details -->
+                        <div class="popup-user-details">
+                            <div class="popup-user-nik">{{ auth()->user()->nik ?? '00001' }}</div>
+                            <div class="popup-user-name">{{ auth()->user()->nama ?? 'Jane Doe' }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logout Button -->
+                    <form action="{{ route('logout') }}" method="POST" style="width: 100%;">
                         @csrf
-                        <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i>Logout</button>
+                        <button type="submit" class="popup-logout-btn">
+                            <span>Logout</span>
+                        </button>
                     </form>
-                </li>
-            </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -268,9 +385,9 @@
     <div class="navbar-header">
         <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
         
-        <!-- Dashboard - Unclickable, Hover Only -->
+        <!-- Dashboard -->
         <div class="nav-item">
-            <span class="nav-link">DASHBOARD</span>
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">DASHBOARD</a>
         </div>
         
         <!-- Quality with Submenu -->
@@ -332,6 +449,35 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <!-- Profile Popup Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userProfileToggle = document.getElementById('userProfileToggle');
+            const popupLogout = document.getElementById('popupLogout');
+            
+            // Toggle popup on profile click
+            userProfileToggle.addEventListener('click', function(e) {
+                // Prevent click from immediately triggering document click
+                e.stopPropagation();
+                popupLogout.classList.toggle('show');
+                userProfileToggle.classList.toggle('active');
+            });
+            
+            // Close popup when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userProfileToggle.contains(e.target)) {
+                    popupLogout.classList.remove('show');
+                    userProfileToggle.classList.remove('active');
+                }
+            });
+            
+            // Prevent popup from closing when clicking inside it
+            popupLogout.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>
