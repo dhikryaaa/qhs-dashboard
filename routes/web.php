@@ -20,9 +20,7 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-// COMMENTED FOR FRONTEND DEVELOPMENT - BYPASS AUTH
-// Route::middleware('auth')->group(function () {
-
+Route::middleware('auth')->group(function () {
     // Home Page
     Route::get('/', function () {
         return view('pages.home');
@@ -78,10 +76,10 @@ Route::get('/login', function () {
     })->name('report.hasil-inspeksi');
 
     Route::post('/logout', function () {
-        // auth()->logout();
-        // session()->invalidate();
-        // session()->regenerateToken();
+        auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
     
-// }); // END COMMENTED AUTH MIDDLEWARE
+});

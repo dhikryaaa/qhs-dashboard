@@ -327,7 +327,6 @@
 
             window.location.href = '{{ route('home') }}';
 
-            /* 
             fetch('/login', {
                     method: 'POST',
                     headers: {
@@ -349,7 +348,6 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
-            */
         }
     </script>
 </body>
