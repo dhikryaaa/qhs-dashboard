@@ -1570,22 +1570,27 @@
                     buktiTemuanPath = uploadData.file_name;
                 }
 
+                const bodyData = {
+                    dokumen: document.getElementById('editStandar').value,
+                    referensi: document.getElementById('editSumber').value,
+                    deskripsi: document.getElementById('editDeskripsi').value,
+                    saran_koreksi: document.getElementById('editSaranKoreksi').value,
+                    saran_korektif: document.getElementById('editSaranKorektif').value,
+                    kode_dept: deptCode,
+                    kode_lokasi: lokasiCode
+                };
+
+                if (buktiTemuanPath) {
+                    bodyData.bukti_temuan = buktiTemuanPath;
+                }
+
                 const response = await fetch('/api/transaksi-inspeksi/' + currentInspectionId, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                     },
-                    body: JSON.stringify({
-                        dokumen: document.getElementById('editStandar').value,
-                        referensi: document.getElementById('editSumber').value,
-                        deskripsi: document.getElementById('editDeskripsi').value,
-                        saran_koreksi: document.getElementById('editSaranKoreksi').value,
-                        saran_korektif: document.getElementById('editSaranKorektif').value,
-                        kode_dept: deptCode,
-                        kode_lokasi: lokasiCode,
-                        bukti_temuan: buktiTemuanPath
-                    })
+                    body: JSON.stringify(bodyData)
                 });
                 
                 if (!response.ok) throw new Error('Failed to update');
