@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\TransaksiClosingController;
 use App\Http\Controllers\Api\TransaksiInspeksiController;
 use App\Http\Controllers\Api\TransaksiPerbaikanController;
 use App\Http\Controllers\Api\UploadTransaksiInspeksiController;
+use App\Http\Controllers\Api\UploadTransaksiPerbaikanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,6 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
     Route::post('transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
-    Route::post('transaksi-perbaikan/upload', [TransaksiPerbaikanController::class, 'uploadFile']);
+    Route::post('transaksi-perbaikan/upload', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
 });
