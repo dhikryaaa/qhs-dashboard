@@ -11,18 +11,17 @@ class UploadTransaksiPerbaikanController extends Controller
     /**
      * Upload file for bukti perbaikan
      */
-    public function uploadFile(Request $request, string $id)
+    public function uploadFile(Request $request)
     {
         $request->validate([
             'file' => 'required|image|max:5120', // max 5MB
             'no_dokumen' => 'required|string',
+            'sub' => 'required|integer'
         ]);
-
-        [$no_dokumen, $sub] = explode(',', $id);
-        $sub = (int) $sub;
 
         $file = $request->file('file');
         $no_dokumen = $request->input('no_dokumen');
+        $sub = $request->input('sub');
 
         // Create filename: no_dokumen.extension
         $ext = $file->getClientOriginalExtension();

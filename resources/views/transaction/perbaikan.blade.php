@@ -946,8 +946,9 @@
             const formData = new FormData();
             formData.append('file', uploadedFile);
             formData.append('no_dokumen', no_dokumen);
+            formData.append('sub', sub);
             
-            const uploadResponse = await fetch('/api/transaksi-perbaikan/upload/' + currentImprovementId, {
+            const uploadResponse = await fetch('/api/transaksi-perbaikan/upload', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
