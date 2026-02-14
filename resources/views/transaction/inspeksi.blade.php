@@ -1130,6 +1130,7 @@
                     <label class="form-label">Lokasi</label>
                     <select id="editLokasi" class="form-select">
                         <option value="">Pilih Lokasi</option>
+                        <option value="">Umum</option>
                         @foreach($locations as $location)
                         <option value="{{ $location->nama_lokasi }}" data-id="{{ $location->kode_lokasi }}">{{ $location->nama_lokasi }}</option>
                         @endforeach
@@ -1272,7 +1273,7 @@
                 <td>${item.bukti_temuan ? `<img src="/storage/bukti_temuan/${item.bukti_temuan}" alt="Bukti Temuan" class="bukti-image" onerror="this.style.display='none'" onclick="openImageZoom(this.src)" style="cursor: zoom-in;">` : '-'}</td>
                 <td>${tanggal}</td>
                 <td>${item.inspect_h?.departemen?.nama_dept || '-'}</td>
-                <td>${item.inspect_h?.lokasi?.nama_lokasi || '-'}</td>
+                <td>${item.inspect_h?.lokasi?.nama_lokasi || 'Umum'}</td>
                 <td>${item.deskripsi || '-'}</td>
                 <td>${item.dokumen || '-'}</td>
                 <td>${item.referensi || '-'}</td>
