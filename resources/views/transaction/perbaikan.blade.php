@@ -947,7 +947,7 @@
             formData.append('file', uploadedFile);
             formData.append('no_dokumen', no_dokumen);
             
-            const uploadResponse = await fetch('/api/transaksi-perbaikan/upload', {
+            const uploadResponse = await fetch('/api/transaksi-perbaikan/upload/' + currentImprovementId, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
@@ -959,20 +959,6 @@
             
             const uploadData = await uploadResponse.json();
             const buktiPerbaikanPath = uploadData.file_name;
-            
-            // Update record with bukti_perbaikan path
-            const updateResponse = await fetch('/api/transaksi-perbaikan/' + currentImprovementId, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                },
-                body: JSON.stringify({
-                    bukti_perbaikan: buktiPerbaikanPath
-                })
-            });
-            
-            if (!updateResponse.ok) throw new Error('Failed to update');
             
             // Clear file input after successful save
             const fileInput = document.getElementById('fileUploadInput');

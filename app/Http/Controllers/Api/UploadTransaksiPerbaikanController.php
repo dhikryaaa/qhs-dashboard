@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\QHSInspectD;
 use Illuminate\Http\Request;
 
 class UploadTransaksiPerbaikanController extends Controller
@@ -10,12 +11,15 @@ class UploadTransaksiPerbaikanController extends Controller
     /**
      * Upload file for bukti perbaikan
      */
-    public function uploadFile(Request $request)
+    public function uploadFile(Request $request, string $id)
     {
         $request->validate([
             'file' => 'required|image|max:5120', // max 5MB
             'no_dokumen' => 'required|string',
         ]);
+
+        [$no_dokumen, $sub] = explode(',', $id);
+        $sub = (int) $sub;
 
         $file = $request->file('file');
         $no_dokumen = $request->input('no_dokumen');
@@ -45,6 +49,11 @@ class UploadTransaksiPerbaikanController extends Controller
             // Store new file
             $file->move($fullStoragePath, $filename);
 
+            // Update database with filename
+            QHSInspectD::where('no_dokumen', $no_dokumen)
+                ->where('sub', $sub)
+                ->update(['bukti_perbaikan' => $filename]);
+
             // Return filename (will be stored in bukti_perbaikan char(20) field)
             $filePath = $storagePath . '/' . $filename;
 
@@ -53,6 +62,7 @@ class UploadTransaksiPerbaikanController extends Controller
                 'file_path' => $filePath,
                 'file_name' => $filename,
                 'file_url' => '/storage/' . $filePath,
+                'message' => 'File berhasil diupload dan database terupdate'
             ]);
         } catch (\Exception $e) {
             return response()->json([

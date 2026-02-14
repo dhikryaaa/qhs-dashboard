@@ -44,6 +44,6 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
     Route::post('transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
-    Route::post('transaksi-perbaikan/upload', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
+    Route::post('transaksi-perbaikan/upload/{id}', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
 });

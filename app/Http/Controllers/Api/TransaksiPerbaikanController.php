@@ -54,15 +54,10 @@ class TransaksiPerbaikanController extends Controller
         [$no_dokumen, $sub] = explode(',', $id);
         $sub = (int) $sub;
 
-        $validation = $request->validate([
-            'bukti_perbaikan' => 'sometimes|nullable|string',
-        ]);
-        $validation['tgl_perbaikan'] = $request->input('tgl_perbaikan', Date::now());
-
         // Ensure we get the exact record
         QHSInspectD::where('no_dokumen', $no_dokumen)
             ->where('sub', $sub)
-            ->update($validation);
+            ->update(['tgl_perbaikan' => now()]);
 
         // Update only this specific record
         return QHSInspectD::where('no_dokumen', $no_dokumen)->where('sub', $sub)->with([
