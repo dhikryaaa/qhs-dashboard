@@ -61,8 +61,8 @@ class ReportInspeksiController extends Controller
         );
 
         $response = [
-            'K3' => [],
             'Mutu' => [],
+            'K3' => [],
         ];
 
         foreach ($groupAll as $key => $itemsAll) {
@@ -80,7 +80,7 @@ class ReportInspeksiController extends Controller
                 ? round(($closedAll / $totalAll) * 100, 2)
                 : 0;
 
-            foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
+            foreach (['001' => 'Mutu', '002' => 'K3'] as $kode => $label) {
 
                 $allPerKategori = $itemsAll->where('kode', $kode);
                 $filteredPerKategori = $itemsFiltered->where('kode', $kode);
@@ -104,7 +104,6 @@ class ReportInspeksiController extends Controller
                 $tglPerbaikan = $allPerKategori
                     ->pluck('tgl_perbaikan')
                     ->filter()
-                    ->sortDesc()
                     ->first();
 
                 $response[$label][] = [
@@ -127,13 +126,13 @@ class ReportInspeksiController extends Controller
         );
 
         $summary = [
-            'K3' => [
+            'Mutu' => [
                 'total_temuan' => 0,
                 'total_open' => 0,
                 'total_closed' => 0,
                 'persentase' => 0,
             ],
-            'Mutu' => [
+            'K3' => [
                 'total_temuan' => 0,
                 'total_open' => 0,
                 'total_closed' => 0,
@@ -141,7 +140,7 @@ class ReportInspeksiController extends Controller
             ],
         ];
 
-        foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
+        foreach (['001' => 'Mutu', '002' => 'K3'] as $kode => $label) {
 
             // ===== DATA FILTERED (jumlah mengikuti filter status)
             $filteredPerKategori = $filteredData->where('kode', $kode);
@@ -170,56 +169,24 @@ class ReportInspeksiController extends Controller
         return response()->json([
             'success' => true,
             'kategori' => [
-                'K3' => $paginate($response['K3']),
-                'Total_K3' => $summary['K3'],
-
                 'Mutu' => $paginate($response['Mutu']),
                 'Total_Mutu' => $summary['Mutu'],
+
+                'K3' => $paginate($response['K3']),
+                'Total_K3' => $summary['K3'],
             ],
             'pagination' => [
                 'current_page' => $page,
                 'per_page' => $perPage,
                 'total' => [
-                    'K3' => count($response['K3']),
                     'Mutu' => count($response['Mutu']),
+                    'K3' => count($response['K3']),
                 ],
                 'last_page' => [
-                    'K3' => ceil(count($response['K3']) / $perPage),
                     'Mutu' => ceil(count($response['Mutu']) / $perPage),
+                    'K3' => ceil(count($response['K3']) / $perPage),
                 ],
             ],
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
