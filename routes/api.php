@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExportReportAsExcelController;
+use App\Http\Controllers\Api\QHSCounterController;
 use App\Http\Controllers\Api\QHSDepartemenController;
 use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSKategoriController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Api\QHSRoleController;
 use App\Http\Controllers\Api\ReportInspeksiController;
 use App\Http\Controllers\Api\TransaksiClosingController;
 use App\Http\Controllers\Api\TransaksiInspeksiController;
+use App\Http\Controllers\Api\TransaksiInspeksiMobileController;
 use App\Http\Controllers\Api\TransaksiPerbaikanController;
 use App\Http\Controllers\Api\UploadTransaksiInspeksiController;
 use App\Http\Controllers\Api\UploadTransaksiPerbaikanController;
@@ -43,7 +45,9 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
+    Route::apiResource('transaksi-mobile', TransaksiInspeksiMobileController::class);
     Route::post('transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
     Route::post('transaksi-perbaikan/upload', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
+    Route::post('generate-nomor', [QHSCounterController::class, 'generateNomor']);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
 });
