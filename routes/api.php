@@ -59,9 +59,13 @@ Route::post('/mobile/login', [MobileAuthController::class, 'mobileLogin']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/mobile/logout', [MobileAuthController::class, 'mobileLogout']);
+    Route::get('/mobile/user', [MobileAuthController::class, 'mobileUserData']);
 });
 
 Route::middleware('auth:sanctum')->group(function() {
+    Route::apiResource('mobile/inspector', QHSInspectorController::class);
+    Route::apiResource('mobile/departemen', QHSDepartemenController::class);
+    Route::apiResource('mobile/lokasi', QHSLokasiController::class);
     Route::apiResource('mobile/transaksi-inspeksi', TransaksiInspeksiMobileController::class);
     Route::post('mobile/transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
 });

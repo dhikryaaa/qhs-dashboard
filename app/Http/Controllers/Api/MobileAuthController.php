@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class MobileAuthController extends Controller
 {
+    public function userData(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
     public function mobileLogin(Request $request)
     {
         $request->validate([
