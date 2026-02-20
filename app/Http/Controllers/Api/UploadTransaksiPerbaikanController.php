@@ -14,7 +14,7 @@ class UploadTransaksiPerbaikanController extends Controller
     public function uploadFile(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|max:5120', // max 5MB
+            'file' => 'required|image|mimes:png,jpg,jpeg|max:10240', // max 10MB
             'no_dokumen' => 'required|string',
             'sub' => 'required|integer'
         ]);
