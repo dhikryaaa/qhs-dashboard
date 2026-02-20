@@ -26,7 +26,7 @@ class QHSCounterController extends Controller
 
             $konter = $lastKonter ? $lastKonter + 1 : 000001; 
 
-            $nomor = sprintf('%s/%s/%s/%06d', $kode, $bulan, $tahun, $konter);
+            $nomor = sprintf('%s%s%s%06d', $kode, $bulan, $tahun, $konter);
 
             QHSCounter::create([
                 'kode' => $kode,
