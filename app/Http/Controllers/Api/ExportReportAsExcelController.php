@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\QHSInspectD;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -29,10 +30,10 @@ class ExportReportAsExcelController extends Controller
         // === ISI HEADER ===
         if ($bulan) {
             [$tahun, $bulanAngka] = explode('-', $bulan);
-            $monthName = \DateTime::createFromFormat('!m', $bulanAngka)->format('F');
+            $monthName = Carbon::createFromDate($tahun, $bulanAngka, 1)->locale('id')->translatedFormat('F');
             $sheet->setCellValue('M3', ": {$monthName} {$tahun}");
         } else {
-            $sheet->setCellValue('M3', ': ' . now()->format('F Y'));
+            $sheet->setCellValue('M3', ': ' . now()->locale('id')->translatedFormat('F Y'));
         }
 
         // === ISI TABLE (START ROW 6) ===
@@ -72,52 +73,54 @@ class ExportReportAsExcelController extends Controller
             $sheet->setCellValue("A{$row}", $no++);
             
             // Tanggal Inspeksi - Center
-            $sheet->setCellValue("B{$row}", \Carbon\Carbon::parse($group['tgl_inspeksi'])->format('d/m/Y'));
+            $sheet->setCellValue("B{$row}", Carbon::parse($group['tgl_inspeksi'])->format('d/m/Y'));
             $sheet->getStyle("B{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             
             // Departemen - Left
             $sheet->setCellValue("C{$row}", $group['departemen']);
             $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
-            // K3 columns - Center
-            if ($group['K3']) {
-                $sheet->setCellValue("D{$row}", $group['K3']['total_issue']);
-                $sheet->getStyle("D{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                
-                $sheet->setCellValue("E{$row}", $group['K3']['open_issue']);
-                $sheet->getStyle("E{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                
-                $sheet->setCellValue("F{$row}", $group['K3']['closed_issue']);
-                $sheet->getStyle("F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                
-                $sheet->setCellValue("G{$row}", $group['K3']['persentase_per_kategori'] . '%');
-                $sheet->getStyle("G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            }
-
             // Mutu columns - Center
             if ($group['Mutu']) {
-                $sheet->setCellValue("H{$row}", $group['Mutu']['total_issue']);
-                $sheet->getStyle("H{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->setCellValue("D{$row}", $group['Mutu']['total_issue']);
+                $sheet->getStyle("D{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
-                $sheet->setCellValue("I{$row}", $group['Mutu']['open_issue']);
-                $sheet->getStyle("I{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->setCellValue("E{$row}", $group['Mutu']['open_issue']);
+                $sheet->getStyle("E{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
-                $sheet->setCellValue("J{$row}", $group['Mutu']['closed_issue']);
-                $sheet->getStyle("J{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->setCellValue("F{$row}", $group['Mutu']['closed_issue']);
+                $sheet->getStyle("F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
-                $sheet->setCellValue("K{$row}", $group['Mutu']['persentase_per_kategori'] . '%');
-                $sheet->getStyle("K{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->setCellValue("G{$row}", $group['Mutu']['persentase_per_kategori'] . '%');
+                $sheet->getStyle("G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 // Tanggal Perbaikan - Center (from Mutu)
-                $sheet->setCellValue("L{$row}", $group['Mutu']['tgl_perbaikan'] ? \Carbon\Carbon::parse($group['Mutu']['tgl_perbaikan'])->format('d/m/Y') : '');
+                $sheet->setCellValue("L{$row}", $group['Mutu']['tgl_perbaikan'] ? Carbon::parse($group['Mutu']['tgl_perbaikan'])->format('d/m/Y') : '');
                 $sheet->getStyle("L{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
                 // % perbaikan keseluruhan - Center (from Mutu)
                 $sheet->setCellValue("M{$row}", $group['Mutu']['persentase_semua_kategori'] . '%');
                 $sheet->getStyle("M{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            } elseif ($group['K3']) {
+            }
+
+            // K3 columns - Center
+            if ($group['K3']) {
+                $sheet->setCellValue("H{$row}", $group['K3']['total_issue']);
+                $sheet->getStyle("H{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("I{$row}", $group['K3']['open_issue']);
+                $sheet->getStyle("I{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("J{$row}", $group['K3']['closed_issue']);
+                $sheet->getStyle("J{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                
+                $sheet->setCellValue("K{$row}", $group['K3']['persentase_per_kategori'] . '%');
+                $sheet->getStyle("K{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            }
+            
+            if (!$group['Mutu']) {
                 // If only K3 exists, use K3 data for L and M columns
-                $sheet->setCellValue("L{$row}", $group['K3']['tgl_perbaikan'] ? \Carbon\Carbon::parse($group['K3']['tgl_perbaikan'])->format('d/m/Y') : '');
+                $sheet->setCellValue("L{$row}", $group['K3']['tgl_perbaikan'] ? Carbon::parse($group['K3']['tgl_perbaikan'])->format('d/m/Y') : '');
                 $sheet->getStyle("L{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
                 $sheet->setCellValue("M{$row}", $group['K3']['persentase_semua_kategori'] . '%');
@@ -216,7 +219,7 @@ class ExportReportAsExcelController extends Controller
         // === TTD ===
         $ttdRow = $summaryStartRow;
         $sheet->mergeCells("L{$ttdRow}:M{$ttdRow}");
-        $sheet->setCellValue("L{$ttdRow}", 'Surabaya, ' . now()->format('d F Y'));
+        $sheet->setCellValue("L{$ttdRow}", 'Surabaya, ' . now()->locale('id')->translatedFormat('d F Y'));
         $sheet->getStyle("L{$ttdRow}")->getFont()->setSize(10);
         $sheet->getStyle("L{$ttdRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -328,7 +331,7 @@ class ExportReportAsExcelController extends Controller
             $closedAll = $itemsAll->whereNotNull('tgl_close')->count();
             $percentAll = $totalAll > 0 ? round(($closedAll / $totalAll) * 100, 2) : 0;
 
-            foreach (['001' => 'K3', '002' => 'Mutu'] as $kode => $label) {
+            foreach (['001' => 'Mutu', '002' => 'K3'] as $kode => $label) {
                 $allPerKategori = $itemsAll->where('kode', $kode);
                 $filteredPerKategori = $itemsFiltered->where('kode', $kode);
 
@@ -351,7 +354,6 @@ class ExportReportAsExcelController extends Controller
                 $tglPerbaikan = $allPerKategori
                     ->pluck('tgl_perbaikan')
                     ->filter()
-                    ->sortDesc()
                     ->first();
 
                 $itemData = [
@@ -374,8 +376,8 @@ class ExportReportAsExcelController extends Controller
         }
 
         // Calculate summaries
-        $k3Summary = $this->calculateSummary($allData, $filteredData, '001');
-        $mutuSummary = $this->calculateSummary($allData, $filteredData, '002');
+        $mutuSummary = $this->calculateSummary($allData, $filteredData, '001');
+        $k3Summary = $this->calculateSummary($allData, $filteredData, '002');
 
         return [
             'K3' => [

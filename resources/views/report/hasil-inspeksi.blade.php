@@ -457,8 +457,8 @@
     <!-- ========== TABS SECTION ========== -->
     <div class="tabs-section">
         <div class="tabs-container">
-            <div class="tab-item active" onclick="switchTab('K3')">K3</div>
-            <div class="tab-item" onclick="switchTab('Mutu')">Mutu</div>
+            <div class="tab-item active" onclick="switchTab('Mutu')">Mutu</div>
+            <div class="tab-item" onclick="switchTab('K3')">K3</div>
         </div>
     </div>
 
@@ -592,21 +592,21 @@
 <script>
     // Global variables
     let allTabData = {
-        'K3': [],
-        'Mutu': []
+        'Mutu': [],
+        'K3': []
     };
     let currentPagePerTab = {
-        'K3': 1,
-        'Mutu': 1
+        'Mutu': 1,
+        'K3': 1
     };
     let paginationInfoPerTab = {
-        'K3': { total: 0, last_page: 0, per_page: 5 },
-        'Mutu': { total: 0, last_page: 0, per_page: 5 }
+        'Mutu': { total: 0, last_page: 0, per_page: 5 },
+        'K3': { total: 0, last_page: 0, per_page: 5 }
     };
     let filteredData = [];
     let allFilteredData = [];
     let entriesPerPage = 5;
-    let activeTab = 'K3';
+    let activeTab = 'Mutu';
     
     // API Base URL
     const API_BASE_URL = '{{ url("/api/report-inspeksi") }}';
@@ -676,7 +676,7 @@
     // Switch Tab Function
     function switchTab(tab) {
         // Normalize tab name
-        const normalizedTab = (tab === 'K3') ? 'K3' : 'Mutu';
+        const normalizedTab = (tab === 'Mutu') ? 'Mutu' : 'K3';
         activeTab = normalizedTab;
         console.log('Switching tab to:', activeTab);
         
@@ -701,8 +701,8 @@
         document.getElementById('searchInput').value = '';
         
         // Reset pagination for all tabs when switching
-        currentPagePerTab['K3'] = 1;
         currentPagePerTab['Mutu'] = 1;
+        currentPagePerTab['K3'] = 1;
         
         // If filters are set, reload data, otherwise show empty message
         if (periode || departemen || status) {
@@ -761,8 +761,8 @@
                 
                 // Store ALL data for both tabs (for client-side search)
                 // Use the actual returned data length, but we have the total from pagination
-                allTabData['K3'] = transformAPIData(data.kategori.K3 || []);
                 allTabData['Mutu'] = transformAPIData(data.kategori.Mutu || []);
+                allTabData['K3'] = transformAPIData(data.kategori.K3 || []);
                 
                 // Note: We use the actual loaded data for client-side filtering
                 // If there are more items than per_page limit, we'd need to load more pages
@@ -803,8 +803,8 @@
     function applyFilter() {
         console.log('Apply filter clicked');
         // Reset to page 1 when applying filter
-        currentPagePerTab['K3'] = 1;
         currentPagePerTab['Mutu'] = 1;
+        currentPagePerTab['K3'] = 1;
         // Clear search input
         document.getElementById('searchInput').value = '';
         // Load data with filters applied
