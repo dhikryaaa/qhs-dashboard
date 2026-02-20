@@ -49,7 +49,6 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
     Route::post('transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
     Route::post('transaksi-perbaikan/upload', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
-    Route::post('generate-nomor', [QHSCounterController::class, 'generateNomor']);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
 });
 
@@ -67,5 +66,6 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('mobile/departemen', QHSDepartemenController::class);
     Route::apiResource('mobile/lokasi', QHSLokasiController::class);
     Route::apiResource('mobile/transaksi-inspeksi', TransaksiInspeksiMobileController::class);
+    Route::post('mobile/generate-nomor', [QHSCounterController::class, 'generateNomor']);
     Route::post('mobile/transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
 });
