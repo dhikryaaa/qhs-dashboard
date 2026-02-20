@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExportReportAsExcelController;
+use App\Http\Controllers\Api\MobileAuthController;
+use App\Http\Controllers\Api\QHSCounterController;
 use App\Http\Controllers\Api\QHSDepartemenController;
 use App\Http\Controllers\Api\QHSInspectorController;
 use App\Http\Controllers\Api\QHSKategoriController;
@@ -10,7 +12,10 @@ use App\Http\Controllers\Api\QHSRoleController;
 use App\Http\Controllers\Api\ReportInspeksiController;
 use App\Http\Controllers\Api\TransaksiClosingController;
 use App\Http\Controllers\Api\TransaksiInspeksiController;
+use App\Http\Controllers\Api\TransaksiInspeksiMobileController;
 use App\Http\Controllers\Api\TransaksiPerbaikanController;
+use App\Http\Controllers\Api\UploadTransaksiInspeksiController;
+use App\Http\Controllers\Api\UploadTransaksiPerbaikanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Web Routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'userData']);
@@ -38,10 +44,28 @@ Route::middleware('auth')->group(function() {
     Route::apiResource('lokasi', QHSLokasiController::class);
     Route::apiResource('kategori', QHSKategoriController::class);
     Route::apiResource('transaksi-inspeksi', TransaksiInspeksiController::class);
-    Route::post('transaksi-inspeksi/upload', [TransaksiInspeksiController::class, 'uploadFile']);
     Route::apiResource('transaksi-perbaikan', TransaksiPerbaikanController::class);
-    Route::post('transaksi-perbaikan/upload', [TransaksiPerbaikanController::class, 'uploadFile']);
     Route::apiResource('transaksi-closing', TransaksiClosingController::class);
     Route::apiResource('report-inspeksi', ReportInspeksiController::class);
+    Route::post('transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
+    Route::post('transaksi-perbaikan/upload', [UploadTransaksiPerbaikanController::class, 'uploadFile']);
     Route::get('export-report-inspeksi', [ExportReportAsExcelController::class, 'export']);
+});
+
+
+// Mobile Routes
+Route::post('/mobile/login', [MobileAuthController::class, 'mobileLogin']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/mobile/logout', [MobileAuthController::class, 'mobileLogout']);
+    Route::get('/mobile/user', [MobileAuthController::class, 'mobileUserData']);
+});
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::apiResource('mobile/inspector', QHSInspectorController::class);
+    Route::apiResource('mobile/departemen', QHSDepartemenController::class);
+    Route::apiResource('mobile/lokasi', QHSLokasiController::class);
+    Route::apiResource('mobile/transaksi-inspeksi', TransaksiInspeksiMobileController::class);
+    Route::post('mobile/generate-nomor', [QHSCounterController::class, 'generateNomor']);
+    Route::post('mobile/transaksi-inspeksi/upload', [UploadTransaksiInspeksiController::class, 'uploadFile']);
 });

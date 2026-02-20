@@ -31,7 +31,7 @@ class QHSInspectR extends Model
 {
     use HasFactory;
 
-    protected $table = 'qhs_inspect_h';
+    protected $table = 'qhs_inspect_r';
     protected $primaryKey = 'no_dokumen';
     public $incrementing = false;
     protected $keyType = 'string';

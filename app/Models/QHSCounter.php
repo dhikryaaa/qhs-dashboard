@@ -26,7 +26,6 @@ class QHSCounter extends Model
     use HasFactory;
 
     protected $table = 'qhs_counter';
-    protected $primaryKey = ['kode', 'bulan', 'tahun', 'konter'];
     public $incrementing = false;
     public $timestamps = false;
 
